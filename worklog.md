@@ -394,6 +394,32 @@ lalu diuji. Hasilnya identik dengan folder kerja:
 Jadi repo ini bisa di-clone di komputer mana pun (termasuk laptop kampus)
 dan langsung jalan tanpa langkah tambahan selain `PUTAR-DECK.bat`.
 
+## Rentang resolusi yang sudah diuji
+
+Diuji 15 Sep 2026, semuanya lewat `index.html` langsung:
+
+| Resolusi | Rasio | Overflow | Elemen bocor | Kolom | Font terkecil |
+|---|---|---|---|---|---|
+| 1920×1080 | 1,78 | 0 | 0 | 2 | 11,5 px |
+| 1920×1200 | 1,60 | 0 | 0 | 2 | 11,5 px |
+| 1600×900 | 1,78 | 0 | 0 | 2 | 11,5 px |
+| 1366×768 | 1,78 | 0 | 0 | 2 | 10,9 px |
+| 1280×800 | 1,60 | 0 | 0 | 2 | 10,2 px |
+| 1280×720 | 1,78 | 0 | 0 | 2 | 10,2 px |
+| **1024×768** (proyektor 4:3) | 1,33 | 0 | 0 | 2 | 9,6 px |
+| 800×600 | 1,33 | **3** | **21** | 1 | 9,6 px |
+
+**Aman untuk semua laptop dan proyektor realistis** — termasuk proyektor 4:3
+1024×768 yang masih banyak dipakai di ruang kelas.
+
+**Batasnya di 800×600.** Di bawah lebar ~900 px, `.body.cols` melebur jadi
+satu kolom; kontennya lalu menumpuk vertikal dan 3 slide meluber. 800×600
+sudah tidak realistis untuk proyektor tahun 2026, jadi ini dibiarkan —
+**tapi perlu diingat kalau deck ini suatu saat dibuka di ponsel** (mis. dari
+tautan Vercel yang dibagikan). Kalau itu terjadi, langkah paling murah:
+kunci lebar minimum dan skalakan seluruh deck dengan `transform: scale()`,
+atau tampilkan pesan "buka di layar lebih besar".
+
 ## Verifikasi terakhir (semua lolos)
 
 - 22 slide, semuanya dapat kelas `.in`

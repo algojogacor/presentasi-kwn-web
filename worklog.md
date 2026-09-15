@@ -364,8 +364,9 @@ dari WebGL lagi. Komentar di kode sudah dikoreksi.
 
 ## Status
 
-**Deck selesai, terverifikasi, dan dipublikasikan.**
-Proyek ditutup untuk sesi ini. Server lokal sudah dimatikan (port 8788 bebas).
+**Deck selesai, terverifikasi, dan sudah ter-push ke GitHub.**
+Proyek ditutup untuk sesi ini. Server lokal sudah dimatikan
+(port 8788 & 8790 bebas).
 
 ## Yang diserahkan
 
@@ -374,7 +375,24 @@ Proyek ditutup untuk sesi ini. Server lokal sudah dimatikan (port 8788 bebas).
 | Deck | `index.html` — 22 slide, satu file, CSS+JS inline, **nol dependensi runtime** |
 | Cara pakai | `PUTAR-DECK.bat` (menyalakan server lokal + membuka browser) |
 | Repo | https://github.com/algojogacor/presentasi-kwn-web |
+| Commit | `5f37a56` — 34 file, 6.640 baris |
 | Bahan | `content/design-plan.md`, `content/verified-data.md` |
+
+## Verifikasi pasca-push (clone bersih dari GitHub)
+
+Repo di-clone ulang dari GitHub ke folder terpisah, disajikan lewat server,
+lalu diuji. Hasilnya identik dengan folder kerja:
+
+- 34 berkas, 894 KB — **tidak ada berkas yang hilang** karena `.gitignore`
+- Semua aset HTTP **200**: `index.html`, `assets/fonts/fonts.css`,
+  kedua PNG QR, dan berkas woff2
+- 22 slide · WebGL aktif · 3 keluarga font termuat · 16 jalur SVG
+- **0 overflow · 0 elemen bocor · 0 error konsol**
+- Panel sumber slide 01 ada · 6 kartu anggota slide 02 dengan 6 NIM valid
+- 0 slide tanpa catatan pembicara
+
+Jadi repo ini bisa di-clone di komputer mana pun (termasuk laptop kampus)
+dan langsung jalan tanpa langkah tambahan selain `PUTAR-DECK.bat`.
 
 ## Verifikasi terakhir (semua lolos)
 

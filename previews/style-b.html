@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Preview B — Berkas Negara</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,900;1,6..96,400&family=Manrope:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+/* ============================================================
+   STYLE B — "BERKAS NEGARA"
+   Konsep: dokumen resmi / arsip hukum. Kertas tulang, tinta
+   hampir hitam, satu aksen vermilion. Rosette guilloche seperti
+   pada banknote & dokumen negara, plus bar redaksi (sensor).
+   Arah rasa: editorial kuat + wibawa dokumen resmi. TEMA TERANG.
+   ============================================================ */
+
+/* ---------- TOKENS ---------- */
+:root{
+  --paper:#F2EDE3;
+  --paper-2:#E6DDCE;
+  --ink:#15130F;
+  --muted:#8B8175;
+  --rule:rgba(21,19,15,.15);
+  --vermilion:#C33B22;
+
+  --font-display:'Bodoni Moda', 'Didot', Georgia, serif;
+  --font-body:'Manrope', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:'Space Mono', ui-monospace, monospace;
+
+  --pad: clamp(1.15rem, 3.4vw, 3.4rem);
+  --ease: cubic-bezier(.16,1,.3,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--paper)}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ---------- WEBGL PAPER LAYER ---------- */
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0}
+.no-gl #gl{
+  background:
+    radial-gradient(ellipse 60% 70% at 78% 22%, rgba(195,59,34,.055), transparent 60%),
+    var(--paper);
+}
+
+/* ---------- GUILLOCHE ROSETTE (SVG) ---------- */
+.rosette{
+  position:fixed;
+  z-index:1;
+  right:calc(-1 * clamp(30px, 7.6vw, 130px));
+  top:50%;
+  width:clamp(420px, 52vw, 830px);
+  height:clamp(420px, 52vw, 830px);
+  transform:translateY(-50%);
+  pointer-events:none;
+  opacity:.5;
+}
+.rosette .spin{
+  transform-origin:center;
+  animation:spin 260s linear infinite;
+}
+.rosette path{
+  fill:none;stroke:var(--vermilion);
+  stroke-width:.6;vector-effect:non-scaling-stroke;
+}
+
+/* ---------- SLIDE SHELL ---------- */
+.slide{
+  position:relative;z-index:3;
+  width:100vw;height:100vh;height:100dvh;
+  overflow:hidden;
+  display:grid;grid-template-rows:auto 1fr auto;
+  padding:var(--pad);
+  gap:clamp(.6rem,1.6vh,1.4rem);
+}
+
+/* ---------- HEADER ---------- */
+.hdr{
+  display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  font-family:var(--font-mono);
+  font-size:clamp(.53rem,.78vw,.68rem);
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);
+  padding-bottom:clamp(.5rem,1.2vh,1rem);
+  border-bottom:1px solid var(--rule);
+}
+.hdr .seal{
+  display:inline-block;width:8px;height:8px;background:var(--vermilion);
+  margin-right:.7em;transform:translateY(-1px);
+}
+
+/* ---------- MAIN ---------- */
+.main{
+  display:grid;
+  grid-template-columns:minmax(0,1.5fr) minmax(0,.8fr);
+  align-items:center;
+  gap:clamp(1rem,3.5vw,3.5rem);
+  min-height:0;
+  position:relative;
+}
+
+/* Watermark numeral di belakang judul */
+.watermark{
+  position:absolute;
+  left:calc(-1 * clamp(.4rem,1.5vw,1.6rem));
+  top:50%;transform:translateY(-52%);
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(9rem,26vw,22rem);
+  line-height:.72;
+  letter-spacing:-.06em;
+  color:transparent;
+  -webkit-text-stroke:2px rgba(21,19,15,.30);
+  pointer-events:none;
+  user-select:none;
+}
+
+/* ---------- EYEBROW ---------- */
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:clamp(.53rem,.78vw,.68rem);
+  letter-spacing:.26em;text-transform:uppercase;
+  color:var(--vermilion);
+  margin-bottom:clamp(.55rem,1.5vh,1.2rem);
+  opacity:0;
+  animation:fade .7s var(--ease) .1s both;
+}
+
+/* ---------- TITLE ---------- */
+.title{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:clamp(1.85rem,5.4vw,5rem);
+  line-height:.98;
+  letter-spacing:-.022em;
+}
+.mask{display:block;overflow:hidden;padding-bottom:.05em}
+.mask > span{display:block;transform:translateY(112%);animation:rise 1.1s var(--ease) both}
+.mask:nth-child(1) > span{animation-delay:.24s}
+.mask:nth-child(2) > span{animation-delay:.35s}
+.mask:nth-child(3) > span{animation-delay:.46s}
+.title em{
+  font-style:italic;font-weight:400;
+  color:var(--vermilion);
+}
+
+/* ---------- SUBTITLE ---------- */
+.sub{
+  margin-top:clamp(.75rem,2vh,1.6rem);
+  padding-top:clamp(.65rem,1.7vh,1.2rem);
+  border-top:2px solid var(--ink);
+  max-width:44ch;
+  font-size:clamp(.76rem,1.12vw,1rem);
+  line-height:1.6;
+  color:#4A453D;
+  opacity:0;
+  animation:fade .85s var(--ease) .72s both;
+}
+
+/* ---------- DOKUMEN CARD (dengan bar redaksi) ---------- */
+.doc{
+  align-self:center;
+  position:relative;
+  background:linear-gradient(175deg, rgba(255,255,255,.72), rgba(255,255,255,.28));
+  border:1px solid var(--rule);
+  box-shadow:0 18px 48px -26px rgba(21,19,15,.5);
+  padding:clamp(.85rem,1.9vw,1.5rem);
+  opacity:0;
+  animation:fade .9s var(--ease) .9s both;
+}
+.doc-head{
+  font-family:var(--font-mono);
+  font-size:clamp(.48rem,.68vw,.6rem);
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);
+  padding-bottom:.7em;margin-bottom:.9em;
+  border-bottom:1px solid var(--rule);
+  display:flex;justify-content:space-between;gap:.6em;
+}
+.redact-row{
+  height:clamp(.5rem,.95vw,.78rem);
+  margin-bottom:.62em;
+  position:relative;
+}
+.redact-row i{
+  position:absolute;inset:0 auto 0 0;
+  width:0;
+  background:var(--ink);
+  animation:redact .62s cubic-bezier(.7,0,.2,1) both;
+}
+.redact-row:nth-child(2) i{animation-delay:1.05s; --w:92%}
+.redact-row:nth-child(3) i{animation-delay:1.16s; --w:74%}
+.redact-row:nth-child(4) i{animation-delay:1.27s; --w:88%}
+.redact-row:nth-child(5) i{animation-delay:1.38s; --w:61%}
+.redact-row:nth-child(6) i{animation-delay:1.49s; --w:80%}
+.redact-open{
+  margin-top:1.35em;padding-top:1.05em;
+  border-top:1px solid var(--rule);
+  font-family:var(--font-mono);
+  font-size:clamp(.58rem,.82vw,.72rem);
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--vermilion);
+  display:flex;align-items:center;gap:.7em;
+  opacity:0;animation:fade .6s var(--ease) 1.85s both;
+}
+.redact-open .dash{
+  width:clamp(16px,2.6vw,34px);height:1px;flex:none;
+  background:var(--vermilion);
+  transform-origin:left;transform:scaleX(0);
+  animation:drawX .7s var(--ease) 1.9s both;
+}
+.doc-note{
+  margin-top:.7em;
+  font-size:clamp(.55rem,.75vw,.66rem);
+  line-height:1.5;color:var(--muted);
+  opacity:0;animation:fade .7s var(--ease) 2.05s both;
+}
+
+/* Stempel */
+.stamp{
+  position:absolute;
+  right:clamp(-.5rem,-1vw,-1rem); bottom:clamp(-.7rem,-1.4vh,-1rem);
+  border:2px solid var(--vermilion);
+  color:var(--vermilion);
+  font-family:var(--font-mono);
+  font-size:clamp(.46rem,.66vw,.58rem);
+  letter-spacing:.14em;text-transform:uppercase;
+  padding:.42em .7em;
+  transform:rotate(-7deg);
+  opacity:0;
+  animation:stampIn .5s cubic-bezier(.34,1.56,.64,1) 2.25s both;
+  background:rgba(242,237,227,.72);
+}
+
+/* ---------- FOOTER ---------- */
+.ftr{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;
+  font-family:var(--font-mono);
+  font-size:clamp(.5rem,.72vw,.64rem);
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);
+  padding-top:clamp(.5rem,1.2vh,1rem);
+  border-top:1px solid var(--rule);
+  opacity:0;
+  animation:fade .9s var(--ease) 1.1s both;
+}
+
+/* ---------- KEYFRAMES ---------- */
+@keyframes rise{to{transform:translateY(0)}}
+@keyframes fade{to{opacity:1}}
+@keyframes drawX{to{transform:scaleX(1)}}
+@keyframes redact{from{width:0}to{width:var(--w)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes stampIn{
+  0%{opacity:0;transform:rotate(-7deg) scale(1.5)}
+  60%{opacity:1}
+  100%{opacity:.92;transform:rotate(-7deg) scale(1)}
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width:880px){
+  .main{grid-template-columns:1fr;align-content:center}
+  .doc{display:none}
+  .rosette{opacity:.3}
+}
+@media (max-height:620px){
+  .title{font-size:clamp(1.45rem,4.2vw,2.6rem)}
+  .sub{font-size:clamp(.68rem,.92vw,.84rem)}
+  .watermark{font-size:clamp(6rem,18vw,12rem)}
+}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;animation-delay:0ms !important}
+  .mask > span{transform:none}
+  .redact-row i{width:var(--w)}
+  .rosette .spin{animation:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== WebGL: kertas + noda tinta yang merembes ===== -->
+<canvas id="gl" aria-hidden="true"></canvas>
+
+<!-- ===== Guilloche rosette (pola pengaman seperti pada dokumen negara) ===== -->
+<svg class="rosette" viewBox="-300 -300 600 600" aria-hidden="true">
+  <g class="spin" id="rosetteGroup"></g>
+</svg>
+
+<main class="slide">
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <div><span class="seal"></span>Kewarganegaraan PDB · Kelompok 6 · PDB 93</div>
+    <div>Lembar 01 / 19</div>
+  </header>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="watermark" aria-hidden="true">01</div>
+
+    <div>
+      <p class="eyebrow">Berkas Akademik · Semester Ganjil</p>
+
+      <h1 class="title">
+        <span class="mask"><span>Kesadaran Pajak</span></span>
+        <span class="mask"><span>dan Pendidikan</span></span>
+        <span class="mask"><span><em>Anti Korupsi</em></span></span>
+      </h1>
+
+      <p class="sub">
+        Membangun warga negara yang taat, berintegritas, dan bertanggung jawab —
+        dimulai dari meja kuliah, diuji di ruang publik.
+      </p>
+    </div>
+
+    <!-- Kartu dokumen dengan bar redaksi -->
+    <aside class="doc">
+      <div class="doc-head">
+        <span>Laporan Anggaran</span>
+        <span>RA-2020</span>
+      </div>
+
+      <div class="redact-row"><i></i></div>
+      <div class="redact-row"><i></i></div>
+      <div class="redact-row"><i></i></div>
+      <div class="redact-row"><i></i></div>
+      <div class="redact-row"><i></i></div>
+
+      <div class="redact-open"><span class="dash"></span><span>Transparansi</span></div>
+      <p class="doc-note">
+        Korupsi bekerja dengan menutup informasi. Kesadaran pajak bekerja
+        dengan membukanya.
+      </p>
+
+      <div class="stamp">Taat &amp; Bersih</div>
+    </aside>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="ftr">
+    <div>Dosen Pengampu · Ratna Damayanti, M.Kes., Drh</div>
+    <div>Scroll atau tekan → untuk lanjut</div>
+  </footer>
+
+</main>
+
+<script>
+/* ============================================================
+   1. GENERATE GUILLOCHE
+   Kurva rosette: r(θ) = R0 + A·cos(k·θ). Beberapa lapis dengan
+   k berbeda disarangkan -> pola pengaman khas uang kertas /
+   dokumen negara. Ringan: 5 path, bukan ratusan node.
+   ============================================================ */
+(function () {
+  const NS = 'http://www.w3.org/2000/svg';
+  const group = document.getElementById('rosetteGroup');
+  const STEPS = 1080;
+
+  const layers = [
+    { R0: 240, A: 62, k: 9,  o: 0.55 },   // kelopak besar
+    { R0: 206, A: 42, k: 18, o: 0.40 },
+    { R0: 176, A: 26, k: 27, o: 0.32 },
+    { R0: 148, A: 15, k: 36, o: 0.26 }    // ukiran halus di tengah
+  ];
+
+  layers.forEach(function (L) {
+    let d = '';
+    for (let i = 0; i <= STEPS; i++) {
+      const th = (i / STEPS) * Math.PI * 2;
+      const r  = L.R0 + L.A * Math.cos(L.k * th);
+      const x  = r * Math.cos(th);
+      const y  = r * Math.sin(th);
+      d += (i ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    d += 'Z';
+
+    const p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', d);
+    p.setAttribute('opacity', L.o);
+    group.appendChild(p);
+  });
+})();
+
+/* ============================================================
+   2. WEBGL — "PAPER & INK" SHADER
+   Serat kertas halus + noda tinta sepia yang merembes pelan.
+   Nuansa terang, kontras rendah, tidak mengganggu teks.
+   ============================================================ */
+(function () {
+  const canvas = document.getElementById('gl');
+  const gl = canvas.getContext('webgl2', { antialias: false, alpha: false, powerPreference: 'high-performance' });
+  if (!gl) { document.documentElement.classList.add('no-gl'); return; }
+
+  const VS = `#version 300 es
+  void main(){
+    vec2 v = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+    gl_Position = vec4(v * 2.0 - 1.0, 0.0, 1.0);
+  }`;
+
+  const FS = `#version 300 es
+  precision highp float;
+  uniform vec2  uRes;
+  uniform float uTime;
+  out vec4 fragColor;
+
+  float hash(vec2 p){
+    p = fract(p * vec2(123.34, 456.21));
+    p += dot(p, p + 45.32);
+    return fract(p.x * p.y);
+  }
+  float vnoise(vec2 p){
+    vec2 i = floor(p), f = fract(p);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = hash(i);
+    float b = hash(i + vec2(1.0, 0.0));
+    float c = hash(i + vec2(0.0, 1.0));
+    float d = hash(i + vec2(1.0, 1.0));
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+  }
+  float fbm(vec2 p){
+    float v = 0.0, a = 0.5;
+    for (int i = 0; i < 5; i++){ v += a * vnoise(p); p *= 2.04; a *= 0.5; }
+    return v;
+  }
+
+  void main(){
+    vec2 uv = gl_FragCoord.xy / uRes;
+    vec2 p  = uv;
+    p.x *= uRes.x / uRes.y;
+
+    float t = uTime * 0.028;
+
+    /* Domain warp -> noda tinta yang mengalir sangat pelan */
+    float warp  = fbm(p * 1.15 + vec2(t, -t * 0.7));
+    float stain = fbm(p * 1.9 + warp * 1.5 + vec2(-t * 0.55, t * 0.32));
+    stain = smoothstep(0.44, 0.98, stain);
+
+    vec3 paper = vec3(0.949, 0.929, 0.890);
+    vec3 sepia = vec3(0.744, 0.686, 0.592);
+
+    vec3 col = mix(paper, sepia, stain * 0.30);
+
+    /* Serat kertas: noise sangat memanjang horizontal */
+    float fiber = vnoise(vec2(uv.x * 300.0, uv.y * 6.0));
+    col -= fiber * 0.014;
+
+    /* Cahaya hangat lembut dari kiri atas */
+    col += vec3(0.028, 0.020, 0.0) * smoothstep(1.0, 0.0, length(uv - vec2(0.12, 0.92)));
+
+    /* Vignette ringan */
+    vec2 v = uv - 0.5;
+    col *= 1.0 - dot(v, v) * 0.24;
+
+    /* Grain */
+    col += (hash(gl_FragCoord.xy + fract(uTime) * 77.0) - 0.5) * 0.018;
+
+    fragColor = vec4(col, 1.0);
+  }`;
+
+  function compile(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+      console.error('Shader error:', gl.getShaderInfoLog(s));
+      return null;
+    }
+    return s;
+  }
+
+  const vs = compile(gl.VERTEX_SHADER, VS);
+  const fs = compile(gl.FRAGMENT_SHADER, FS);
+  if (!vs || !fs) { document.documentElement.classList.add('no-gl'); return; }
+
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+    console.error('Link error:', gl.getProgramInfoLog(prog));
+    document.documentElement.classList.add('no-gl');
+    return;
+  }
+  gl.useProgram(prog);
+  gl.bindVertexArray(gl.createVertexArray());
+
+  const uRes  = gl.getUniformLocation(prog, 'uRes');
+  const uTime = gl.getUniformLocation(prog, 'uTime');
+  const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+
+  function resize() {
+    const w = Math.floor(window.innerWidth * DPR);
+    const h = Math.floor(window.innerHeight * DPR);
+    if (canvas.width !== w || canvas.height !== h) {
+      canvas.width = w; canvas.height = h;
+      gl.viewport(0, 0, w, h);
+    }
+    gl.uniform2f(uRes, w, h);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  let raf = 0;
+  const start = performance.now();
+  function frame(now) {
+    gl.uniform1f(uTime, (now - start) / 1000);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    raf = requestAnimationFrame(frame);
+  }
+  raf = requestAnimationFrame(frame);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { cancelAnimationFrame(raf); raf = 0; }
+    else if (!raf) { raf = requestAnimationFrame(frame); }
+  });
+})();
+</script>
+</body>
+</html>

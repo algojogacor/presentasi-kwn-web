@@ -1,0 +1,2950 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Kesadaran Pajak &amp; Pendidikan Anti Korupsi — Kewarganegaraan PDB</title>
+<meta name="description" content="Paparan Kelompok 6 PDB 93 — Kesadaran Pajak dan Pendidikan Anti Korupsi." />
+
+<!-- Font lokal: tidak butuh internet, aman walau wifi kampus mati -->
+<link rel="stylesheet" href="assets/fonts/fonts.css" />
+
+<style>
+/* ================================================================
+   DECK KEWARGANEGARAAN — "BERKAS NEGARA"
+   Kertas tulang, tinta, satu aksen vermilion.
+   ----------------------------------------------------------------
+   DAFTAR ISI
+     01. Token desain
+     02. Reset & dasar
+     03. Viewport fitting (WAJIB — tiap slide pas 100dvh)
+     04. Lapisan atmosfer (WebGL, grain, guilloche)
+     05. Kerangka slide
+     06. Tipografi & komponen
+     07. Primitif animasi
+     08. Komponen khas per slide
+     09. Chrome (navigasi, penggaris, titik)
+     10. Mode edit & presenter
+     11. Cetak / PDF
+     12. Responsif & reduced motion
+   ================================================================ */
+
+/* ================================================================
+   01. TOKEN DESAIN
+   Ubah di sini untuk mengganti seluruh tampilan deck.
+   ================================================================ */
+:root{
+  /* --- Palet: tiga warna, tidak lebih --- */
+  --paper:#F2EDE3;
+  --paper-2:#E8E0D1;
+  --paper-3:#DCD1BD;
+  --ink:#15130F;
+  --ink-2:#3A352C;
+  --ink-3:#5C564A;
+  --muted:#8B8175;
+  --rule:rgba(21,19,15,.15);
+  --rule-2:rgba(21,19,15,.30);
+  --vermilion:#C33B22;
+  --vermilion-2:#9E2E19;
+  --vermilion-soft:rgba(195,59,34,.12);
+
+  /* --- Tipografi: tiga peran --- */
+  --font-display:'Bodoni Moda','Didot',Georgia,'Times New Roman',serif;
+  --font-body:'Manrope','Helvetica Neue',Arial,sans-serif;
+  --font-mono:'Space Mono',ui-monospace,'Courier New',monospace;
+
+  /* --- Skala huruf: semua clamp, tidak ada px tetap --- */
+  --t-hero:clamp(2.1rem,6vw,5.4rem);
+  --t-1:clamp(1.7rem,3.9vw,3.3rem);
+  --t-2:clamp(1.25rem,2.5vw,2.1rem);
+  --t-3:clamp(.95rem,1.55vw,1.32rem);
+  --t-4:clamp(.8rem,1.12vw,1rem);
+  --t-5:clamp(.6rem,.8vw,.72rem);
+  --t-num:clamp(2.4rem,6.4vw,6.4rem);
+  --t-num-s:clamp(1.6rem,3.4vw,3rem);
+
+  /* --- Jarak & gerak --- */
+  --pad:clamp(1.1rem,3.2vw,3.2rem);
+  --gap:clamp(.5rem,1.5vh,1.2rem);
+  --ease:cubic-bezier(.16,1,.3,1);
+  --ease-io:cubic-bezier(.65,0,.35,1);
+  --ease-spring:cubic-bezier(.34,1.4,.64,1);
+}
+
+/* ================================================================
+   02. RESET & DASAR
+   ================================================================ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--paper)}
+body{
+  font-family:var(--font-body);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+::selection{background:var(--vermilion);color:var(--paper)}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+
+/* ================================================================
+   03. VIEWPORT FITTING — setiap slide PAS 100dvh, tanpa scroll
+   ================================================================ */
+#deck{
+  position:relative;
+  height:100vh;height:100dvh;
+  overflow-y:scroll;
+  overflow-x:hidden;
+  scroll-snap-type:y mandatory;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+}
+#deck::-webkit-scrollbar{display:none}
+
+.slide{
+  position:relative;
+  width:100%;
+  height:100vh;height:100dvh;
+  overflow:hidden;
+  scroll-snap-align:start;
+  scroll-snap-stop:always;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr) auto;
+  gap:var(--gap);
+  padding:var(--pad);
+  z-index:2;
+}
+
+/* Bayangan tepi atas: kesan tumpukan kertas */
+.slide::after{
+  content:"";
+  position:absolute;left:0;right:0;top:0;
+  height:clamp(20px,4vh,44px);
+  background:linear-gradient(180deg,rgba(21,19,15,.055),transparent);
+  pointer-events:none;z-index:1;
+}
+
+/* ================================================================
+   04. LAPISAN ATMOSFER
+   ================================================================ */
+#gl{
+  position:fixed;inset:0;width:100%;height:100%;
+  display:block;z-index:0;pointer-events:none;
+  /* Latar kertas dipasang permanen, bukan cuma saat .no-gl.
+     Hasil uji (tools/alpha-proof.py): saat konteks WebGL HILANG, Chromium
+     melewati elemen canvas sepenuhnya — yang terlihat latar body, dan itu
+     sudah kertas. Yang dijaga di sini adalah kasus lain: canvas tampil tapi
+     isinya kosong (WebGL gagal / driver aneh). Dengan alpha:true canvas
+     tembus pandang, jadi yang muncul kertas — bukan hitam. */
+  background:
+    radial-gradient(ellipse 60% 70% at 78% 18%,rgba(195,59,34,.05),transparent 60%),
+    radial-gradient(ellipse 70% 60% at 12% 88%,rgba(21,19,15,.05),transparent 60%),
+    var(--paper);
+}
+
+/* Grain film — SVG inline, tanpa permintaan jaringan */
+.grain{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  opacity:.30;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+}
+
+/* Guilloche — satu rosette per babak, saling silang-tutup */
+.rosettes{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+.rosette{
+  position:absolute;
+  right:calc(-1 * clamp(40px,9vw,170px));
+  top:50%;transform:translateY(-50%);
+  width:clamp(400px,50vw,800px);height:clamp(400px,50vw,800px);
+  opacity:0;
+  transition:opacity 1.1s var(--ease);
+}
+.rosette.on{opacity:.42}
+.rosette .spin{transform-origin:center;animation:spin 300s linear infinite}
+.rosette path{
+  fill:none;stroke:var(--vermilion);
+  stroke-width:.6;vector-effect:non-scaling-stroke;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ================================================================
+   05. KERANGKA SLIDE
+   ================================================================ */
+.hdr{
+  display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+  font-family:var(--font-mono);
+  font-size:var(--t-5);
+  letter-spacing:.19em;text-transform:uppercase;
+  color:var(--muted);
+  padding-bottom:clamp(.45rem,1.1vh,.9rem);
+  border-bottom:1px solid var(--rule);
+  z-index:2;
+}
+.hdr .seal{
+  display:inline-block;width:7px;height:7px;background:var(--vermilion);
+  margin-right:.7em;transform:translateY(-1px);
+}
+.hdr-r{white-space:nowrap}
+
+.body{
+  display:grid;
+  align-content:center;
+  min-height:0;
+  gap:clamp(.6rem,1.8vh,1.5rem);
+  z-index:2;
+}
+.body.cols{
+  grid-template-columns:minmax(0,1.35fr) minmax(0,.9fr);
+  align-items:center;
+  gap:clamp(1rem,3.4vw,3.4rem);
+}
+.body.cols-wide{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+/* 21 — kolom kanan lebih lega: panel metrik butuh ruang, bukan kolom sempit */
+.body.cols-kpi{
+  grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
+  align-items:center;
+  gap:clamp(1rem,3.2vw,3.2rem);
+}
+
+.ftr{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:1rem;
+  font-family:var(--font-mono);
+  font-size:var(--t-5);
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--muted);
+  padding-top:clamp(.45rem,1.1vh,.9rem);
+  border-top:1px solid var(--rule);
+  z-index:2;
+}
+.ftr .babak{color:var(--vermilion)}
+
+/* ================================================================
+   06. TIPOGRAFI & KOMPONEN
+   ================================================================ */
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:var(--t-5);
+  letter-spacing:.26em;text-transform:uppercase;
+  color:var(--vermilion);
+  display:flex;align-items:center;gap:.75em;
+  margin-bottom:clamp(.4rem,1.2vh,.9rem);
+}
+.eyebrow .dash{
+  width:clamp(14px,2.4vw,32px);height:1px;flex:none;
+  background:var(--vermilion);transform-origin:left;transform:scaleX(0);
+  transition:transform .7s var(--ease) .15s;
+}
+.slide.in .eyebrow .dash{transform:scaleX(1)}
+
+h1.hero{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:var(--t-hero);
+  line-height:.98;letter-spacing:-.024em;
+}
+h2.title{
+  font-family:var(--font-display);
+  font-weight:900;
+  font-size:var(--t-1);
+  line-height:1.02;letter-spacing:-.02em;
+}
+h3.sub{
+  font-family:var(--font-body);
+  font-weight:600;
+  font-size:var(--t-3);
+  line-height:1.3;letter-spacing:-.01em;
+}
+em.acc{font-style:italic;font-weight:400;color:var(--vermilion)}
+p.lead{
+  font-size:var(--t-4);
+  line-height:1.62;
+  color:var(--ink-2);
+  max-width:56ch;
+}
+p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
+.mono{font-family:var(--font-mono)}
+.rule{border-top:1px solid var(--rule);padding-top:clamp(.5rem,1.4vh,1.1rem)}
+.rule-thick{border-top:2px solid var(--ink);padding-top:clamp(.5rem,1.4vh,1.1rem)}
+
+/* Kartu dokumen */
+.doc{
+  position:relative;
+  background:linear-gradient(175deg,rgba(255,255,255,.68),rgba(255,255,255,.24));
+  border:1px solid var(--rule);
+  padding:clamp(.8rem,1.8vw,1.5rem);
+}
+.doc-head{
+  display:flex;justify-content:space-between;gap:.7em;
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.19em;text-transform:uppercase;color:var(--muted);
+  padding-bottom:.65em;margin-bottom:.85em;
+  border-bottom:1px solid var(--rule);
+}
+
+/* Daftar sumber di panel slide 01.
+   Menggantikan bar redaksi kosong: isinya nyata dan bisa dicek. */
+.src{list-style:none;display:grid;gap:clamp(.5rem,1.3vh,.95rem)}
+.src li{
+  border-left:2px solid var(--rule-2);
+  padding-left:clamp(.5rem,1vw,.9rem);
+}
+.src b{
+  display:block;font-weight:700;
+  font-size:var(--t-4);line-height:1.25;color:var(--ink);
+}
+.src span{
+  display:block;
+  font-family:var(--font-mono);font-size:var(--t-5);
+  line-height:1.45;letter-spacing:.05em;color:var(--ink-3);
+}
+.stamp{
+  position:absolute;
+  right:calc(-1 * clamp(.2rem,.8vw,.7rem));
+  bottom:calc(-1 * clamp(.4rem,1.2vh,.9rem));
+  border:2px solid var(--vermilion);color:var(--vermilion);
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.13em;text-transform:uppercase;
+  padding:.4em .68em;transform:rotate(-7deg) scale(1.5);
+  opacity:0;background:rgba(242,237,227,.75);
+  transition:opacity .45s ease,transform .5s var(--ease-spring);
+  transition-delay:1.5s;
+}
+.slide.in .stamp{opacity:.94;transform:rotate(-7deg) scale(1)}
+
+/* Kartu kisi */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,190px),1fr));
+  gap:clamp(.6rem,1.4vw,1.1rem);
+}
+.card{
+  border-top:2px solid var(--ink);
+  padding-top:clamp(.5rem,1.2vh,1rem);
+}
+.card .num{
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.2em;color:var(--vermilion);
+  display:block;margin-bottom:.5em;
+}
+.card h4{
+  font-family:var(--font-display);font-weight:700;
+  font-size:var(--t-3);line-height:1.2;
+  margin-bottom:.45em;letter-spacing:-.01em;
+}
+.card p{font-size:var(--t-4);line-height:1.55;color:var(--ink-3)}
+/* Baris NIM di bawah nama anggota — metadata, bukan isi */
+.card .nim{
+  font-family:var(--font-mono);
+  font-size:var(--t-5);
+  line-height:1.4;
+  letter-spacing:.12em;
+  color:var(--muted);
+  font-variant-numeric:tabular-nums;
+  margin-top:.1em;
+}
+.card ul{list-style:none;margin-top:.5em}
+.card li{
+  font-size:var(--t-5);line-height:1.5;color:var(--ink-3);
+  padding-left:1em;position:relative;
+}
+.card li::before{
+  content:"";position:absolute;left:0;top:.6em;
+  width:5px;height:1px;background:var(--vermilion);
+}
+
+/* Angka besar */
+.bignum{
+  font-family:var(--font-display);font-weight:900;
+  font-size:var(--t-num);line-height:.9;letter-spacing:-.035em;
+  font-variant-numeric:tabular-nums;
+}
+.bignum.v{color:var(--vermilion)}
+.metric-label{
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
+}
+
+/* Kutipan */
+.quote{
+  font-family:var(--font-display);
+  font-weight:400;font-style:italic;
+  font-size:var(--t-2);line-height:1.35;
+  letter-spacing:-.01em;
+  border-left:2px solid var(--vermilion);
+  padding-left:clamp(.7rem,1.8vw,1.6rem);
+}
+.quote cite{
+  display:block;margin-top:.7em;
+  font-family:var(--font-mono);font-style:normal;
+  font-size:var(--t-5);letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);
+}
+
+/* ================================================================
+   07. PRIMITIF ANIMASI
+   Semua dipicu oleh kelas .in pada .slide (IntersectionObserver)
+   ================================================================ */
+.rv{
+  opacity:0;transform:translateY(clamp(12px,2vh,26px));
+  transition:opacity .78s var(--ease),transform .78s var(--ease);
+  transition-delay:calc(var(--i,0) * 68ms);
+}
+.rv-l{transform:translateX(clamp(-40px,-3vw,-14px))}
+.rv-r{transform:translateX(clamp(14px,3vw,40px))}
+.rv-s{transform:scale(.94)}
+.rv-b{filter:blur(9px)}
+.slide.in .rv{opacity:1;transform:none;filter:none}
+
+/* Reveal per baris: teks naik dari balik topeng */
+.mask{display:block;overflow:hidden;padding-bottom:.05em}
+.mask > span{
+  display:block;transform:translateY(112%);
+  transition:transform 1.05s var(--ease);
+  transition-delay:calc(var(--i,0) * 90ms + 120ms);
+}
+.slide.in .mask > span{transform:translateY(0)}
+
+/* ================================================================
+   08. KOMPONEN KHAS PER SLIDE
+   ================================================================ */
+
+/* --- 06: diagram batang rasio pajak --- */
+.bars{
+  display:flex;flex-direction:column;
+  gap:clamp(.22rem,.85vh,.55rem);
+  position:relative;
+  padding-top:clamp(.8rem,2vh,1.6rem);
+}
+.bar-row{
+  display:grid;
+  grid-template-columns:clamp(72px,9vw,124px) minmax(0,1fr) clamp(48px,5vw,74px);
+  align-items:center;gap:clamp(.4rem,1vw,.9rem);
+  font-size:var(--t-5);
+}
+.bar-row .name{
+  font-family:var(--font-mono);letter-spacing:.08em;
+  color:var(--ink-2);text-align:right;white-space:nowrap;
+}
+.bar-track{position:relative;height:clamp(9px,1.5vh,15px);background:rgba(21,19,15,.07)}
+.bar-track i{
+  position:absolute;inset:0 auto 0 0;width:0;
+  background:var(--ink);
+  transition:width 1.05s var(--ease);
+  transition-delay:calc(var(--i,0) * 75ms + 250ms);
+}
+.slide.in .bar-track i{width:calc(var(--v) / 25 * 100%)}
+.bar-row .val{
+  font-family:var(--font-mono);font-weight:700;
+  color:var(--ink-2);text-align:right;
+  font-variant-numeric:tabular-nums;
+}
+.bar-row.hi .name,.bar-row.hi .val{color:var(--vermilion)}
+.bar-row.hi .bar-track i{background:var(--vermilion)}
+.bar-row.hi .bar-track{background:var(--vermilion-soft)}
+.avgline{
+  position:absolute;top:0;bottom:0;
+  left:calc(clamp(72px,9vw,124px) + clamp(.4rem,1vw,.9rem));
+  right:calc(clamp(48px,5vw,74px) + clamp(.4rem,1vw,.9rem));
+  pointer-events:none;
+}
+.avgline span{
+  position:absolute;top:0;bottom:0;width:0;
+  border-left:1px dashed var(--vermilion);
+  left:calc(var(--av) / 25 * 100%);
+  opacity:0;transition:opacity .6s ease 1.3s;
+}
+.slide.in .avgline span{opacity:.85}
+.avgline b{
+  position:absolute;top:calc(-1 * clamp(.8rem,1.9vh,1.5rem));
+  left:calc(var(--av) / 25 * 100%);
+  transform:translateX(-50%);
+  font-family:var(--font-mono);font-size:var(--t-5);
+  font-weight:700;color:var(--vermilion);white-space:nowrap;
+  opacity:0;transition:opacity .6s ease 1.45s;
+}
+.slide.in .avgline b{opacity:1}
+
+/* --- 16: grafik garis CPI --- */
+.chart{position:relative;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.cpi-line{
+  fill:none;stroke:var(--ink);stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round;
+  stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 1.6s var(--ease-io) .35s;
+}
+.slide.in .cpi-line{stroke-dashoffset:0}
+.cpi-target{
+  fill:none;stroke:var(--vermilion);stroke-width:1.5;
+  stroke-dasharray:5 5;opacity:0;
+  transition:opacity .7s ease 1.9s;
+}
+.slide.in .cpi-target{opacity:.9}
+.cpi-dot{
+  fill:var(--paper);stroke:var(--ink);stroke-width:2;
+  opacity:0;transform-box:fill-box;transform-origin:center;
+  transform:scale(.2);
+  transition:opacity .4s ease,transform .5s var(--ease-spring);
+}
+.cpi-dot.hi{fill:var(--vermilion);stroke:var(--vermilion)}
+.slide.in .cpi-dot{opacity:1;transform:scale(1)}
+.slide.in .cpi-dot[data-d="1"]{transition-delay:1.0s}
+.slide.in .cpi-dot[data-d="2"]{transition-delay:1.5s}
+.slide.in .cpi-dot[data-d="3"]{transition-delay:2.0s}
+.cpi-txt{
+  font-family:var(--font-mono);font-size:11px;fill:var(--ink-2);
+  opacity:0;transition:opacity .5s ease;
+}
+.slide.in .cpi-txt{opacity:1}
+.slide.in .cpi-txt[data-d="1"]{transition-delay:1.15s}
+.slide.in .cpi-txt[data-d="2"]{transition-delay:1.65s}
+.slide.in .cpi-txt[data-d="3"]{transition-delay:2.15s}
+.cpi-txt.hi{fill:var(--vermilion);font-weight:700}
+.cpi-axis{stroke:var(--rule);stroke-width:1}
+
+/* --- 18: rantai sebab-akibat --- */
+.chain{width:100%}
+.chain svg{display:block;width:100%;height:auto;overflow:visible}
+.chain-path{
+  fill:none;stroke:var(--vermilion);stroke-width:1.5;
+  stroke-dasharray:1;stroke-dashoffset:1;
+  transition:stroke-dashoffset 2.1s var(--ease-io) .3s;
+}
+.slide.in .chain-path{stroke-dashoffset:0}
+.chain-node circle{
+  fill:var(--paper);stroke:var(--ink);stroke-width:1.5;
+  opacity:0;transform-box:fill-box;transform-origin:center;
+  transform:scale(.3);
+  transition:opacity .5s ease,transform .6s var(--ease-spring);
+}
+.slide.in .chain-node circle{opacity:1;transform:scale(1)}
+.slide.in .chain-node:nth-child(2) circle{transition-delay:.5s}
+.slide.in .chain-node:nth-child(3) circle{transition-delay:.85s}
+.slide.in .chain-node:nth-child(4) circle{transition-delay:1.2s}
+.slide.in .chain-node:nth-child(5) circle{transition-delay:1.55s}
+.slide.in .chain-node:nth-child(6) circle{transition-delay:1.9s}
+.chain-node text{
+  font-family:var(--font-body);font-size:11px;font-weight:600;
+  fill:var(--ink);opacity:0;transition:opacity .5s ease 1.1s;
+}
+.chain-node .sub{
+  font-family:var(--font-mono);font-size:9px;font-weight:400;
+  fill:var(--muted);letter-spacing:.06em;
+}
+.slide.in .chain-node text{opacity:1}
+
+/* --- 22: dokumen ditutup bar redaksi, lalu DIBUKA satu per satu --- */
+.closing-bars{display:flex;flex-direction:column;gap:.66em;margin-bottom:1.15em}
+.cb-row{position:relative;display:block}
+.cb-row b{
+  display:block;
+  font-family:var(--font-mono);
+  font-size:var(--t-5);font-weight:400;
+  letter-spacing:.055em;color:var(--ink-2);
+  opacity:0;transform:translateY(4px);
+  transition:opacity .6s ease,transform .6s var(--ease);
+  transition-delay:calc(var(--i,0) * 130ms + 900ms);
+}
+.cb-row b .cb-l{color:var(--muted);margin-right:.8em}
+.cb-row b .cb-v{color:var(--ink);font-weight:700}
+.slide.in .cb-row b{opacity:1;transform:none}
+.cb-row i{
+  position:absolute;left:0;top:50%;translate:0 -50%;
+  display:block;height:clamp(.5rem,.92vw,.74rem);
+  background:var(--ink);width:0;
+}
+.slide.in .cb-row i{
+  animation:barsLift 3s cubic-bezier(.72,0,.22,1) forwards;
+  animation-delay:calc(var(--i,0) * 130ms + 220ms);
+}
+@keyframes barsLift{
+  0%  {width:0}
+  18% {width:100%}
+  60% {width:100%}
+  100%{width:0}
+}
+/* baris yang baru terbaca setelah penyensoran dibuka */
+.reveal-line{
+  opacity:0;transform:translateY(9px);
+  transition:opacity .9s var(--ease) 3.15s, transform .9s var(--ease) 3.15s;
+}
+.slide.in .reveal-line{opacity:1;transform:none}
+
+/* --- 21: metrik & jurang target --- */
+.kpi{display:flex;flex-direction:column;gap:clamp(.8rem,2.1vh,1.5rem)}
+.kpi.doc .doc-head{margin-bottom:0}
+.kpi-row{display:grid;gap:.5em}
+.kpi-head{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  align-items:baseline;gap:1em;
+  font-size:var(--t-4);
+}
+.kpi-head .lbl{color:var(--ink-2)}
+.kpi-head .vals{
+  font-family:var(--font-mono);font-weight:700;color:var(--ink);
+  white-space:nowrap;font-variant-numeric:tabular-nums;
+}
+.kpi-head .vals b{color:var(--vermilion);font-weight:700;padding:0 .35em}
+
+/* jalur: garis ukur tiap 10% · batang hitam = hari ini · blok bergaris = jurang · garis merah = target */
+.kpi-track{
+  position:relative;
+  height:clamp(15px,2.5vh,25px);
+  background-color:rgba(21,19,15,.055);
+  background-image:repeating-linear-gradient(90deg,rgba(21,19,15,.15) 0 1px,transparent 1px 10%);
+}
+.kpi-track i{
+  position:absolute;inset:0 auto 0 0;width:0;background:var(--ink);
+  transition:width 1.1s var(--ease);
+  transition-delay:calc(var(--i,0) * 130ms + 320ms);
+}
+.slide.in .kpi-track i{width:calc(var(--v) * 1%)}
+.kpi-track .gap{
+  position:absolute;top:0;bottom:0;
+  left:calc(var(--v) * 1%);
+  width:calc((var(--t) - var(--v)) * 1%);
+  background:repeating-linear-gradient(45deg,
+    rgba(195,59,34,.52) 0 2px,rgba(195,59,34,.10) 2px 6px);
+  opacity:0;transition:opacity .6s ease;
+  transition-delay:calc(var(--i,0) * 130ms + 1.28s);
+}
+.slide.in .kpi-track .gap{opacity:1}
+.kpi-track em{
+  position:absolute;
+  top:calc(-1 * clamp(4px,.8vh,8px));
+  bottom:calc(-1 * clamp(4px,.8vh,8px));
+  width:2px;background:var(--vermilion);
+  left:calc(var(--t) * 1%);
+  opacity:0;transition:opacity .5s ease;
+  transition-delay:calc(var(--i,0) * 130ms + 1.05s);
+}
+.slide.in .kpi-track em{opacity:1}
+.kpi-track em::before{
+  content:"";position:absolute;left:50%;top:calc(-1 * clamp(4px,.8vh,8px));
+  width:clamp(5px,.62vw,8px);height:clamp(5px,.62vw,8px);
+  background:var(--vermilion);transform:translateX(-50%) rotate(45deg);
+}
+.kpi-foot{
+  border-top:1px solid var(--rule);
+  padding-top:.75em;margin-top:.15em;
+}
+.kpi-legend{
+  display:flex;gap:1.2em;flex-wrap:wrap;
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.09em;text-transform:uppercase;color:var(--muted);
+}
+.kpi-legend i{
+  display:inline-block;width:16px;height:9px;background:var(--ink);
+  margin-right:.5em;vertical-align:middle;
+}
+.kpi-legend i.hatch{
+  background:repeating-linear-gradient(45deg,
+    rgba(195,59,34,.55) 0 2px,rgba(195,59,34,.10) 2px 5px);
+}
+.kpi-legend em{
+  display:inline-block;width:2px;height:14px;background:var(--vermilion);
+  margin-right:.5em;vertical-align:middle;
+}
+
+/* --- Video embed (facade) --- */
+.video{
+  position:relative;width:100%;
+  aspect-ratio:16/9;max-height:min(58vh,520px);
+  background:#0E0C09;
+  border:1px solid var(--rule-2);
+  overflow:hidden;cursor:pointer;
+  display:block;
+}
+.video img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;opacity:.62;
+  transition:opacity .5s ease,transform .8s var(--ease);
+}
+.video:hover img{opacity:.78;transform:scale(1.03)}
+.video iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.video .play{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:clamp(52px,6vw,78px);height:clamp(52px,6vw,78px);
+  border-radius:50%;
+  border:2px solid var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  transition:transform .45s var(--ease-spring),background .3s ease,border-color .3s ease;
+}
+.video .play::before{
+  content:"";margin-left:14%;
+  border-left:clamp(14px,1.6vw,20px) solid var(--paper);
+  border-top:clamp(9px,1vw,13px) solid transparent;
+  border-bottom:clamp(9px,1vw,13px) solid transparent;
+}
+.video:hover .play{transform:translate(-50%,-50%) scale(1.1);background:var(--vermilion);border-color:var(--vermilion)}
+.video .meta{
+  position:absolute;left:0;right:0;bottom:0;
+  padding:clamp(.6rem,1.4vw,1.1rem);
+  background:linear-gradient(0deg,rgba(14,12,9,.92),transparent);
+  color:var(--paper);
+}
+.video .meta strong{
+  display:block;font-family:var(--font-display);font-weight:700;
+  font-size:var(--t-3);line-height:1.2;
+}
+.video .meta span{
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.14em;text-transform:uppercase;opacity:.7;
+}
+/* Kalau deck dibuka lewat file:// (klik dua kali), YouTube MENOLAK embed-nya.
+   Diuji ulang 15 Sep 2026 (tools/yt-file-test.py):
+     file:// + youtube.com/embed      -> "Terjadi error pada konfigurasi pemutar"
+     file:// + youtube-nocookie/embed -> layar hitam kosong
+     http://127.0.0.1:8788            -> player normal
+   Jadi di mode file, player TIDAK boleh ditampilkan (akan jadi kotak hitam
+   di depan kelas). Pesannya harus menyuruh hal yang bisa langsung dilakukan. */
+.video.file-mode .play{
+  border-color:var(--vermilion);background:rgba(195,59,34,.88);
+}
+.video.file-mode .meta span::after{
+  content:" · buka di YouTube ↗";color:var(--vermilion);opacity:1;
+}
+.video.file-mode::after{
+  content:"Video butuh server · jalankan PUTAR-DECK.bat\A lalu buka http://127.0.0.1:8788/index.html";
+  white-space:pre-line;
+  position:absolute;left:0;right:0;top:0;
+  padding:.5em clamp(.6rem,1.4vw,1.1rem);
+  font-family:var(--font-mono);font-size:var(--t-5);letter-spacing:.1em;
+  line-height:1.5;
+  text-transform:uppercase;
+  background:var(--vermilion);color:var(--paper);
+}
+
+/* QR */
+.qr{
+  display:flex;align-items:center;gap:clamp(.5rem,1.2vw,1rem);
+  border:1px solid var(--rule);padding:clamp(.5rem,1.2vw,1rem);
+}
+.qr canvas,.qr img{width:clamp(64px,7vw,104px);height:clamp(64px,7vw,104px);display:block}
+.qr p{font-size:var(--t-5);line-height:1.5;color:var(--muted)}
+
+/* ================================================================
+   09. CHROME — navigasi, penggaris, titik
+   ================================================================ */
+.ruler{
+  position:fixed;left:0;right:0;top:0;height:clamp(12px,1.7vh,20px);
+  z-index:40;pointer-events:none;
+  border-bottom:1px solid var(--rule);
+  background:linear-gradient(180deg,rgba(242,237,227,.92),rgba(242,237,227,.55));
+}
+.ruler::before,.ruler::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;
+  background-image:repeating-linear-gradient(90deg,var(--rule-2) 0 1px,transparent 1px 84px);
+}
+.ruler::before{height:100%}
+.ruler::after{
+  height:46%;background-image:repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px 14px);
+}
+.ruler i{
+  position:absolute;bottom:0;left:0;height:100%;
+  width:0;background:var(--vermilion);opacity:.85;
+  transition:width .18s linear;
+}
+
+.dots{
+  position:fixed;right:clamp(8px,1.4vw,18px);top:50%;
+  transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:clamp(5px,.9vh,9px);
+  z-index:40;
+}
+.dots button{
+  width:clamp(5px,.7vw,8px);height:clamp(5px,.7vw,8px);
+  border-radius:50%;background:var(--rule-2);
+  transition:background .3s ease,transform .3s var(--ease-spring);
+}
+.dots button:hover{background:var(--ink-3);transform:scale(1.35)}
+.dots button.on{background:var(--vermilion);transform:scale(1.35)}
+
+.hint{
+  position:fixed;left:50%;bottom:clamp(10px,2vh,22px);
+  transform:translateX(-50%);
+  z-index:40;pointer-events:none;
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--muted);
+  display:flex;align-items:center;gap:.8em;
+  opacity:0;transition:opacity .6s ease;
+}
+.hint.on{opacity:.8}
+.hint b{color:var(--vermilion);font-weight:700}
+.hint .k{
+  border:1px solid var(--rule-2);border-radius:3px;
+  padding:.15em .5em;font-size:.92em;
+}
+
+/* Kursor tinta — hanya di perangkat berpenunjuk presisi */
+.ink-cursor{
+  position:fixed;left:0;top:0;z-index:39;
+  width:9px;height:9px;border-radius:50%;
+  background:var(--vermilion);
+  pointer-events:none;opacity:0;
+  transform:translate(-50%,-50%);
+  transition:opacity .3s ease,width .3s var(--ease),height .3s var(--ease);
+  mix-blend-mode:multiply;
+}
+.ink-cursor.on{opacity:.5}
+.ink-cursor.big{width:34px;height:34px;opacity:.22}
+@media (hover:none),(pointer:coarse){.ink-cursor{display:none}}
+
+/* ================================================================
+   10. MODE EDIT & PRESENTER
+   ================================================================ */
+.edit-toggle{
+  position:fixed;left:clamp(8px,1.4vw,18px);top:clamp(20px,3vh,34px);
+  z-index:41;width:32px;height:32px;border-radius:50%;
+  border:1px solid var(--rule-2);background:rgba(242,237,227,.85);
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--ink-3);
+  opacity:0;pointer-events:none;
+  transition:opacity .3s ease,background .3s ease,color .3s ease;
+}
+.edit-toggle.show,.edit-toggle.on{opacity:1;pointer-events:auto}
+.edit-toggle.on{background:var(--vermilion);color:var(--paper);border-color:var(--vermilion)}
+.edit-toggle svg{width:15px;height:15px}
+
+body.editing [data-edit]{outline:1px dashed var(--vermilion);outline-offset:3px;cursor:text}
+body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgba(195,59,34,.05)}
+
+.toast{
+  position:fixed;left:50%;bottom:clamp(46px,7vh,74px);
+  transform:translate(-50%,10px);
+  z-index:50;pointer-events:none;
+  background:var(--ink);color:var(--paper);
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.1em;
+  padding:.6em 1.1em;border-radius:3px;
+  opacity:0;transition:opacity .3s ease,transform .3s var(--ease);
+}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+.notes{
+  position:fixed;right:0;bottom:0;left:0;
+  max-height:38vh;overflow:auto;z-index:45;
+  background:rgba(21,19,15,.94);color:var(--paper);
+  padding:clamp(.8rem,2vw,1.6rem);
+  transform:translateY(101%);
+  transition:transform .45s var(--ease);
+}
+.notes.on{transform:translateY(0)}
+.notes h5{
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.2em;text-transform:uppercase;
+  color:var(--vermilion);margin-bottom:.7em;
+}
+.notes p{font-size:var(--t-4);line-height:1.6;max-width:88ch}
+.notes .timer{
+  position:absolute;right:clamp(.8rem,2vw,1.6rem);top:clamp(.8rem,2vw,1.6rem);
+  font-family:var(--font-mono);font-size:var(--t-3);color:var(--vermilion);
+}
+
+/* ================================================================
+   11. CETAK / PDF
+   ================================================================ */
+@media print{
+  /* Halaman cetak = ukuran desain (1600x900), bukan 297x167mm.
+     Alasannya penting: semua token tipografi pakai clamp(...vw...) dan
+     jarak pakai clamp(...vh...). Kalau halaman cetak lebih kecil dari
+     desain, vw/vh mengecil juga -> tata letak bergeser dan konten
+     meluber keluar halaman. Dengan halaman seukuran desain, hasil PDF
+     persis sama dengan yang tampil di layar. */
+  @page{size:1600px 900px;margin:0}
+  html,body{overflow:visible;background:#fff}
+  #deck{height:auto;overflow:visible;scroll-snap-type:none}
+  .slide{
+    width:1600px;height:900px;
+    page-break-after:always;break-after:page;
+  }
+  .ruler,.dots,.hint,.ink-cursor,.edit-toggle,.notes,.grain,.rosettes{display:none !important}
+  #gl{display:none !important}
+  .rv,.mask > span,.cpi-line,.chain-path,.bar-track i,.cb-row b,
+  .chain-node circle,.chain-node text{
+    opacity:1 !important;transform:none !important;
+    transition:none !important;stroke-dashoffset:0 !important;
+  }
+  .eyebrow .dash{transform:scaleX(1) !important}
+  .stamp{opacity:.94 !important;transform:rotate(-7deg) scale(1) !important}
+  .slide.in .bar-track i,.bar-track i{width:calc(var(--v) / 25 * 100%) !important}
+  .cb-row i{width:0 !important;animation:none !important}
+  .reveal-line{opacity:1 !important;transform:none !important}
+  .kpi-track i{width:calc(var(--v) * 1%) !important}
+  .kpi-track .gap{opacity:1 !important}
+  .kpi-track em{opacity:1 !important}
+  .avgline span,.avgline b{opacity:.85 !important}
+  .cpi-dot{opacity:1 !important;transform:none !important}
+  .cpi-txt{opacity:1 !important}
+  .cpi-target{opacity:.9 !important}
+  .slide::after{display:none}
+}
+
+/* ================================================================
+   12. RESPONSIF & REDUCED MOTION
+   ================================================================ */
+@media (max-width:900px){
+  .body.cols,.body.cols-wide,.body.cols-kpi{grid-template-columns:1fr;align-content:center}
+  .doc{display:none}
+  .rosette{opacity:.18 !important}
+}
+@media (max-height:680px){
+  :root{
+    --t-hero:clamp(1.7rem,4.6vw,3rem);
+    --t-1:clamp(1.4rem,3.1vw,2.2rem);
+    --t-num:clamp(1.9rem,4.6vw,3.4rem);
+    --t-num-s:clamp(1.3rem,2.6vw,2rem);
+    --pad:clamp(.9rem,2.6vw,2rem);
+  }
+  .card li{display:none}
+}
+@media (max-height:560px){
+  .dots,.hint,.ftr{display:none}
+  .card p{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.15s !important;
+    transition-delay:0ms !important;
+  }
+  #deck{scroll-behavior:auto}
+  .rv,.mask > span{opacity:1;transform:none;filter:none}
+  .ink-cursor{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     LAPISAN ATMOSFER
+     WebGL: kertas + noda tinta yang mengalir, bereaksi ke scroll.
+     ============================================================ -->
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="rosettes" aria-hidden="true">
+  <svg class="rosette" id="ros1" viewBox="-300 -300 600 600"><g class="spin"></g></svg>
+  <svg class="rosette" id="ros2" viewBox="-300 -300 600 600"><g class="spin"></g></svg>
+  <svg class="rosette" id="ros3" viewBox="-300 -300 600 600"><g class="spin"></g></svg>
+  <svg class="rosette" id="ros4" viewBox="-300 -300 600 600"><g class="spin"></g></svg>
+</div>
+
+<!-- CHROME -->
+<div class="ruler" aria-hidden="true"><i id="rulerFill"></i></div>
+<nav class="dots" id="dots" aria-label="Navigasi slide"></nav>
+<div class="hint" id="hint"><span class="k">←</span><span class="k">→</span> atau scroll untuk berpindah</div>
+<div class="ink-cursor" id="inkCursor" aria-hidden="true"></div>
+
+<button class="edit-toggle" id="editToggle" title="Mode edit (E)" aria-label="Mode edit">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+  </svg>
+</button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div class="notes" id="notes" aria-hidden="true">
+  <div class="timer" id="timer">00:00</div>
+  <h5>Catatan pembicara</h5>
+  <p id="notesText"></p>
+</div>
+
+<!-- ============================================================
+     DECK — 21 slide
+     ============================================================ -->
+<main id="deck">
+
+<!-- ============================================================
+     01 — JUDUL
+     ============================================================ -->
+<section class="slide" data-babak="1"
+  data-notes="Buka dengan tenang. Kalimat pembuka: 'Semua angka yang kami pakai hari ini ada sumbernya. Empat lembaga ini yang jadi dasar kami — kalau ada yang mau dicek, semuanya bisa ditelusuri.' Sebut sumbernya sekilas saja, jangan dibacakan satu per satu. Lalu lanjut ke slide berikutnya.">
+  <header class="hdr">
+    <div><span class="seal"></span>Kewarganegaraan PDB · Kelompok 6 · PDB 93</div>
+    <div class="hdr-r">Lembar 01 / 22</div>
+  </header>
+
+  <div class="body cols">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Kesadaran Pajak &amp; Pendidikan Anti Korupsi</p>
+
+      <h1 class="hero">
+        <span class="mask" style="--i:0"><span>Kesadaran Pajak</span></span>
+        <span class="mask" style="--i:1"><span>dan Pendidikan</span></span>
+        <span class="mask" style="--i:2"><span><em class="acc">Anti Korupsi</em></span></span>
+      </h1>
+
+      <p class="lead rule rv" style="--i:5">
+        Membangun warga negara yang taat, berintegritas, dan bertanggung jawab —
+        dimulai dari meja kuliah, diuji di ruang publik.
+      </p>
+    </div>
+
+    <aside class="doc rv rv-r" style="--i:6">
+      <div class="doc-head"><span>Sumber &amp; rujukan</span><span>SD-2026</span></div>
+      <ul class="src">
+        <li class="rv" style="--i:7">
+          <b>Kementerian Keuangan RI</b>
+          <span>Laporan Keuangan Kemenkeu 2025</span>
+        </li>
+        <li class="rv" style="--i:8">
+          <b>OECD</b>
+          <span>Revenue Statistics in Asia and the Pacific 2026</span>
+        </li>
+        <li class="rv" style="--i:9">
+          <b>Transparency International Indonesia</b>
+          <span>Corruption Perceptions Index 2025 · rilis 10 Feb 2026</span>
+        </li>
+        <li class="rv" style="--i:10">
+          <b>Direktorat Jenderal Pajak</b>
+          <span>Kanwil DJP Jawa Tengah I · bahan video</span>
+        </li>
+      </ul>
+      <p class="small" style="margin-top:1.1em;padding-top:.85em;border-top:1px solid var(--rule);color:var(--vermilion);letter-spacing:.16em;text-transform:uppercase">
+        Diverifikasi 15 Sep 2026
+      </p>
+      <div class="stamp">Taat &amp; Bersih</div>
+    </aside>
+  </div>
+
+  <footer class="ftr">
+    <div>Dosen Pengampu · Ratna Damayanti, M.Kes., Drh</div>
+    <div>Fakultas Hukum Universitas Airlangga</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     02 — IDENTITAS
+     ============================================================ -->
+<section class="slide" data-babak="1"
+  data-notes="Perkenalan singkat, jangan berlama-lama. Sebut nama anggota satu kali saja, lalu lanjut. Kalau waktu mepet, slide ini bisa dilewati.">
+  <header class="hdr">
+    <div><span class="seal"></span>Identitas</div>
+    <div class="hdr-r">Lembar 02 / 22</div>
+  </header>
+
+  <div class="body cols-wide">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Mata kuliah kewarganegaraan</p>
+      <h2 class="title">
+        <span class="mask" style="--i:0"><span>Kelompok 6</span></span>
+        <span class="mask" style="--i:1"><span><em class="acc">PDB 93</em></span></span>
+      </h2>
+
+      <div class="rule rv" style="--i:3;margin-top:clamp(1rem,2.4vh,2rem)">
+        <p class="metric-label" style="margin-bottom:.5em">Dosen pengampu</p>
+        <h3 class="sub">Ratna Damayanti, M.Kes., Drh</h3>
+      </div>
+
+      <p class="small rv" style="--i:4;margin-top:clamp(.8rem,2vh,1.5rem)">
+        Disusun untuk memenuhi tugas mata kuliah Kewarganegaraan (PDB)<br />
+        Semester Ganjil · Tahun Akademik 2026/2027
+      </p>
+    </div>
+
+    <div>
+      <p class="metric-label rv" style="--i:2;margin-bottom:.8em">Anggota</p>
+      <div class="cards" style="grid-template-columns:1fr">
+        <div class="card rv" style="--i:2"><span class="num">01</span><h4>Muhammad Adyan Faqih Huddin</h4><p class="nim">NIM 626103051312</p></div>
+        <div class="card rv" style="--i:3"><span class="num">02</span><h4>Salma Nur Khasanah</h4><p class="nim">NIM 626107097032</p></div>
+        <div class="card rv" style="--i:4"><span class="num">03</span><h4>Akbar Arya Maulana</h4><p class="nim">NIM 626107097035</p></div>
+        <div class="card rv" style="--i:5"><span class="num">04</span><h4>Arya Rizky Ardhi Pratama</h4><p class="nim">NIM 626103051310</p></div>
+        <div class="card rv" style="--i:6"><span class="num">05</span><h4>Dinda Naura Firdausy</h4><p class="nim">NIM 626115327032</p></div>
+        <div class="card rv" style="--i:7"><span class="num">06</span><h4>Izzatul Hayati</h4><p class="nim">NIM 626113145087</p></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak I · Pembuka</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     03 — PETA PAPARAN
+     ============================================================ -->
+<section class="slide" data-babak="1"
+  data-notes="Beri peta jalan. Sebut empat babak, lalu tegaskan satu kalimat kunci: 'Argumen utama kami ada di babak empat — kesadaran pajak dan anti korupsi bukan dua topik, tapi satu.'">
+  <header class="hdr">
+    <div><span class="seal"></span>Peta paparan</div>
+    <div class="hdr-r">Lembar 03 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Empat babak</p>
+      <h2 class="title" style="max-width:22ch">
+        <span class="mask" style="--i:0"><span>Apa yang akan kita</span></span>
+        <span class="mask" style="--i:1"><span>bahas hari ini</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.6rem,1.6vh,1.4rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">Babak I</span>
+        <h4>Pembuka</h4>
+        <p>Identitas kelompok dan peta pembahasan.</p>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">Babak II</span>
+        <h4>Kesadaran pajak</h4>
+        <ul>
+          <li>Posisi pajak dalam APBN</li>
+          <li>Rasio pajak Indonesia</li>
+          <li>Definisi dan dasar hukum</li>
+          <li>Faktor &amp; pilar kepatuhan</li>
+        </ul>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">Babak III</span>
+        <h4>Pendidikan anti korupsi</h4>
+        <ul>
+          <li>Hakikat dan tujuan</li>
+          <li>Dampak pada generasi muda</li>
+          <li>Posisi Indonesia di CPI</li>
+        </ul>
+      </div>
+      <div class="card rv" style="--i:4">
+        <span class="num">Babak IV</span>
+        <h4>Sintesis &amp; aksi</h4>
+        <ul>
+          <li>Korelasi kedua gagasan</li>
+          <li>Rantai sebab-akibat</li>
+          <li>Peran dan program nyata</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak I · Pembuka</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     04 — VIDEO: PENDAPATAN NEGARA
+     ============================================================ -->
+<section class="slide" data-babak="1"
+  data-notes="Video sudah diperbaiki: 'Indonesia Tanpa Pajak?' dari kanal resmi Kanwil DJP Jawa Tengah I (1:46). Animasi garis hitam-putih: layar kiri = kondisi dengan pajak, layar kanan = tanpa pajak. Cukup putar sekali penuh, videonya pendek. Kalau internet mati, slide ini tetap tampil rapi — klik tidak berfungsi, langsung lanjut ke angka di kanan: pendapatan negara Rp 2.765,13 T, dari pajak Rp 1.917,6 T.">
+  <header class="hdr">
+    <div><span class="seal"></span>Paparan video</div>
+    <div class="hdr-r">Lembar 04 / 22</div>
+  </header>
+
+  <div class="body cols">
+    <div class="rv rv-l" style="--i:0">
+      <p class="eyebrow"><span class="dash"></span>Pendapatan negara</p>
+      <h3 class="sub" style="margin-bottom:clamp(.5rem,1.4vh,1rem)">Dari mana uang negara berasal</h3>
+
+      <!-- Video: "Indonesia Tanpa Pajak?" — kanal resmi Kanwil DJP Jawa Tengah I.
+           Durasi 1:46, animasi garis hitam-putih: kiri = dengan pajak, kanan = tanpa pajak.
+           Alternatif kalau mau yang lebih sinematik (6:22, film pendek resmi Kemenkeu RI):
+           ganti data-yt jadi "rTz_jTxitwA", lalu sesuaikan src thumbnail + QR di bawah. -->
+      <div class="video" data-yt="proAhdTWOH4"
+           data-title="Indonesia Tanpa Pajak? — Kanwil DJP Jawa Tengah I">
+        <img src="https://i.ytimg.com/vi/proAhdTWOH4/maxresdefault.jpg" alt="" loading="lazy"
+             onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://i.ytimg.com/vi/proAhdTWOH4/hqdefault.jpg'}else{this.remove()}" />
+        <span class="play" aria-hidden="true"></span>
+        <div class="meta">
+          <span>Klik untuk memutar · 1:46</span>
+          <strong>Indonesia Tanpa Pajak?</strong>
+        </div>
+      </div>
+    </div>
+
+    <aside class="rv rv-r" style="--i:3">
+      <p class="metric-label" style="margin-bottom:.7em">Konteks 2025</p>
+      <div class="rule">
+        <p class="metric-label">Pendapatan negara</p>
+        <p class="bignum" data-count="2765.13" data-dec="2">0</p>
+        <p class="small">triliun rupiah</p>
+      </div>
+      <div class="rule" style="margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        <p class="metric-label">Dari sektor pajak</p>
+        <p class="bignum v" data-count="1917.6" data-dec="1">0</p>
+        <p class="small">triliun rupiah · 87,6% dari target APBN</p>
+      </div>
+
+      <div class="qr" style="margin-top:clamp(.7rem,1.8vh,1.3rem)">
+        <img src="assets/qr/slide04.png" alt="Kode QR menuju video" width="400" height="400" loading="lazy" />
+        <p>Pindai untuk membuka video di perangkat masing-masing.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="ftr">
+    <div>Sumber data: Laporan Keuangan Kemenkeu 2025 · Video: Kanwil DJP Jawa Tengah I</div>
+    <div class="babak">Babak I · Pembuka</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     05 — PAJAK: KONTRIBUTOR UTAMA
+     ============================================================ -->
+<section class="slide" data-babak="2"
+  data-notes="Tekankan bahwa pajak BUKAN sekadar sumber pemasukan — ia tulang punggung. Lalu sebut kegagalan target: 87,6% dari target APBN 2025. Ini fakta yang mengganggu, dan justru itu pintu masuk ke seluruh argumen kita.">
+  <header class="hdr">
+    <div><span class="seal"></span>Latar belakang</div>
+    <div class="hdr-r">Lembar 05 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Kontributor utama</p>
+      <h2 class="title" style="max-width:26ch">
+        <span class="mask" style="--i:0"><span>Pajak adalah tulang</span></span>
+        <span class="mask" style="--i:1"><span>punggung negara</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.5rem,1.4vh,1.2rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">Pendapatan negara 2025</span>
+        <p class="bignum" data-count="2765.13" data-dec="2">0</p>
+        <p style="font-size:var(--t-5)">triliun rupiah</p>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">Dari pajak</span>
+        <p class="bignum v" data-count="1917.6" data-dec="1">0</p>
+        <p style="font-size:var(--t-5)">triliun rupiah · 69,3% dari total</p>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">Capaian vs target</span>
+        <p class="bignum" data-count="87.6" data-dec="1" data-suffix="%">0</p>
+        <p style="font-size:var(--t-5)">dari target APBN Rp 2.189,3 triliun</p>
+      </div>
+    </div>
+
+    <p class="lead rule rv" style="--i:5;max-width:74ch">
+      Selisih Rp 271,7 triliun itu bukan angka di atas kertas. Ia adalah jalan yang
+      tidak dibangun, ruang kelas yang tidak diperbaiki, dan layanan kesehatan yang
+      tidak menjangkau. <strong>Setiap rupiah pajak yang tidak masuk punya wajah.</strong>
+    </p>
+  </div>
+
+  <footer class="ftr">
+    <div>Sumber: Kemenkeu 2025 · Kontan, Januari 2026</div>
+    <div class="babak">Babak II · Kesadaran Pajak</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     06 — RASIO PAJAK  ★ momen puncak
+     ============================================================ -->
+<section class="slide" data-babak="2"
+  data-notes="MOMEN PENTING. Diamkan 2 detik setelah batang tumbuh. Jangan buru-buru. Kalimatnya: 'Bar Indonesia paling pendek kedua setelah Bangladesh dan Timor-Leste. Rata-rata kawasan Asia-Pasifik 19,7 persen. Kita 11,8. Jarak delapan poin itu bukan angka statistik — itu kapasitas negara yang tidak terpakai.'">
+  <header class="hdr">
+    <div><span class="seal"></span>Rasio pajak terhadap PDB</div>
+    <div class="hdr-r">Lembar 06 / 22</div>
+  </header>
+
+  <div class="body cols">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Perbandingan kawasan · 2024</p>
+      <h2 class="title" style="max-width:20ch">
+        <span class="mask" style="--i:0"><span>Indonesia</span></span>
+        <span class="mask" style="--i:1"><span><em class="acc">terendah ketiga</em></span></span>
+      </h2>
+      <p class="lead rule rv" style="--i:4;margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        Dari 38 negara dan ekonomi di Asia-Pasifik, hanya Bangladesh dan Timor-Leste
+        yang rasio pajaknya lebih rendah dari Indonesia.
+      </p>
+      <p class="small rv" style="--i:5;margin-top:clamp(.5rem,1.3vh,1rem)">
+        Sumber: OECD, <em>Revenue Statistics in Asia and the Pacific 2026</em>
+      </p>
+    </div>
+
+    <div class="bars rv rv-r" style="--i:2">
+      <div class="avgline" style="--av:19.7"><span></span><b>Rata-rata kawasan 19,7%</b></div>
+
+      <div class="bar-row" style="--v:6.7;--i:0">
+        <span class="name">Bangladesh</span><span class="bar-track"><i></i></span><span class="val">6,7%</span>
+      </div>
+      <div class="bar-row" style="--v:10.0;--i:1">
+        <span class="name">Timor-Leste</span><span class="bar-track"><i></i></span><span class="val">10,0%</span>
+      </div>
+      <div class="bar-row hi" style="--v:11.8;--i:2">
+        <span class="name">Indonesia</span><span class="bar-track"><i></i></span><span class="val">11,8%</span>
+      </div>
+      <div class="bar-row" style="--v:13.0;--i:3">
+        <span class="name">Malaysia</span><span class="bar-track"><i></i></span><span class="val">13,0%</span>
+      </div>
+      <div class="bar-row" style="--v:13.4;--i:4">
+        <span class="name">Singapura</span><span class="bar-track"><i></i></span><span class="val">13,4%</span>
+      </div>
+      <div class="bar-row" style="--v:17.1;--i:5">
+        <span class="name">Thailand</span><span class="bar-track"><i></i></span><span class="val">17,1%</span>
+      </div>
+      <div class="bar-row" style="--v:17.2;--i:6">
+        <span class="name">Vietnam</span><span class="bar-track"><i></i></span><span class="val">17,2%</span>
+      </div>
+      <div class="bar-row" style="--v:18.1;--i:7">
+        <span class="name">Filipina</span><span class="bar-track"><i></i></span><span class="val">18,1%</span>
+      </div>
+      <div class="bar-row" style="--v:19.5;--i:8">
+        <span class="name">China</span><span class="bar-track"><i></i></span><span class="val">19,5%</span>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Rata-rata OECD: 34,1% · Rata-rata Asia-Pasifik: 19,7%</div>
+    <div class="babak">Babak II · Kesadaran Pajak</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     07 — KE MANA UANG PAJAK PERGI
+     ============================================================ -->
+<section class="slide" data-babak="2"
+  data-notes="Slide ini yang paling mudah dimengerti kelas. Pakai bahasa konkret: 'Pajak yang Anda bayar tidak hilang. Ia jadi jalan, jadi puskesmas, jadi ruang kelas.' Hindari istilah teknis di sini.">
+  <header class="hdr">
+    <div><span class="seal"></span>Kebutuhan dana publik</div>
+    <div class="hdr-r">Lembar 07 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Ke mana uang pajak pergi</p>
+      <h2 class="title" style="max-width:30ch">
+        <span class="mask" style="--i:0"><span>Pajak adalah fondasi</span></span>
+        <span class="mask" style="--i:1"><span>layanan yang kita pakai tiap hari</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.5rem,1.4vh,1.2rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">01</span>
+        <h4>Pendidikan</h4>
+        <p>Membangun dan meningkatkan kualitas fasilitas pendidikan nasional — dari gedung sekolah sampai kesejahteraan guru.</p>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">02</span>
+        <h4>Kesehatan</h4>
+        <p>Menyediakan layanan kesehatan yang terjangkau bagi seluruh masyarakat, termasuk program jaminan kesehatan nasional.</p>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">03</span>
+        <h4>Infrastruktur</h4>
+        <p>Pembangunan jalan, jembatan, dan sarana transportasi publik yang menghubungkan daerah dan membuka ekonomi baru.</p>
+      </div>
+    </div>
+
+    <p class="lead rule rv" style="--i:5;max-width:76ch">
+      Tiga hal ini bukan hadiah dari negara. Ini hak yang dibiayai bersama —
+      dan satu-satunya cara membiayainya adalah melalui pajak.
+    </p>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak II · Kesadaran Pajak</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     08 — DEFINISI PAJAK
+     ============================================================ -->
+<section class="slide" data-babak="2"
+  data-notes="Ini slide paling mungkin ditanya dosen. Tiga lapis definisi: doktrin yuridis (Adriani), doktrin ekonomi (Soemitro), dan hukum positif (UU KUP Pasal 1 angka 1). Tegaskan: dua yang pertama adalah doktrin, yang ketiga mengikat. Kalau ditanya, jawab dengan pasal.">
+  <header class="hdr">
+    <div><span class="seal"></span>Pengertian pajak</div>
+    <div class="hdr-r">Lembar 08 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Tiga lapis pengertian</p>
+      <h2 class="title" style="max-width:26ch">
+        <span class="mask" style="--i:0"><span>Pajak, dari tiga</span></span>
+        <span class="mask" style="--i:1"><span>sudut pandang</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.4rem,1.2vh,1rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">Sudut pandang yuridis</span>
+        <h4>Prof. Dr. P. J. A. Adriani</h4>
+        <p style="font-size:var(--t-5);line-height:1.6">
+          Iuran masyarakat kepada negara yang dapat dipaksakan, terutang menurut
+          peraturan umum, <strong>tanpa prestasi kembali yang langsung dapat ditunjuk</strong>,
+          guna membiayai pengeluaran umum negara.
+        </p>
+      </div>
+
+      <div class="card rv" style="--i:2">
+        <span class="num">Sudut pandang ekonomi</span>
+        <h4>Prof. Dr. Rochmat Soemitro, S.H.</h4>
+        <p style="font-size:var(--t-5);line-height:1.6">
+          Peralihan kekayaan dari pihak rakyat kepada kas negara untuk membiayai
+          pengeluaran rutin; surplusnya menjadi <em>public saving</em> — sumber utama
+          pembiayaan <em>public investment</em>.
+        </p>
+      </div>
+
+      <div class="card rv" style="--i:3;border-top-color:var(--vermilion)">
+        <span class="num">Hukum positif</span>
+        <h4>UU No. 6 Tahun 1983 tentang KUP</h4>
+        <p style="font-size:var(--t-5);line-height:1.6">
+          <strong>Pasal 1 angka 1:</strong> kontribusi wajib kepada negara yang terutang
+          oleh orang pribadi atau badan, bersifat memaksa berdasarkan Undang-Undang,
+          tanpa imbalan langsung, digunakan bagi sebesar-besarnya kemakmuran rakyat.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Dua definisi pertama bersifat doktrinal · yang ketiga mengikat secara hukum</div>
+    <div class="babak">Babak II · Kesadaran Pajak</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     09 — FAKTOR KEPATUHAN
+     ============================================================ -->
+<section class="slide" data-babak="2"
+  data-notes="Analogi yang mudah: faktor internal itu 'mau', faktor eksternal itu 'harus'. Kepatuhan yang sehat bertumpu pada yang pertama — yang kedua hanya jaring pengaman.">
+  <header class="hdr">
+    <div><span class="seal"></span>Kepatuhan pajak</div>
+    <div class="hdr-r">Lembar 09 / 22</div>
+  </header>
+
+  <div class="body cols">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Definisi</p>
+      <h2 class="title" style="max-width:22ch">
+        <span class="mask" style="--i:0"><span>Sikap taat memenuhi</span></span>
+        <span class="mask" style="--i:1"><span>seluruh kewajiban</span></span>
+      </h2>
+      <p class="lead rule rv" style="--i:3;margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        Kepatuhan pajak adalah sikap taat dalam memenuhi seluruh kewajiban
+        perpajakan sesuai peraturan perundang-undangan yang berlaku.
+      </p>
+
+      <div class="rule rv" style="--i:5;margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        <p class="metric-label">Indikator terukur</p>
+        <h3 class="sub">Ketepatan waktu pembayaran dan pelaporan SPT tahunan</h3>
+      </div>
+    </div>
+
+    <aside class="rv rv-r" style="--i:2">
+      <div class="card" style="border-top-color:var(--vermilion)">
+        <span class="num">Faktor internal</span>
+        <h4>Dorongan dari dalam</h4>
+        <p>Pengetahuan dan kesadaran individu yang mendorong kepatuhan dari dalam
+           diri wajib pajak — tanpa perlu diawasi.</p>
+      </div>
+      <div class="card" style="margin-top:clamp(.7rem,1.8vh,1.4rem)">
+        <span class="num">Faktor eksternal</span>
+        <h4>Tekanan dari luar</h4>
+        <p>Sanksi perpajakan dan pengawasan yang membentuk perilaku patuh dari luar
+           individu — bekerja ketika kesadaran belum tumbuh.</p>
+      </div>
+      <p class="small" style="margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        Kepatuhan yang sehat bertumpu pada faktor internal. Faktor eksternal
+        adalah jaring pengaman, bukan tumpuan.
+      </p>
+    </aside>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak II · Kesadaran Pajak</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     10 — TIGA PILAR
+     ============================================================ -->
+<section class="slide" data-babak="2"
+  data-notes="Tiga pilar ini yang nanti dipakai lagi di slide rantai sebab-akibat. Sebut ketiganya dengan cepat: kesadaran sukarela, pengetahuan, pelayanan dan sanksi. Jangan berhenti lama di sini — ini jembatan, bukan tujuan.">
+  <header class="hdr">
+    <div><span class="seal"></span>Tiga pilar kepatuhan</div>
+    <div class="hdr-r">Lembar 10 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Saling menopang</p>
+      <h2 class="title" style="max-width:28ch">
+        <span class="mask" style="--i:0"><span>Tiga pilar yang menopang</span></span>
+        <span class="mask" style="--i:1"><span>sistem perpajakan</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.4rem,1.2vh,1rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">Pilar I</span>
+        <h4>Kesadaran sukarela</h4>
+        <ul>
+          <li>Sadar akan manfaat pajak bagi pembangunan</li>
+          <li>Pajak sebagai kontribusi bagi kesejahteraan bersama</li>
+          <li>Motivasi internal memenuhi kewajiban</li>
+        </ul>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">Pilar II</span>
+        <h4>Pengetahuan &amp; pemahaman</h4>
+        <ul>
+          <li>Paham mekanisme SPT dan cara pengisiannya</li>
+          <li>Mengetahui aturan dan regulasi perpajakan</li>
+          <li>Edukasi berkelanjutan atas perubahan aturan</li>
+        </ul>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">Pilar III</span>
+        <h4>Pelayanan &amp; sanksi</h4>
+        <ul>
+          <li>Pelayanan fiskus yang responsif dan profesional</li>
+          <li>Ketegasan penerapan sanksi bagi pelanggar</li>
+          <li>Kepercayaan publik terhadap sistem yang adil</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak II · Kesadaran Pajak</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     11 — FONDASI SISTEM (jembatan)
+     ============================================================ -->
+<section class="slide" data-babak="2"
+  data-notes="Slide jeda. Bacakan kalimat di bawah perlahan. Setelah ini kita pindah topik ke anti korupsi — tapi tegaskan dulu bahwa keduanya nyambung, supaya perpindahannya tidak terasa melompat.">
+  <header class="hdr">
+    <div><span class="seal"></span>Fondasi sistem</div>
+    <div class="hdr-r">Lembar 11 / 22</div>
+  </header>
+
+  <div class="body" style="max-width:80ch">
+    <p class="eyebrow"><span class="dash"></span>Jembatan</p>
+
+    <p class="quote rv" style="--i:1">
+      Tanpa kesadaran sukarela, pengetahuan yang memadai, dan pelayanan yang
+      berkualitas — sistem perpajakan tidak akan berjalan optimal.
+      <em class="acc">Kepatuhan pajak yang tinggi berbanding lurus dengan kualitas
+      pembangunan nasional yang dirasakan masyarakat.</em>
+    </p>
+
+    <p class="lead rv" style="--i:3;margin-top:clamp(.8rem,2vh,1.6rem)">
+      Tapi ada satu hal yang bisa meruntuhkan ketiga pilar itu sekaligus.
+      Bukan ketidaktahuan, bukan pula lemahnya sanksi.
+    </p>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak II · Kesadaran Pajak</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     12 — VIDEO: ANTI KORUPSI
+     ============================================================ -->
+<section class="slide" data-babak="3"
+  data-notes="Video ini sudah benar — 'Pribadi Jujur. Antikorupsi' dari kanal Cerdas Berkarakter Kemendikdasmen RI. Kanal resmi pemerintah, jadi aman dari sisi kredibilitas. Putar 1-2 menit saja, jangan sampai habis.">
+  <header class="hdr">
+    <div><span class="seal"></span>Paparan video</div>
+    <div class="hdr-r">Lembar 12 / 22</div>
+  </header>
+
+  <div class="body cols">
+    <div class="rv rv-l" style="--i:0">
+      <p class="eyebrow"><span class="dash"></span>Pendidikan anti korupsi</p>
+      <h3 class="sub" style="margin-bottom:clamp(.5rem,1.4vh,1rem)">Pribadi jujur, antikorupsi</h3>
+
+      <div class="video" data-yt="_YsXw4wKZKU"
+           data-title="Pribadi Jujur. Antikorupsi">
+        <img src="https://i.ytimg.com/vi/_YsXw4wKZKU/maxresdefault.jpg" alt="" loading="lazy"
+             onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://i.ytimg.com/vi/_YsXw4wKZKU/hqdefault.jpg'}else{this.remove()}" />
+        <span class="play" aria-hidden="true"></span>
+        <div class="meta">
+          <span>Klik untuk memutar</span>
+          <strong>Pribadi Jujur. Antikorupsi</strong>
+        </div>
+      </div>
+    </div>
+
+    <aside class="rv rv-r" style="--i:3">
+      <p class="metric-label" style="margin-bottom:.7em">Tentang video</p>
+      <div class="rule">
+        <h3 class="sub">Pribadi Jujur. Antikorupsi</h3>
+        <p class="small" style="margin-top:.6em">
+          Kanal resmi <strong>Cerdas Berkarakter</strong>, Kemendikdasmen RI —
+          program penguatan karakter generasi muda.
+        </p>
+      </div>
+
+      <div class="qr" style="margin-top:clamp(.7rem,1.8vh,1.3rem)">
+        <img src="assets/qr/slide12.png" alt="Kode QR menuju video" width="400" height="400" loading="lazy" />
+        <p>Pindai untuk membuka video di perangkat masing-masing.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="ftr">
+    <div>Sumber: Cerdas Berkarakter · Kemendikdasmen RI</div>
+    <div class="babak">Babak III · Anti Korupsi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     13 — HAKIKAT PENDIDIKAN ANTI KORUPSI
+     ============================================================ -->
+<section class="slide" data-babak="3"
+  data-notes="Tiga kata kunci: sadar, sistematis, konsisten. Tegaskan bahwa pendidikan anti korupsi bukan kampanye sesaat — ia usaha sadar dan sistematis, artinya harus masuk kurikulum, bukan sekadar poster di dinding.">
+  <header class="hdr">
+    <div><span class="seal"></span>Pendidikan anti korupsi</div>
+    <div class="hdr-r">Lembar 13 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Hakikat</p>
+      <h2 class="title" style="max-width:26ch">
+        <span class="mask" style="--i:0"><span>Usaha sadar</span></span>
+        <span class="mask" style="--i:1"><span>dan sistematis</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.4rem,1.2vh,1rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">01</span>
+        <h4>Usaha sadar dan sistematis</h4>
+        <p>Proses terencana untuk menanamkan nilai moral dan kejujuran secara
+           konsisten dalam lingkungan pendidikan — bukan kampanye sesaat.</p>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">02</span>
+        <h4>Membangun integritas dan karakter</h4>
+        <p>Membentuk kepribadian yang kuat, jujur, dan bertanggung jawab dalam
+           diri setiap individu sejak usia muda.</p>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">03</span>
+        <h4>Menghilangkan peluang korupsi</h4>
+        <p>Meniadakan niat dan kesempatan penyalahgunaan wewenang melalui
+           pemahaman yang benar dan pengawasan yang berjalan.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak III · Anti Korupsi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     14 — TUJUAN
+     ============================================================ -->
+<section class="slide" data-babak="3"
+  data-notes="Bedakan slide ini dari sebelumnya: yang tadi hakikat (apa itu), yang ini tujuan (untuk apa). Sebut tiga sasaran perubahan: pola pikir, sikap, perilaku.">
+  <header class="hdr">
+    <div><span class="seal"></span>Tujuan</div>
+    <div class="hdr-r">Lembar 14 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Sasaran perubahan</p>
+      <h2 class="title" style="max-width:30ch">
+        <span class="mask" style="--i:0"><span>Mengubah pola pikir,</span></span>
+        <span class="mask" style="--i:1"><span>sikap, dan perilaku</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.4rem,1.2vh,1rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">Pola pikir</span>
+        <h4>Memahami bahayanya</h4>
+        <p>Mengembangkan pemahaman tentang bahaya korupsi bagi negara dan
+           masyarakat secara luas — bukan sekadar tahu bahwa korupsi itu salah.</p>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">Sikap</span>
+        <h4>Menolak godaan</h4>
+        <p>Membentuk generasi muda yang memiliki integritas tinggi dan tidak mudah
+           tergoda praktik koruptif, bahkan ketika tidak ada yang mengawasi.</p>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">Perilaku</span>
+        <h4>Membangun budaya</h4>
+        <p>Menciptakan budaya anti korupsi di lingkungan pendidikan dan masyarakat
+           luas — sehingga kejujuran menjadi kebiasaan, bukan prestasi.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak III · Anti Korupsi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     15 — DAMPAK PADA GENERASI MUDA
+     ============================================================ -->
+<section class="slide" data-babak="3"
+  data-notes="Slide ini soal kita sendiri. Sebut bahwa korupsi tidak selalu dimulai dari pejabat — ia dimulai dari kebiasaan kecil: menyontek, titip absen, laporan yang dibesarkan. Normalisasi itulah pintu masuknya.">
+  <header class="hdr">
+    <div><span class="seal"></span>Dampak korupsi</div>
+    <div class="hdr-r">Lembar 15 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Pada generasi muda</p>
+      <h2 class="title" style="max-width:28ch">
+        <span class="mask" style="--i:0"><span>Korupsi tidak dimulai</span></span>
+        <span class="mask" style="--i:1"><span>dari ruang pejabat</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.4rem,1.2vh,1rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">01</span>
+        <h4>Normalisasi korupsi</h4>
+        <p>Korupsi yang dianggap lumrah oleh lingkungan menciptakan kepribadian
+           antisosial pada anak — batas antara benar dan salah menjadi kabur.</p>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">02</span>
+        <h4>Budaya koruptif</h4>
+        <p>Generasi muda cenderung memandang korupsi sebagai hal yang normal
+           atau bagian dari budaya yang sudah ada, bukan sebagai pelanggaran.</p>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">03</span>
+        <h4>Karakter negatif</h4>
+        <p>Membiasakan diri tidak jujur dan tidak bertanggung jawab sejak dini,
+           mengikis nilai-nilai integritas sedikit demi sedikit.</p>
+      </div>
+    </div>
+
+    <p class="lead rule rv" style="--i:5;max-width:76ch">
+      Menyontek, titip absen, laporan yang dibesarkan — semuanya kecil.
+      <strong>Masalahnya bukan ukurannya, tapi kebiasaannya.</strong>
+    </p>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak III · Anti Korupsi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     16 — CPI  ★ momen puncak emosional
+     ============================================================ -->
+<section class="slide" data-babak="3"
+  data-notes="MOMEN PALING PENTING DI SELURUH PAPARAN. Diam total 3 detik setelah garis jatuh. Jangan tersenyum. Kalimatnya: 'Dua ribu dua puluh tiga: tiga puluh empat. Dua ribu dua puluh empat: naik ke tiga puluh tujuh — kita sempat berharap. Dua ribu dua puluh lima: kembali ke tiga puluh empat. Peringkat kita turun dari sembilan puluh sembilan ke seratus sembilan. Target kami empat puluh lima.' Lalu diam lagi. Biarkan kelas yang menyimpulkan.">
+  <header class="hdr">
+    <div><span class="seal"></span>Indeks Persepsi Korupsi</div>
+    <div class="hdr-r">Lembar 16 / 22</div>
+  </header>
+
+  <div class="body cols-wide">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Transparency International</p>
+      <h2 class="title" style="max-width:18ch">
+        <span class="mask" style="--i:0"><span>Skornya</span></span>
+        <span class="mask" style="--i:1"><span><em class="acc">berhenti di 34</em></span></span>
+      </h2>
+      <p class="lead rule rv" style="--i:4;margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        Sempat naik tiga poin pada 2024. Lalu turun kembali ke titik awal —
+        dan peringkat Indonesia justru jatuh sepuluh posisi.
+      </p>
+      <p class="small rv" style="--i:5;margin-top:clamp(.5rem,1.3vh,1rem)">
+        Sumber: Transparency International Indonesia, rilis 10 Februari 2026 ·
+        Skala 0 (sangat korup) – 100 (sangat bersih)
+      </p>
+    </div>
+
+    <div class="chart rv rv-r" style="--i:2">
+      <svg viewBox="0 0 420 250" role="img"
+           aria-label="Grafik CPI Indonesia 2023 sampai 2025: 34, lalu 37, lalu kembali 34. Target 45.">
+        <!-- garis bantu -->
+        <g class="cpi-axis-group">
+          <line class="cpi-axis" x1="50" y1="30"    x2="395" y2="30"/>
+          <line class="cpi-axis" x1="50" y1="72.5"  x2="395" y2="72.5"/>
+          <line class="cpi-axis" x1="50" y1="115"   x2="395" y2="115"/>
+          <line class="cpi-axis" x1="50" y1="157.5" x2="395" y2="157.5"/>
+          <line class="cpi-axis" x1="50" y1="200"   x2="395" y2="200"/>
+        </g>
+
+        <text class="cpi-txt" x="42" y="34"    text-anchor="end" dominant-baseline="central">50</text>
+        <text class="cpi-txt" x="42" y="76.5"  text-anchor="end" dominant-baseline="central">45</text>
+        <text class="cpi-txt" x="42" y="119"   text-anchor="end" dominant-baseline="central">40</text>
+        <text class="cpi-txt" x="42" y="161.5" text-anchor="end" dominant-baseline="central">35</text>
+        <text class="cpi-txt" x="42" y="204"   text-anchor="end" dominant-baseline="central">30</text>
+
+        <!-- garis target 45 -->
+        <line class="cpi-target" x1="50" y1="72.5" x2="395" y2="72.5"/>
+        <text class="cpi-txt hi" x="395" y="62" text-anchor="end">TARGET 2028 · 45</text>
+
+        <!-- garis data: 34 → 37 → 34 -->
+        <path class="cpi-line" pathLength="1" d="M90 166 L215 140.5 L340 166"/>
+
+        <circle class="cpi-dot" data-d="1" cx="90"  cy="166"   r="6"/>
+        <circle class="cpi-dot" data-d="2" cx="215" cy="140.5" r="6"/>
+        <circle class="cpi-dot hi" data-d="3" cx="340" cy="166" r="7"/>
+
+        <text class="cpi-txt" data-d="1" x="90"  y="190" text-anchor="middle">2023 · 34</text>
+        <text class="cpi-txt" data-d="2" x="215" y="126" text-anchor="middle">2024 · 37</text>
+        <text class="cpi-txt hi" data-d="3" x="340" y="190" text-anchor="middle">2025 · 34</text>
+
+        <text class="cpi-txt" x="90"  y="224" text-anchor="middle" style="fill:var(--muted)">Peringkat —</text>
+        <text class="cpi-txt" x="215" y="224" text-anchor="middle" style="fill:var(--muted)">Peringkat 99</text>
+        <text class="cpi-txt hi" data-d="3" x="340" y="224" text-anchor="middle">Peringkat 109</text>
+      </svg>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Target kelompok: skor 45 pada 2028 — masih 11 poin dari kondisi hari ini</div>
+    <div class="babak">Babak III · Anti Korupsi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     17 — DUA SISI SATU KOIN
+     ============================================================ -->
+<section class="slide" data-babak="4"
+  data-notes="Inilah tesis utama paparan. Ucapkan dengan pelan: 'Kesadaran pajak dan pendidikan anti korupsi bukan dua topik. Keduanya satu mata uang — dua sisinya berbeda, tapi nilainya sama.'">
+  <header class="hdr">
+    <div><span class="seal"></span>Korelasi</div>
+    <div class="hdr-r">Lembar 17 / 22</div>
+  </header>
+
+  <div class="body" style="max-width:88ch">
+    <p class="eyebrow"><span class="dash"></span>Kesadaran pajak &amp; anti korupsi</p>
+
+    <h2 class="title" style="max-width:34ch">
+      <span class="mask" style="--i:0"><span>Dua sisi dari</span></span>
+      <span class="mask" style="--i:1"><span><em class="acc">satu mata uang yang sama</em></span></span>
+    </h2>
+
+    <div class="cards" style="margin-top:clamp(.5rem,1.4vh,1.2rem)">
+      <div class="card rv" style="--i:3">
+        <span class="num">01</span>
+        <h4>Pendidikan integritas</h4>
+        <p>Menanamkan nilai kejujuran sejak dini, sebelum kebiasaan terbentuk.</p>
+      </div>
+      <div class="card rv" style="--i:4">
+        <span class="num">02</span>
+        <h4>Kepatuhan sukarela</h4>
+        <p>Warga taat membayar pajak karena sadar, bukan karena takut sanksi.</p>
+      </div>
+      <div class="card rv" style="--i:5">
+        <span class="num">03</span>
+        <h4>Tata kelola bersih</h4>
+        <p>Pemerintahan yang transparan dan akuntabel atas setiap rupiah.</p>
+      </div>
+    </div>
+
+    <p class="lead rule rv" style="--i:7;max-width:78ch">
+      Warga yang memahami manfaat pajak secara otomatis akan menolak korupsi —
+      karena korupsi merugikan kepentingan publik yang ia biayai sendiri.
+    </p>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak IV · Sintesis &amp; Aksi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     18 — RANTAI SEBAB-AKIBAT  ★
+     ============================================================ -->
+<section class="slide" data-babak="4"
+  data-notes="Biarkan garis menggambar dirinya sendiri sambil Anda diam. Setelah selesai, baru jelaskan tiap simpul dari kiri ke kanan. Kalimat penutup: 'Perhatikan bahwa semuanya dimulai dari pendidikan — bukan dari penindakan.'">
+  <header class="hdr">
+    <div><span class="seal"></span>Mekanisme kausal</div>
+    <div class="hdr-r">Lembar 18 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Dari pendidikan ke tata kelola</p>
+      <h2 class="title" style="max-width:34ch">
+        <span class="mask" style="--i:0"><span>Bagaimana satu hal</span></span>
+        <span class="mask" style="--i:1"><span>menyebabkan yang lain</span></span>
+      </h2>
+    </div>
+
+    <div class="chain rv" style="--i:2;margin-top:clamp(.4rem,1.2vh,1rem)">
+      <svg viewBox="0 0 660 172" role="img"
+           aria-label="Rantai lima tahap: pendidikan integritas, karakter jujur, kepatuhan pajak sukarela, tata kelola bersih, kepercayaan publik, pembangunan merata.">
+        <!-- garis penghubung -->
+        <path class="chain-path" pathLength="1" d="M60 56 L600 56"/>
+
+        <!-- partikel yang berjalan di sepanjang rantai -->
+        <circle r="3.5" fill="#C33B22" opacity=".9">
+          <animateMotion dur="4.2s" repeatCount="indefinite" begin="2.6s"
+            path="M60 56 L600 56" keyPoints="0;1" keyTimes="0;1" calcMode="linear"/>
+          <animate attributeName="opacity" values="0;.95;.95;0" keyTimes="0;.1;.9;1"
+            dur="4.2s" repeatCount="indefinite" begin="2.6s"/>
+        </circle>
+        <circle r="2.5" fill="#C33B22" opacity=".55">
+          <animateMotion dur="4.2s" repeatCount="indefinite" begin="3.4s"
+            path="M60 56 L600 56"/>
+          <animate attributeName="opacity" values="0;.6;.6;0" keyTimes="0;.1;.9;1"
+            dur="4.2s" repeatCount="indefinite" begin="3.4s"/>
+        </circle>
+
+        <!-- simpul -->
+        <g class="chain-node">
+          <circle cx="60"  cy="56" r="27"/>
+          <text x="60"  y="56" text-anchor="middle" dominant-baseline="central" style="font-family:var(--font-mono);font-size:12px;font-weight:700">01</text>
+          <text x="60"  y="106" text-anchor="middle">Pendidikan</text>
+          <text class="sub" x="60"  y="122" text-anchor="middle">integritas</text>
+        </g>
+        <g class="chain-node">
+          <circle cx="195" cy="56" r="27"/>
+          <text x="195" y="56" text-anchor="middle" dominant-baseline="central" style="font-family:var(--font-mono);font-size:12px;font-weight:700">02</text>
+          <text x="195" y="106" text-anchor="middle">Karakter</text>
+          <text class="sub" x="195" y="122" text-anchor="middle">jujur</text>
+        </g>
+        <g class="chain-node">
+          <circle cx="330" cy="56" r="27"/>
+          <text x="330" y="56" text-anchor="middle" dominant-baseline="central" style="font-family:var(--font-mono);font-size:12px;font-weight:700">03</text>
+          <text x="330" y="106" text-anchor="middle">Kepatuhan</text>
+          <text class="sub" x="330" y="122" text-anchor="middle">sukarela</text>
+        </g>
+        <g class="chain-node">
+          <circle cx="465" cy="56" r="27"/>
+          <text x="465" y="56" text-anchor="middle" dominant-baseline="central" style="font-family:var(--font-mono);font-size:12px;font-weight:700">04</text>
+          <text x="465" y="106" text-anchor="middle">Tata kelola</text>
+          <text class="sub" x="465" y="122" text-anchor="middle">bersih</text>
+        </g>
+        <g class="chain-node">
+          <circle cx="600" cy="56" r="27"/>
+          <text x="600" y="56" text-anchor="middle" dominant-baseline="central" style="font-family:var(--font-mono);font-size:12px;font-weight:700">05</text>
+          <text x="600" y="106" text-anchor="middle">Pembangunan</text>
+          <text class="sub" x="600" y="122" text-anchor="middle">merata</text>
+        </g>
+      </svg>
+    </div>
+
+    <p class="lead rule rv" style="--i:6;max-width:78ch">
+      Perhatikan bahwa rantai ini <strong>dimulai dari pendidikan</strong>, bukan dari
+      penindakan. Penindakan bekerja setelah kerugian terjadi. Pendidikan bekerja
+      sebelum niat itu ada.
+    </p>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak IV · Sintesis &amp; Aksi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     19 — PERAN MAHASISWA & DOSEN
+     ============================================================ -->
+<section class="slide" data-babak="4"
+  data-notes="Slide ini yang paling dekat dengan audiens. Kalau waktunya cukup, sebut nama — misalnya himpunan mahasiswa atau komunitas di fakultas. Yang penting bukan teori, tapi siapa yang mulai.">
+  <header class="hdr">
+    <div><span class="seal"></span>Peran</div>
+    <div class="hdr-r">Lembar 19 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Kampus sebagai titik mula</p>
+      <h2 class="title" style="max-width:30ch">
+        <span class="mask" style="--i:0"><span>Yang bisa kita lakukan</span></span>
+        <span class="mask" style="--i:1"><span>dimulai dari sekarang</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.4rem,1.2vh,1rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">Mahasiswa</span>
+        <h4>Agen perubahan</h4>
+        <p>Garda terdepan penyebaran nilai kejujuran dan kesadaran pajak
+           di masyarakat — dimulai dari lingkaran terdekat.</p>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">Dosen</span>
+        <h4>Teladan akademis</h4>
+        <p>Role model integritas dan penggerak budaya anti korupsi
+           di lingkungan kampus — lewat keteladanan, bukan hanya ceramah.</p>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">Bersama</span>
+        <h4>Sinergi civitas akademika</h4>
+        <p>Kolaborasi seluruh civitas akademika mewujudkan ekosistem pendidikan
+           yang bersih, transparan, dan akuntabel.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak IV · Sintesis &amp; Aksi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     20 — TIGA PROGRAM
+     ============================================================ -->
+<section class="slide" data-babak="4"
+  data-notes="Tiga program ini usulan kelompok. Sampaikan sebagai usulan, bukan klaim — dan sebut targetnya supaya terukur. Yang paling mudah dieksekusi adalah yang ketiga: komunitas duta pajak kampus.">
+  <header class="hdr">
+    <div><span class="seal"></span>Program</div>
+    <div class="hdr-r">Lembar 20 / 22</div>
+  </header>
+
+  <div class="body">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Tiga usulan nyata</p>
+      <h2 class="title" style="max-width:30ch">
+        <span class="mask" style="--i:0"><span>Bukan sekadar gagasan —</span></span>
+        <span class="mask" style="--i:1"><span>ini yang bisa dijalankan</span></span>
+      </h2>
+    </div>
+
+    <div class="cards" style="margin-top:clamp(.4rem,1.2vh,1rem)">
+      <div class="card rv" style="--i:1">
+        <span class="num">Program 01</span>
+        <h4>Kurikulum anti korupsi terintegrasi</h4>
+        <p>Integrasi nilai anti korupsi dan literasi perpajakan ke mata kuliah
+           seperti etika bisnis dan hukum pajak.</p>
+        <ul><li>Target: seluruh mahasiswa baru dan mata kuliah relevan</li></ul>
+      </div>
+      <div class="card rv" style="--i:2">
+        <span class="num">Program 02</span>
+        <h4>Platform e-learning pajak</h4>
+        <p>Platform digital berisi modul interaktif, video edukasi, dan kuis
+           perpajakan untuk pemahaman mandiri.</p>
+        <ul><li>Target: seluruh mahasiswa aktif di universitas</li></ul>
+      </div>
+      <div class="card rv" style="--i:3">
+        <span class="num">Program 03</span>
+        <h4>Komunitas duta pajak kampus</h4>
+        <p>Pembentukan dan pelatihan mahasiswa sebagai agen perubahan yang
+           aktif mensosialisasikan pajak dan nilai anti korupsi.</p>
+        <ul><li>Target: mahasiswa terpilih sebagai relawan</li></ul>
+      </div>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93</div>
+    <div class="babak">Babak IV · Sintesis &amp; Aksi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     21 — METRIK & JURANG  ★
+     ============================================================ -->
+<section class="slide" data-babak="4"
+  data-notes="MOMEN KEDUA TERPENTING. Tunjukkan jurangnya secara terbuka. Kalimatnya: 'Kami menetapkan target ini. Kami juga tahu di mana posisi kita sekarang. Jarak antara batang hitam dan garis merah itu adalah pekerjaan yang belum selesai — dan itu justru alasan paparan ini dibuat.' Kejujuran di sini yang akan diingat dosen.">
+  <header class="hdr">
+    <div><span class="seal"></span>Metrik keberhasilan</div>
+    <div class="hdr-r">Lembar 21 / 22</div>
+  </header>
+
+  <div class="body cols-kpi">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Target jangka menengah 3–5 tahun</p>
+      <h2 class="title" style="max-width:20ch">
+        <span class="mask" style="--i:0"><span>Target kami,</span></span>
+        <span class="mask" style="--i:1"><span><em class="acc">dan jarak ke sana</em></span></span>
+      </h2>
+      <p class="lead rule rv" style="--i:4;margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        Batang hitam adalah kondisi hari ini. Blok bergaris adalah selisihnya.
+        Garis merah adalah target 2028. Jarak itu bukan kegagalan — itu daftar pekerjaan.
+      </p>
+      <div class="kpi-legend rv" style="--i:6;margin-top:clamp(.7rem,1.8vh,1.3rem)">
+        <span><i></i>Hari ini</span>
+        <span><i class="hatch"></i>Jurang</span>
+        <span><em></em>Target 2028</span>
+      </div>
+    </div>
+
+    <div class="kpi doc rv rv-r" style="--i:2">
+      <div class="doc-head"><span>Rekap capaian</span><span>SK-2028</span></div>
+
+      <div class="kpi-row" style="--i:0">
+        <div class="kpi-head">
+          <span class="lbl">Tingkat kepatuhan pajak</span>
+          <span class="vals">75%<b>→</b>85%</span>
+        </div>
+        <div class="kpi-track" style="--v:75;--t:85"><i></i><span class="gap"></span><em></em></div>
+      </div>
+
+      <div class="kpi-row" style="--i:1">
+        <div class="kpi-head">
+          <span class="lbl">Indeks Persepsi Korupsi</span>
+          <span class="vals">34<b>→</b>45</span>
+        </div>
+        <div class="kpi-track" style="--v:34;--t:45"><i></i><span class="gap"></span><em></em></div>
+      </div>
+
+      <div class="kpi-row" style="--i:2">
+        <div class="kpi-head">
+          <span class="lbl">Kepercayaan publik</span>
+          <span class="vals">60%<b>→</b>75%</span>
+        </div>
+        <div class="kpi-track" style="--v:60;--t:75"><i></i><span class="gap"></span><em></em></div>
+      </div>
+
+      <p class="small kpi-foot">
+        Baseline 2023–2025 · Skala 0–100 · Target jangka menengah 2028
+      </p>
+    </div>
+  </div>
+
+  <footer class="ftr">
+    <div>Sumber baseline: DJP &amp; Transparency International Indonesia</div>
+    <div class="babak">Babak IV · Sintesis &amp; Aksi</div>
+  </footer>
+</section>
+
+<!-- ============================================================
+     22 — KESIMPULAN  ★ penutup
+     ============================================================ -->
+<section class="slide" data-babak="4"
+  data-notes="PENUTUP. Bar yang menutupi angka di panel kanan akan terbuka serentak. Diam sampai semuanya terbuka, baru ucapkan kalimat terakhir. Jangan tambah slide 'terima kasih' — akhiri di sini.">
+  <header class="hdr">
+    <div><span class="seal"></span>Kesimpulan</div>
+    <div class="hdr-r">Lembar 22 / 22</div>
+  </header>
+
+  <div class="body cols">
+    <div>
+      <p class="eyebrow"><span class="dash"></span>Penutup</p>
+      <h2 class="title" style="max-width:26ch">
+        <span class="mask" style="--i:0"><span>Tidak ada lagi</span></span>
+        <span class="mask" style="--i:1"><span>yang <em class="acc">disensor</em></span></span>
+      </h2>
+
+      <p class="lead rule rv" style="--i:4;margin-top:clamp(.6rem,1.6vh,1.2rem)">
+        Banyak tantangan yang dihadapi Indonesia — salah satunya pemahaman tentang
+        pajak itu sendiri, dan ketidakpercayaan masyarakat terhadap pengalokasiannya.
+        Karena itu diperlukan kesadaran pajak dan pendidikan anti korupsi.
+      </p>
+
+      <p class="lead rv" style="--i:6">
+        <strong>Keduanya saling mendukung</strong> untuk menciptakan masyarakat yang
+        lebih transparan, adil, dan berintegritas.
+      </p>
+    </div>
+
+    <aside class="doc rv rv-r" style="--i:3">
+      <div class="doc-head"><span>Laporan Anggaran</span><span>RA-2025</span></div>
+      <span class="closing-bars">
+        <span class="cb-row" style="--i:0">
+          <b><span class="cb-l">Pendapatan negara</span><span class="cb-v">Rp 2.765,13 T</span></b>
+          <i></i>
+        </span>
+        <span class="cb-row" style="--i:1">
+          <b><span class="cb-l">Penerimaan pajak</span><span class="cb-v">Rp 1.917,6 T</span></b>
+          <i></i>
+        </span>
+        <span class="cb-row" style="--i:2">
+          <b><span class="cb-l">Rasio pajak</span><span class="cb-v">11,8% PDB</span></b>
+          <i></i>
+        </span>
+        <span class="cb-row" style="--i:3">
+          <b><span class="cb-l">Indeks korupsi</span><span class="cb-v">34 / 100</span></b>
+          <i></i>
+        </span>
+        <span class="cb-row" style="--i:4">
+          <b><span class="cb-l">Peringkat global</span><span class="cb-v">109 / 180</span></b>
+          <i></i>
+        </span>
+      </span>
+      <p class="reveal-line" style="font-family:var(--font-mono);font-size:var(--t-5);letter-spacing:.16em;text-transform:uppercase;color:var(--vermilion)">
+        Transparansi · Integritas · Akuntabilitas
+      </p>
+      <div class="stamp" style="transition-delay:3.4s">Taat &amp; Bersih</div>
+    </aside>
+  </div>
+
+  <footer class="ftr">
+    <div>Kelompok 6 · PDB 93 · Kewarganegaraan</div>
+    <div class="babak">Terima kasih</div>
+  </footer>
+</section>
+
+<!--SLIDES4-->
+
+</main>
+
+<script>
+/* ================================================================
+   DECK KEWARGANEGARAAN — MESIN
+   ----------------------------------------------------------------
+     1. WebGL — kertas + noda tinta, bereaksi ke scroll & babak
+     2. Guilloche — satu rosette per babak
+     3. Navigasi — keyboard, titik, penggaris, swipe
+     4. Animasi masuk — dipicu saat slide mendarat
+     5. Parallax halus
+     6. Penghitung angka
+     7. Kursor tinta
+     8. Video embed (facade)
+     9. Mode edit (localStorage + export)
+    10. Mode presenter (catatan + timer)
+    11. Cetak / PDF
+   ================================================================ */
+(function () {
+  'use strict';
+
+  const deck   = document.getElementById('deck');
+  const slides = Array.from(deck.querySelectorAll('.slide'));
+  const total  = slides.length;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ==============================================================
+     1. WEBGL — kertas + noda tinta
+     ============================================================== */
+  (function webgl() {
+    const canvas = document.getElementById('gl');
+    let gl = null, raf = 0, last = 0;
+    let uRes = null, uTime = null, uScroll = null, uBabak = null;
+    const t0 = performance.now();
+    const state = { scroll: 0, babak: 0 };
+    const DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+    let lastScroll = 0;
+
+    const VS = `#version 300 es
+    void main(){
+      vec2 v = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+      gl_Position = vec4(v * 2.0 - 1.0, 0.0, 1.0);
+    }`;
+
+    const FS = `#version 300 es
+    precision highp float;
+    uniform vec2  uRes;
+    uniform float uTime;
+    uniform float uScroll;
+    uniform float uBabak;
+    out vec4 fragColor;
+
+    float hash(vec2 p){
+      p = fract(p * vec2(123.34, 456.21));
+      p += dot(p, p + 45.32);
+      return fract(p.x * p.y);
+    }
+    float vnoise(vec2 p){
+      vec2 i = floor(p), f = fract(p);
+      f = f * f * (3.0 - 2.0 * f);
+      float a = hash(i);
+      float b = hash(i + vec2(1.0, 0.0));
+      float c = hash(i + vec2(0.0, 1.0));
+      float d = hash(i + vec2(1.0, 1.0));
+      return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+    }
+    float fbm(vec2 p){
+      float v = 0.0, a = 0.5;
+      for (int i = 0; i < 5; i++){ v += a * vnoise(p); p *= 2.04; a *= 0.5; }
+      return v;
+    }
+
+    void main(){
+      vec2 uv = gl_FragCoord.xy / uRes;
+      vec2 p  = uv;
+      p.x *= uRes.x / uRes.y;
+
+      float t = uTime * 0.026;
+
+      /* Scroll menggeser aliran tinta -> latar bergerak saat presentasi */
+      float drift = uScroll * 2.6;
+
+      vec2 w = vec2(fbm(p * 1.15 + vec2(t + drift * 0.4, -t * 0.7)),
+                    fbm(p * 1.15 + vec2(5.2, 1.3) - t + drift * 0.3));
+      float stain = fbm(p * 1.9 + w * 1.5 + vec2(-t * 0.5, t * 0.3 + drift));
+      stain = smoothstep(0.44, 0.98, stain);
+
+      /* Babak menggeser rona: makin jauh, makin hangat sedikit */
+      float warmth = uBabak / 3.0;
+
+      vec3 paper = vec3(0.949, 0.929, 0.890);
+      vec3 sepia = mix(vec3(0.744, 0.686, 0.592), vec3(0.780, 0.664, 0.560), warmth);
+
+      vec3 col = mix(paper, sepia, stain * (0.28 + 0.06 * warmth));
+
+      /* Serat kertas */
+      float fiber = vnoise(vec2(uv.x * 300.0, uv.y * 6.0));
+      col -= fiber * 0.014;
+
+      /* Cahaya hangat dari kiri atas */
+      col += vec3(0.028, 0.020, 0.0) * smoothstep(1.0, 0.0, length(uv - vec2(0.12, 0.92)));
+
+      /* Vignette */
+      vec2 v = uv - 0.5;
+      col *= 1.0 - dot(v, v) * 0.24;
+
+      /* Grain */
+      col += (hash(gl_FragCoord.xy + fract(uTime) * 77.0) - 0.5) * 0.018;
+
+      fragColor = vec4(col, 1.0);
+    }`;
+
+    function compile(type, src) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error('[deck] shader:', gl.getShaderInfoLog(s));
+        return null;
+      }
+      return s;
+    }
+
+    function resize() {
+      if (!gl) return;
+      const w = Math.floor(window.innerWidth  * DPR);
+      const h = Math.floor(window.innerHeight * DPR);
+      if (canvas.width !== w || canvas.height !== h) {
+        canvas.width = w; canvas.height = h;
+        gl.viewport(0, 0, w, h);
+      }
+      if (uRes) gl.uniform2f(uRes, w, h);
+    }
+
+    function frame(now) {
+      raf = requestAnimationFrame(frame);
+      const busy = (now - lastScroll) < 900;
+      if (!busy && (now - last) < 33) return;   // idle -> ~30 fps
+      last = now;
+      gl.uniform1f(uTime, (now - t0) / 1000);
+      gl.uniform1f(uScroll, state.scroll);
+      gl.uniform1f(uBabak, state.babak);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = 0; } }
+
+    /* Bangun semua resource GL. Dipanggil lagi setelah konteks pulih. */
+    function build() {
+      gl = canvas.getContext('webgl2', {
+        antialias: false,
+        /* alpha:true + latar kertas di #gl = jaring pengaman untuk kasus
+           canvas tampil tapi isinya kosong. Catatan hasil uji: saat konteks
+           HILANG, Chromium melewati canvas sepenuhnya (bukan hitam), jadi
+           latar body yang terlihat. Yang bikin layar hitam adalah canvas
+           opaque yang tampil tanpa isi — itu yang dicegah di sini. */
+        alpha: true,
+        powerPreference: 'high-performance'
+      });
+      if (!gl) { document.documentElement.classList.add('no-gl'); return false; }
+
+      const vs = compile(gl.VERTEX_SHADER, VS);
+      const fs = compile(gl.FRAGMENT_SHADER, FS);
+      if (!vs || !fs) { document.documentElement.classList.add('no-gl'); return false; }
+
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.error('[deck] link:', gl.getProgramInfoLog(prog));
+        document.documentElement.classList.add('no-gl');
+        return false;
+      }
+      gl.useProgram(prog);
+      gl.bindVertexArray(gl.createVertexArray());
+
+      uRes    = gl.getUniformLocation(prog, 'uRes');
+      uTime   = gl.getUniformLocation(prog, 'uTime');
+      uScroll = gl.getUniformLocation(prog, 'uScroll');
+      uBabak  = gl.getUniformLocation(prog, 'uBabak');
+
+      resize();
+      document.documentElement.classList.remove('no-gl');
+      return true;
+    }
+
+    function run() {
+      stop();
+      last = 0;
+      if (!build()) return;
+
+      /* Hormati reduced-motion: satu bingkai statis, lalu berhenti */
+      if (reduced) {
+        gl.uniform1f(uTime, 0);
+        gl.uniform1f(uScroll, 0);
+        gl.uniform1f(uBabak, 0);
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        return;
+      }
+      raf = requestAnimationFrame(frame);
+    }
+
+    /* --- Listener dipasang SEKALI, tidak ikut dibangun ulang --- */
+    window.addEventListener('resize', resize);
+
+    /* Hemat baterai: 60 fps hanya saat menggulir, 30 fps saat diam */
+    window.addEventListener('scroll', () => { lastScroll = performance.now(); },
+      { passive: true, capture: true });
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) stop();
+      else if (!raf && gl && !reduced) raf = requestAnimationFrame(frame);
+    });
+
+    /* Konteks WebGL hilang: GPU reset, ganti layar/proyektor, driver
+       bermasalah. Tanpa penanganan ini loop rAF terus memanggil GL pada
+       konteks yang sudah mati (error konsol menumpuk) dan latar animasi
+       tidak pernah kembali. Dengan ini: loop dihentikan, lalu seluruh
+       resource GL dibangun ulang begitu konteks pulih. */
+    canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault();                                 // minta dipulihkan
+      stop();
+      document.documentElement.classList.add('no-gl');    // -> latar kertas
+      console.warn('[deck] konteks WebGL hilang — latar dialihkan ke kertas');
+    });
+    canvas.addEventListener('webglcontextrestored', () => {
+      console.info('[deck] konteks WebGL pulih — menggambar ulang');
+      run();
+    });
+
+    run();
+
+    /* Dibaca oleh handler scroll */
+    window.__glState = state;
+  })();
+
+  /* ==============================================================
+     2. GUILLOCHE — satu pola per babak
+     ============================================================== */
+  (function guilloche() {
+    const NS = 'http://www.w3.org/2000/svg';
+    const STEPS = 1080;
+
+    /* Tiap babak punya frekuensi kelopak berbeda -> penonton
+       diam-diam tahu sedang di babak mana. */
+    const configs = [
+      { k: 9,  layers: [ [240, 62, 9],  [206, 42, 18], [176, 26, 27] ] },
+      { k: 14, layers: [ [244, 56, 14], [210, 38, 21], [178, 24, 28] ] },
+      { k: 11, layers: [ [238, 66, 11], [204, 44, 22], [172, 28, 33] ] },
+      { k: 6,  layers: [ [246, 58, 6],  [212, 40, 12], [180, 26, 18] ] }
+    ];
+
+    configs.forEach(function (cfg, idx) {
+      const group = document.querySelector('#ros' + (idx + 1) + ' .spin');
+      if (!group) return;
+
+      cfg.layers.forEach(function (L, li) {
+        const R0 = L[0], A = L[1], k = L[2];
+        let d = '';
+        for (let i = 0; i <= STEPS; i++) {
+          const th = (i / STEPS) * Math.PI * 2;
+          const r  = R0 + A * Math.cos(k * th);
+          d += (i ? 'L' : 'M') + (r * Math.cos(th)).toFixed(1) + ' ' + (r * Math.sin(th)).toFixed(1);
+        }
+        const path = document.createElementNS(NS, 'path');
+        path.setAttribute('d', d + 'Z');
+        path.setAttribute('opacity', String(0.58 - li * 0.15));
+        group.appendChild(path);
+      });
+    });
+  })();
+
+  /* ==============================================================
+     3. NAVIGASI
+     ============================================================== */
+  const dotsBox   = document.getElementById('dots');
+  const rulerFill = document.getElementById('rulerFill');
+  const hint      = document.getElementById('hint');
+  let activeIndex = -1;
+
+  slides.forEach(function (s, i) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', 'Ke slide ' + (i + 1));
+    b.addEventListener('click', function () { goTo(i); });
+    dotsBox.appendChild(b);
+  });
+  const dots = Array.from(dotsBox.children);
+
+  function slideHeight() { return deck.clientHeight; }
+
+  function goTo(i) {
+    i = Math.max(0, Math.min(total - 1, i));
+    const target = i * slideHeight();
+    deck.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' });
+    hint.classList.remove('on');
+
+    /* Jaring pengaman: kalau scroll mulus berhenti di tengah (bisa terjadi
+       karena scroll-snap-stop), lompat langsung ke target. */
+    clearTimeout(goTo.__t);
+    goTo.__t = setTimeout(function () {
+      if (Math.abs(deck.scrollTop - target) > slideHeight() * 0.5) {
+        const prev = deck.style.scrollBehavior;
+        deck.style.scrollBehavior = 'auto';
+        deck.scrollTop = target;
+        deck.style.scrollBehavior = prev;
+      }
+      ensureActive();
+    }, 820);
+  }
+
+  function currentIndex() {
+    return Math.round(deck.scrollTop / slideHeight());
+  }
+
+  function updateChrome() {
+    const max = deck.scrollHeight - deck.clientHeight;
+    const p = max > 0 ? deck.scrollTop / max : 0;
+    rulerFill.style.width = (p * 100).toFixed(2) + '%';
+
+    if (window.__glState) window.__glState.scroll = p;
+
+    const idx = currentIndex();
+    dots.forEach(function (d, i) { d.classList.toggle('on', i === idx); });
+  }
+
+  let lastScrollAt = 0;
+
+  deck.addEventListener('scroll', function () {
+    lastScrollAt = Date.now();
+    updateChrome();
+    clearTimeout(deck.__settle);
+    deck.__settle = setTimeout(ensureActive, 180);
+  }, { passive: true });
+
+  if ('onscrollend' in window) {
+    deck.addEventListener('scrollend', ensureActive, { passive: true });
+  }
+
+  window.addEventListener('resize', function () {
+    const prev = deck.style.scrollBehavior;
+    deck.style.scrollBehavior = 'auto';
+    deck.scrollTop = Math.max(0, activeIndex) * slideHeight();
+    deck.style.scrollBehavior = prev;
+    updateChrome();
+  });
+
+  /* Keyboard */
+  document.addEventListener('keydown', function (e) {
+    if (document.body.classList.contains('editing')) return;
+    if (e.target.isContentEditable) return;
+    /* Jangan rampas pintasan sistem: Ctrl+P harus tetap membuka dialog cetak,
+       Ctrl/Cmd+F tetap mencari, dst. */
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+    const k = e.key;
+    if (k === 'ArrowRight' || k === 'ArrowDown' || k === 'PageDown' || k === ' ') {
+      e.preventDefault(); goTo(currentIndex() + 1);
+    } else if (k === 'ArrowLeft' || k === 'ArrowUp' || k === 'PageUp') {
+      e.preventDefault(); goTo(currentIndex() - 1);
+    } else if (k === 'Home') {
+      e.preventDefault(); goTo(0);
+    } else if (k === 'End') {
+      e.preventDefault(); goTo(total - 1);
+    } else if (k === 'f' || k === 'F') {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else document.documentElement.requestFullscreen().catch(function () {});
+    } else if (k === 'p' || k === 'P') {
+      toggleNotes();
+    } else if (k === 'e' || k === 'E') {
+      Editor.toggle();
+    }
+  });
+
+  /* Swipe */
+  let touchY = null;
+  deck.addEventListener('touchstart', function (e) {
+    touchY = e.changedTouches[0].clientY;
+  }, { passive: true });
+  deck.addEventListener('touchend', function (e) {
+    if (touchY === null) return;
+    const dy = touchY - e.changedTouches[0].clientY;
+    if (Math.abs(dy) > 55) goTo(currentIndex() + (dy > 0 ? 1 : -1));
+    touchY = null;
+  }, { passive: true });
+
+  /* ==============================================================
+     4. ANIMASI MASUK
+     Tiga lapis pengaman supaya slide TIDAK PERNAH kosong:
+       a. IntersectionObserver — jalur utama
+       b. scrollend / scroll   — cadangan
+       c. watchdog interval    — jaring terakhir
+     Semua memanggil ensureActive() yang idempoten.
+     ============================================================== */
+  function nearestIndex() {
+    const h = slideHeight();
+    const c = deck.scrollTop + h / 2;
+    let best = 0, bestD = Infinity;
+    for (let i = 0; i < total; i++) {
+      const d = Math.abs((i + 0.5) * h - c);
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+
+  function activate(idx) {
+    if (idx < 0 || idx >= total) return;
+    if (idx === activeIndex) return;
+
+    slides.forEach(function (s) { s.classList.remove('in'); });
+    activeIndex = idx;
+
+    const s = slides[idx];
+    const babak = parseInt(s.dataset.babak || '1', 10);
+    document.querySelectorAll('.rosette').forEach(function (r, i) {
+      r.classList.toggle('on', i === babak - 1);
+    });
+    if (window.__glState) window.__glState.babak = babak - 1;
+
+    void s.offsetWidth;                     /* paksa reflow, transisi mulai dari nol */
+    requestAnimationFrame(function () {
+      s.classList.add('in');
+      runCounters(s);
+    });
+  }
+
+  /* Idempoten. Kalau slide aktif belum beranimasi, paksa tampil —
+     inilah yang menjamin tidak akan pernah ada slide kosong. */
+  function ensureActive() {
+    const idx = nearestIndex();
+    if (idx !== activeIndex) activate(idx);
+
+    const s = slides[idx];
+    if (s && !s.classList.contains('in')) {
+      s.classList.add('in');
+      runCounters(s);
+    }
+  }
+
+  /* a. Jalur utama */
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting && e.intersectionRatio >= 0.55) {
+          activate(slides.indexOf(e.target));
+        }
+      });
+    }, { root: deck, threshold: [0, 0.55, 0.95] });
+    slides.forEach(function (s) { io.observe(s); });
+  }
+
+  /* c. Watchdog — sangat murah, dan memastikan isi selalu terlihat.
+     Dilewati saat sedang menggulir supaya tidak berebut dengan snap. */
+  setInterval(function () {
+    if (document.hidden) return;
+    if (Date.now() - lastScrollAt < 300) return;
+    ensureActive();
+  }, 400);
+
+  /* ==============================================================
+     5. PARALLAX HALUS
+     Elemen ber-atribut data-par bergeser mengikuti posisi slide.
+     ============================================================== */
+  const parEls = Array.from(document.querySelectorAll('[data-par]'));
+  if (parEls.length && !reduced) {
+    let ticking = false;
+    deck.addEventListener('scroll', function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () {
+        const h = slideHeight();
+        parEls.forEach(function (el) {
+          const rect = el.getBoundingClientRect();
+          const rel = (rect.top + rect.height / 2 - window.innerHeight / 2) / h;
+          el.style.transform = 'translateY(' + (-rel * parseFloat(el.dataset.par || '30')).toFixed(2) + 'px)';
+        });
+        ticking = false;
+      });
+    }, { passive: true });
+  }
+
+  /* ==============================================================
+     6. PENGHITUNG ANGKA
+     ============================================================== */
+  function runCounters(slide) {
+    slide.querySelectorAll('[data-count]').forEach(function (el) {
+      if (el.dataset.done === '1') return;
+      el.dataset.done = '1';
+
+      const target = parseFloat(el.dataset.count);
+      const dec    = parseInt(el.dataset.dec || '0', 10);
+      const suffix = el.dataset.suffix || '';
+      const dur    = 1500;
+      const start  = performance.now() + 450;
+
+      function tick(now) {
+        const p = Math.min(Math.max((now - start) / dur, 0), 1);
+        const e = 1 - Math.pow(1 - p, 4);
+        el.textContent = (target * e).toLocaleString('id-ID', {
+          minimumFractionDigits: dec, maximumFractionDigits: dec
+        }) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    });
+  }
+
+  /* ==============================================================
+     7. KURSOR TINTA
+     ============================================================== */
+  (function inkCursor() {
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+    const dot = document.getElementById('inkCursor');
+    let x = 0, y = 0, cx = 0, cy = 0;
+
+    window.addEventListener('mousemove', function (e) {
+      x = e.clientX; y = e.clientY;
+      dot.classList.add('on');
+    }, { passive: true });
+
+    document.addEventListener('mouseover', function (e) {
+      const hit = e.target.closest('a,button,.video,.card,.bar-row');
+      dot.classList.toggle('big', !!hit);
+    });
+
+    (function loop() {
+      cx += (x - cx) * 0.22;
+      cy += (y - cy) * 0.22;
+      dot.style.transform = 'translate(' + cx.toFixed(1) + 'px,' + cy.toFixed(1) + 'px) translate(-50%,-50%)';
+      requestAnimationFrame(loop);
+    })();
+  })();
+
+  /* ==============================================================
+     8. VIDEO — facade, iframe baru dimuat setelah diklik
+     ============================================================== */
+  document.querySelectorAll('.video').forEach(function (v) {
+    const id = v.dataset.yt;
+    const ytUrl = 'https://youtu.be/' + id;
+
+    /* PENTING: kalau file dibuka lewat klik dua kali (protocol file:),
+       origin-nya null dan YouTube menolak embed-nya (Error 153). Jangan
+       tampilkan player rusak di depan kelas — alihkan ke YouTube. */
+    if (location.protocol === 'file:') v.classList.add('file-mode');
+
+    v.addEventListener('click', function () {
+      if (v.dataset.loaded === '1') return;
+      if (v.classList.contains('file-mode')) {
+        window.open(ytUrl, '_blank', 'noopener');
+        return;
+      }
+      v.dataset.loaded = '1';
+      const f = document.createElement('iframe');
+      f.src = 'https://www.youtube-nocookie.com/embed/' + id + '?autoplay=1&rel=0';
+      f.title = v.dataset.title || 'Video';
+      f.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+      f.setAttribute('allowfullscreen', '');
+      v.innerHTML = '';
+      v.appendChild(f);
+    });
+  });
+
+  /* ==============================================================
+     9. MODE EDIT
+     Teks bisa diklik langsung di browser. Tersimpan di localStorage
+     (perangkat sendiri, tanpa server). Ctrl+S mengunduh HTML baru.
+     ============================================================== */
+  const Editor = (function () {
+    const KEY = 'kwn-deck-edits-v1';
+    const SEL = 'h1,h2,h3,h4,p,li,cite,.bar-row .name,.bar-row .val,.card .num,.metric-label,.doc-head span,.video .meta strong,.video .meta span';
+    const btn = document.getElementById('editToggle');
+    const toastEl = document.getElementById('toast');
+    let on = false;
+
+    function toast(msg) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('on');
+      clearTimeout(toastEl.__t);
+      toastEl.__t = setTimeout(function () { toastEl.classList.remove('on'); }, 2200);
+    }
+
+    function nodes() { return Array.from(document.querySelectorAll(SEL)); }
+
+    function tag() {
+      nodes().forEach(function (el, i) {
+        if (!el.dataset.ek) el.dataset.ek = 'n' + i;
+      });
+    }
+
+    function load() {
+      let data = {};
+      try { data = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { data = {}; }
+      tag();
+      nodes().forEach(function (el) {
+        const v = data[el.dataset.ek];
+        if (typeof v === 'string' && v !== el.innerHTML) el.innerHTML = v;
+      });
+      return Object.keys(data).length;
+    }
+
+    function save() {
+      const data = {};
+      nodes().forEach(function (el) { data[el.dataset.ek] = el.innerHTML; });
+      try { localStorage.setItem(KEY, JSON.stringify(data)); } catch (e) { /* penuh / diblokir */ }
+    }
+
+    let saveTimer;
+    function saveSoon() {
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(save, 500);
+    }
+
+    function setEditable(flag) {
+      nodes().forEach(function (el) {
+        if (flag) {
+          el.setAttribute('contenteditable', 'plaintext-only');
+          el.spellcheck = false;
+        } else {
+          el.removeAttribute('contenteditable');
+        }
+      });
+    }
+
+    function toggle() {
+      on = !on;
+      document.body.classList.toggle('editing', on);
+      btn.classList.toggle('on', on);
+      setEditable(on);
+      if (on) {
+        tag();
+        toast('Mode edit aktif — klik teks untuk mengubah. Ctrl+S untuk unduh.');
+      } else {
+        save();
+        toast('Mode edit nonaktif — perubahan tersimpan.');
+      }
+    }
+
+    function exportHTML() {
+      save();
+      const clone = document.documentElement.cloneNode(true);
+      clone.querySelectorAll('iframe').forEach(function (f) { f.remove(); });
+      clone.querySelectorAll('[contenteditable]').forEach(function (el) {
+        el.removeAttribute('contenteditable');
+      });
+      clone.querySelectorAll('.rosette path').forEach(function (p) { p.remove(); });
+      clone.querySelectorAll('[data-ek]').forEach(function (el) { el.removeAttribute('data-ek'); });
+      const blob = new Blob(['<!DOCTYPE html>\n' + clone.outerHTML], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'index.html';
+      a.click();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
+      toast('HTML terunduh — simpan menimpa index.html');
+    }
+
+    document.addEventListener('input', function (e) {
+      if (on && e.target.isContentEditable) saveSoon();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (on && (e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        exportHTML();
+      }
+    });
+
+    btn.addEventListener('click', toggle);
+
+    /* Tombol hanya muncul kalau kursor mendekati sudut kiri atas */
+    let hideT;
+    function show() { clearTimeout(hideT); btn.classList.add('show'); }
+    function laterHide() {
+      hideT = setTimeout(function () { if (!on) btn.classList.remove('show'); }, 500);
+    }
+    document.addEventListener('mousemove', function (e) {
+      if (e.clientY < 110 && e.clientX < 110) show(); else laterHide();
+    }, { passive: true });
+    btn.addEventListener('mouseenter', show);
+    btn.addEventListener('mouseleave', laterHide);
+
+    const restored = load();
+
+    return { toggle: toggle, toast: toast, restored: restored };
+  })();
+
+  /* ==============================================================
+     10. MODE PRESENTER
+     ============================================================== */
+  const notesEl   = document.getElementById('notes');
+  const notesText = document.getElementById('notesText');
+  const timerEl   = document.getElementById('timer');
+  let notesOn = false;
+  let timerStart = null;
+
+  function toggleNotes() {
+    notesOn = !notesOn;
+    notesEl.classList.toggle('on', notesOn);
+    notesEl.setAttribute('aria-hidden', String(!notesOn));
+    if (notesOn) {
+      if (!timerStart) timerStart = Date.now();
+      refreshNotes();
+    }
+  }
+
+  function refreshNotes() {
+    if (!notesOn) return;
+    const s = slides[Math.max(0, currentIndex())];
+    notesText.textContent = (s && s.dataset.notes) || 'Belum ada catatan untuk slide ini.';
+  }
+
+  setInterval(function () {
+    if (!notesOn || !timerStart) return;
+    const sec = Math.floor((Date.now() - timerStart) / 1000);
+    timerEl.textContent =
+      String(Math.floor(sec / 60)).padStart(2, '0') + ':' +
+      String(sec % 60).padStart(2, '0');
+    refreshNotes();
+  }, 1000);
+
+  /* ==============================================================
+     11. CETAK / PDF
+     Semua animasi dipaksa ke keadaan akhir sebelum dicetak.
+     ============================================================== */
+  window.addEventListener('beforeprint', function () {
+    slides.forEach(function (s) { s.classList.add('in'); });
+    document.querySelectorAll('[data-count]').forEach(function (el) {
+      const dec = parseInt(el.dataset.dec || '0', 10);
+      el.textContent = parseFloat(el.dataset.count).toLocaleString('id-ID', {
+        minimumFractionDigits: dec, maximumFractionDigits: dec
+      }) + (el.dataset.suffix || '');
+    });
+  });
+
+  /* ==============================================================
+     START
+     ============================================================== */
+  function boot() {
+    updateChrome();
+
+    /* Slide pertama langsung aktif — tanpa menunggu scroll apa pun */
+    slides.forEach(function (s) { s.classList.remove('in'); });
+    activeIndex = 0;
+    document.querySelectorAll('.rosette').forEach(function (r, i) {
+      r.classList.toggle('on', i === 0);
+    });
+    void slides[0].offsetWidth;
+    requestAnimationFrame(function () {
+      slides[0].classList.add('in');
+      runCounters(slides[0]);
+    });
+
+    setTimeout(function () { hint.classList.add('on'); }, 900);
+    setTimeout(function () { hint.classList.remove('on'); }, 7000);
+
+    if (Editor.restored > 0) {
+      setTimeout(function () { Editor.toast('Perubahan tersimpan dipulihkan.'); }, 1400);
+    }
+
+    console.log('[deck] siap — ' + total + ' slide' +
+      (document.documentElement.classList.contains('no-gl') ? ' (tanpa WebGL)' : ''));
+  }
+
+  if (document.readyState === 'complete') boot();
+  else window.addEventListener('load', boot);
+})();
+</script>
+</body>
+</html>

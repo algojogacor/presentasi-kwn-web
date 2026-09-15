@@ -1,0 +1,22 @@
+# ---------------------------------------------------------------
+# Artefak verifikasi — 73 MB, bisa dibuat ulang kapan saja.
+#   python tools/verify-deck.py
+# ---------------------------------------------------------------
+shots/
+
+# Sisa penyelidikan ekspor PDF yang dibatalkan (Arya: tidak butuh PDF)
+_pdf_dump.json
+verify.log
+
+# Berkas sementara saat memeriksa repo / server
+_lsremote.txt
+_mcp.txt
+_gh.json
+
+# Memori kerja agen — catatan lingkungan lokal, bukan isi proyek
+.workbuddy-ai/
+
+# Berkas sistem operasi
+Thumbs.db
+desktop.ini
+.DS_Store

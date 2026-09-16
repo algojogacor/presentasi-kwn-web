@@ -504,16 +504,18 @@ Rincian + tautan sumber ada di `content/verified-data.md`.
 
 ## Status git (per 16 Sep 2026, sesi tutup)
 
-Remote `main` = `5f37a56`. Lokal `main` = `a17751e`. **3 commit tertunda:**
+Remote `main` = `5f37a56`. **Semua commit lokal di atasnya belum ter-push.**
+Isinya murni pembukuan:
 
 | Commit | Isi |
 | --- | --- |
 | `a5e42af` | worklog: catat push berhasil + verifikasi clone bersih |
 | `fe90d27` | worklog: catat hasil uji rentang resolusi |
 | `a17751e` | deploy: Vercel produksi + auto-deploy dari GitHub |
+| `a4d33c2` | worklog: status git akhir sesi + keputusan NIM publik |
+| `f3f0845` | chore: abaikan `PUSH-GIT.bat` (helper lokal) |
 
-Ketiganya **hanya menyentuh `.gitignore`, `.vercelignore`, dan `worklog.md`.**
-`index.html` tidak berubah sama sekali — jadi **isi deck yang live di Vercel
+Tak satu pun menyentuh `index.html` — jadi **isi deck yang live di Vercel
 identik dengan yang ada di disk sekarang**. Push ini pembukuan, bukan konten.
 
 **Push harus dijalankan Arya sendiri.** Sandbox tidak punya kredensial GitHub:
@@ -522,13 +524,15 @@ identik dengan yang ada di disk sekarang**. Push ini pembukuan, bukan konten.
 non-interaktif (coba buka GUI). Yang bisa jalan dari sandbox hanya read-only
 (`git ls-remote`).
 
-Satu perintah, dari PowerShell:
+Dua cara, pilih salah satu:
 
 ```powershell
 cd D:\Projects\PPT_KWN
 git push
 ```
 
-Sekali push → 3 commit naik **dan** otomatis memicu deploy produksi baru di
+…atau **klik dua kali `PUSH-GIT.bat`** (dibuat di sesi ini, sudah di-`.gitignore`).
+
+Sekali push → semua commit naik **dan** otomatis memicu deploy produksi baru di
 Vercel (auto-deploy dari `main` sudah aktif).
 

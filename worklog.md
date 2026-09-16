@@ -367,8 +367,10 @@ dan `/worklog.md` → **404**. Jadi benar-benar tidak ikut.
   `.env.local` berisi `VERCEL_OIDC_TOKEN` — **jangan pernah di-commit**,
   sudah dipastikan ter-ignore lewat `git check-ignore`.
 - Situs ini **publik dan bisa diindeks mesin pencari**, sementara deck memuat
-  nama lengkap + NIM enam mahasiswa. Kalau mau dibatasi: aktifkan Deployment
-  Protection di dashboard Vercel, atau tambahkan `robots.txt` berisi
+  nama lengkap + NIM enam mahasiswa. **Keputusan Arya (16 Sep 2026): tidak apa-apa.**
+  NIM itu nomor biasa, tidak ada unsur privat, dan lazim dipampang terbuka.
+  → **Tidak ada tindakan lanjutan.** Kalau suatu saat berubah pikiran, opsinya:
+  Deployment Protection di dashboard Vercel, atau `robots.txt` berisi
   `Disallow: /` (hanya menghalangi crawler yang patuh, bukan mengunci akses).
 - `vercel git connect` butuh konfirmasi interaktif; dipanggil dengan `--yes`.
 
@@ -494,10 +496,39 @@ Rincian + tautan sumber ada di `content/verified-data.md`.
 
 1. ~~Deploy ke Vercel~~ → **SUDAH** (16 Sep 2026). Live di
    https://presentasi-kwn-web.vercel.app, auto-deploy dari GitHub aktif.
-   Sisa pertimbangan: situsnya publik dan memuat NIM — lihat §Deploy.
 2. Opsional: varian "aman" untuk laptop kampus jadul (WebGL dimatikan).
 3. Opsional: `?noanim=1` untuk memaksa animasi langsung ke keadaan akhir.
 4. Opsional: tangani layar sempit (< 900 px) — deck rusak di bawah 800×600,
    relevan kalau dibuka di ponsel. Lihat §Rentang resolusi.
 5. Opsional: README untuk repo (belum dibuat — worklog ini yang jadi dokumentasi).
+
+## Status git (per 16 Sep 2026, sesi tutup)
+
+Remote `main` = `5f37a56`. Lokal `main` = `a17751e`. **3 commit tertunda:**
+
+| Commit | Isi |
+| --- | --- |
+| `a5e42af` | worklog: catat push berhasil + verifikasi clone bersih |
+| `fe90d27` | worklog: catat hasil uji rentang resolusi |
+| `a17751e` | deploy: Vercel produksi + auto-deploy dari GitHub |
+
+Ketiganya **hanya menyentuh `.gitignore`, `.vercelignore`, dan `worklog.md`.**
+`index.html` tidak berubah sama sekali — jadi **isi deck yang live di Vercel
+identik dengan yang ada di disk sekarang**. Push ini pembukuan, bukan konten.
+
+**Push harus dijalankan Arya sendiri.** Sandbox tidak punya kredensial GitHub:
+`gh` belum login, tidak ada `GH_TOKEN`, tidak ada `~/.git-credentials`, dan
+`cmdkey /list` diblokir. Git Credential Manager menggantung saat dipaksa
+non-interaktif (coba buka GUI). Yang bisa jalan dari sandbox hanya read-only
+(`git ls-remote`).
+
+Satu perintah, dari PowerShell:
+
+```powershell
+cd D:\Projects\PPT_KWN
+git push
+```
+
+Sekali push → 3 commit naik **dan** otomatis memicu deploy produksi baru di
+Vercel (auto-deploy dari `main` sudah aktif).
 

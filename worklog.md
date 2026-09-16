@@ -332,6 +332,46 @@ Perlu `white-space:pre-line` supaya `\A` di `content` jadi baris baru.
 **Untuk Arya:** jangan klik dua kali `index.html`. Pakai `PUTAR-DECK.bat`.
 Kalau nanti sudah di Vercel (https), masalah ini hilang sendiri.
 
+## Deploy ke Vercel (16 Sep 2026)
+
+Arya bertanya apakah deck sudah di-deploy. Jawabannya belum — diverifikasi
+lewat API Vercel: **42 project** di akun `arya-rizkys-projects`, tidak satu pun
+cocok (`ppt`, `kwn`, `presentasi`, `deck`, `kewarga`, `pdb`, `slide` → nol
+hasil). Tidak ada folder `.vercel/` maupun `vercel.json` di proyek.
+
+Arya memilih **deploy + auto-deploy dari GitHub**, jadi keduanya dikerjakan.
+
+| | |
+|---|---|
+| URL produksi | **https://presentasi-kwn-web.vercel.app** |
+| URL deployment | `presentasi-kwn-minzfdnyh-arya-rizkys-projects.vercel.app` |
+| Project | `arya-rizkys-projects/presentasi-kwn-web` (`prj_zM046noVqsvcnb1PO9Wau6bDFtOe`) |
+| Repo tersambung | `github / algojogacor / presentasi-kwn-web` |
+| Branch produksi | `main` → **setiap `git push` otomatis deploy** |
+| Yang terunggah | **116 KB** (bukan 73 MB) |
+
+### `.vercelignore`
+Dibuat supaya yang ter-unggah cuma `index.html` + `assets/`. Diuji:
+`/assets/fonts/*` dan `/assets/qr/*` → 200, sedangkan `/tools/verify-deck.py`
+dan `/worklog.md` → **404**. Jadi benar-benar tidak ikut.
+
+### Verifikasi situs live (Playwright, 1600×900)
+- `https:` · 22 slide · WebGL aktif · 3 keluarga font
+- **0 overflow · 0 elemen bocor · 0 error konsol**
+- **Video diputar di dalam deck** — `file-mode` mati, iframe YouTube masuk,
+  dan frame videonya benar-benar tampil (dua panel animasi hitam-putih).
+  Inilah alasan utama deploy: batasan `file://` hilang di https.
+
+### Catatan
+- `vercel link` otomatis menambahkan `.vercel` dan `.env*` ke `.gitignore`.
+  `.env.local` berisi `VERCEL_OIDC_TOKEN` — **jangan pernah di-commit**,
+  sudah dipastikan ter-ignore lewat `git check-ignore`.
+- Situs ini **publik dan bisa diindeks mesin pencari**, sementara deck memuat
+  nama lengkap + NIM enam mahasiswa. Kalau mau dibatasi: aktifkan Deployment
+  Protection di dashboard Vercel, atau tambahkan `robots.txt` berisi
+  `Disallow: /` (hanya menghalangi crawler yang patuh, bukan mengunci akses).
+- `vercel git connect` butuh konfirmasi interaktif; dipanggil dengan `--yes`.
+
 ## Ketahanan WebGL (15 Sep 2026)
 
 Celah nyata: deck tidak punya listener `webglcontextlost`/`webglcontextrestored`.
@@ -373,7 +413,8 @@ Proyek ditutup untuk sesi ini. Server lokal sudah dimatikan
 | | |
 |---|---|
 | Deck | `index.html` — 22 slide, satu file, CSS+JS inline, **nol dependensi runtime** |
-| Cara pakai | `PUTAR-DECK.bat` (menyalakan server lokal + membuka browser) |
+| **Live** | **https://presentasi-kwn-web.vercel.app** |
+| Cara pakai lokal | `PUTAR-DECK.bat` (menyalakan server lokal + membuka browser) |
 | Repo | https://github.com/algojogacor/presentasi-kwn-web |
 | Commit | `5f37a56` — 34 file, 6.640 baris |
 | Bahan | `content/design-plan.md`, `content/verified-data.md` |
@@ -451,9 +492,12 @@ Rincian + tautan sumber ada di `content/verified-data.md`.
 
 ## Kalau dilanjutkan
 
-1. **Deploy ke Vercel** — menghilangkan batasan `file://` sekaligus memberi
-   tautan yang bisa dibagikan ke dosen dan kelas.
+1. ~~Deploy ke Vercel~~ → **SUDAH** (16 Sep 2026). Live di
+   https://presentasi-kwn-web.vercel.app, auto-deploy dari GitHub aktif.
+   Sisa pertimbangan: situsnya publik dan memuat NIM — lihat §Deploy.
 2. Opsional: varian "aman" untuk laptop kampus jadul (WebGL dimatikan).
 3. Opsional: `?noanim=1` untuk memaksa animasi langsung ke keadaan akhir.
-4. Opsional: README untuk repo (belum dibuat — worklog ini yang jadi dokumentasi).
+4. Opsional: tangani layar sempit (< 900 px) — deck rusak di bawah 800×600,
+   relevan kalau dibuka di ponsel. Lihat §Rentang resolusi.
+5. Opsional: README untuk repo (belum dibuat — worklog ini yang jadi dokumentasi).
 

@@ -1,0 +1,25 @@
+# Yang TIDAK perlu ikut ter-unggah ke Vercel.
+# Situs ini cuma butuh: index.html + assets/
+# (index.html memuat assets/fonts/* dan assets/qr/*)
+
+# Hasil verifikasi — 73 MB, bisa dibuat ulang
+shots/
+
+# Memori kerja agen
+.workbuddy-ai/
+
+# Berkas pengembangan, bukan bagian situs
+previews/
+tools/
+content/
+worklog.md
+PUTAR-DECK.bat
+
+# Sisa penyelidikan PDF yang dibatalkan
+_pdf_dump.json
+verify.log
+
+# Kontrol versi
+.git/
+.gitignore
+.vercelignore

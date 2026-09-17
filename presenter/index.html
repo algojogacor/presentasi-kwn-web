@@ -599,6 +599,34 @@
     </div>
   </div>
 
+  <!-- PIN SESI MODAL (Jika buka langsung tanpa scan QR) -->
+  <div id="pinModal" class="drawer-overlay" aria-hidden="true">
+    <div class="drawer" style="max-height: 400px;">
+      <div class="drawer-head">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="width:8px;height:8px;background:var(--vermilion);display:inline-block"></span>
+          <h3>Hubungkan ke Laptop</h3>
+        </div>
+        <button id="pinModalClose" class="drawer-close">&times;</button>
+      </div>
+      <div style="padding: 18px 20px; display: flex; flex-direction: column; gap: 14px;">
+        <p style="font-size: 14px; color: var(--ink-2); line-height: 1.5;">
+          Arahkan kamera HP ke <strong>QR Code</strong> di layar laptop (tekan <strong>[P]</strong> di laptop), atau ketik <strong>PIN Sesi</strong> di bawah ini:
+        </p>
+        <div style="display: flex; gap: 8px;">
+          <input type="text" id="pinInput" placeholder="Contoh: 7K92" maxlength="12"
+            style="flex: 1; height: 46px; background: var(--bg-elevated); border: 1px solid var(--rule); border-radius: 8px; color: var(--ink); font-family: var(--font-mono); font-size: 16px; font-weight: 700; text-align: center; text-transform: uppercase; outline: none; letter-spacing: 0.1em;" />
+          <button id="btnJoinPin" class="btn-nav primary" style="flex: 0 0 110px; height: 46px;">
+            Hubungkan
+          </button>
+        </div>
+        <p style="font-size: 11px; color: var(--ink-muted); font-family: var(--font-mono);">
+          *Setiap presentasi memiliki PIN privat agar tidak dapat diintervensi oleh orang lain.
+        </p>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function () {
       'use strict';
@@ -853,10 +881,68 @@
         }
       });
 
+      // Dapatkan room dari URL, atau dari sessionStorage
+      const urlParams = new URLSearchParams(window.location.search);
+      let roomParam = urlParams.get('room');
+      if (roomParam && roomParam.trim()) {
+        roomParam = roomParam.toLowerCase().trim();
+        sessionStorage.setItem('kwn_tele_room', roomParam);
+      } else {
+        roomParam = sessionStorage.getItem('kwn_tele_room');
+      }
+
+      // PIN Modal handlers
+      const pinModal = document.getElementById('pinModal');
+      const pinModalClose = document.getElementById('pinModalClose');
+      const pinInput = document.getElementById('pinInput');
+      const btnJoinPin = document.getElementById('btnJoinPin');
+
+      function openPinModal() {
+        pinModal.classList.add('open');
+        pinModal.setAttribute('aria-hidden', 'false');
+        pinInput.value = (window.DeckSync ? window.DeckSync.roomId : (roomParam || '')).replace(/^kwn-/, '').toUpperCase();
+        setTimeout(() => pinInput.focus(), 150);
+      }
+
+      function closePinModal() {
+        pinModal.classList.remove('open');
+        pinModal.setAttribute('aria-hidden', 'true');
+      }
+
+      function applyPinFromInput() {
+        let val = pinInput.value.trim().toLowerCase();
+        if (!val) return;
+        if (!val.startsWith('kwn-') && !val.includes('-')) {
+          val = 'kwn-' + val;
+        }
+        sessionStorage.setItem('kwn_tele_room', val);
+        if (window.DeckSync) {
+          window.DeckSync.switchRoom(val);
+        }
+        closePinModal();
+      }
+
+      btnJoinPin.addEventListener('click', applyPinFromInput);
+      pinInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') applyPinFromInput();
+      });
+      pinModalClose.addEventListener('click', closePinModal);
+      pinModal.addEventListener('click', (e) => {
+        if (e.target === pinModal) closePinModal();
+      });
+      syncBadge.addEventListener('click', openPinModal);
+      syncBadge.style.cursor = 'pointer';
+      syncBadge.title = 'Klik untuk melihat / mengganti PIN Sesi';
+
+      if (!roomParam) {
+        setTimeout(openPinModal, 500);
+      }
+
       // Initialize Sync Engine
       if (window.DeckSync) {
         window.DeckSync.init({
           role: 'teleprompter',
+          roomId: roomParam || 'kwn-tele',
           onSlideChange: (idx) => {
             renderSlide(idx);
           },

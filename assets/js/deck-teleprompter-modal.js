@@ -11,16 +11,42 @@
 (function () {
   'use strict';
 
+  function generateFriendlyPin() {
+    const chars = '23456789abcdefghjkmnpqrstuvwxyz';
+    let code = '';
+    for (let i = 0; i < 4; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return 'kwn-' + code;
+  }
+
+  function getOrGenerateDeckRoomId() {
+    const params = new URLSearchParams(window.location.search);
+    const urlRoom = params.get('room');
+    if (urlRoom && urlRoom.trim()) {
+      return urlRoom.toLowerCase().trim();
+    }
+    let stored = sessionStorage.getItem('kwn_deck_room');
+    if (!stored) {
+      stored = generateFriendlyPin();
+      sessionStorage.setItem('kwn_deck_room', stored);
+    }
+    return stored;
+  }
+
   function init() {
     if (!window.DeckNav) {
       setTimeout(init, 100);
       return;
     }
 
-    // 1. Inisialisasi SyncEngine untuk Deck
+    const roomId = getOrGenerateDeckRoomId();
+
+    // 1. Inisialisasi SyncEngine untuk Deck dengan Room Terisolasi
     if (window.DeckSync) {
       window.DeckSync.init({
         role: 'deck',
+        roomId: roomId,
         onRemoteNav: function (action, index) {
           const current = window.DeckNav.currentIndex();
           if (action === 'next') {
@@ -54,7 +80,7 @@
   let statusDotEl = null;
 
   function getPresenterUrl() {
-    const roomId = (window.DeckSync && window.DeckSync.roomId) || 'kwn93';
+    const roomId = (window.DeckSync && window.DeckSync.roomId) || getOrGenerateDeckRoomId();
     let base = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
     if (!base.endsWith('/')) base += '/';
     // Jika dibuka lewat file:// lokal, arahkan ke URL produksi Vercel agar HP bisa scan
@@ -101,6 +127,14 @@
           </div>
 
           <div class="tele-info-pane">
+            <div class="tele-pin-box">
+              <div class="tele-pin-info">
+                <span class="tele-pin-tag">PIN SESI PRIVAT</span>
+                <span class="tele-pin-val" id="telePinVal">...</span>
+              </div>
+              <button id="btnNewSession" class="tele-btn-regen" type="button" title="Buat PIN Sesi Baru">🔄 Buat PIN Baru</button>
+            </div>
+
             <p class="tele-guide-title">Buka Naskah Presenter di HP:</p>
             <p class="tele-guide-desc">
               Arahkan kamera HP ke QR Code di samping. Naskah pidato, waktu, dan catatan slide akan tampil otomatis di HP dan tersinkronisasi secara real-time saat slide bergerak.
@@ -274,6 +308,52 @@
       .tele-status-dot.connecting { background: #FBBC05; }
       .tele-status-dot.error { background: #EA4335; }
 
+      .tele-pin-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(195,59,34,0.06);
+        border: 1px solid rgba(195,59,34,0.25);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-bottom: 12px;
+      }
+      .tele-pin-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .tele-pin-tag {
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        color: var(--vermilion);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+      .tele-pin-val {
+        font-family: var(--font-mono);
+        font-size: 17px;
+        letter-spacing: 0.14em;
+        color: var(--ink);
+        font-weight: 800;
+      }
+      .tele-btn-regen {
+        background: var(--paper);
+        border: 1px solid var(--rule);
+        border-radius: 6px;
+        padding: 5px 10px;
+        font-family: var(--font-mono);
+        font-size: 11px;
+        color: var(--ink-2);
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+      .tele-btn-regen:hover {
+        border-color: var(--vermilion);
+        color: var(--vermilion);
+      }
+
       .tele-guide-title {
         font-family: var(--font-display);
         font-size: 16px;
@@ -362,6 +442,16 @@
     // Render QR Code
     renderQrCode(url);
 
+    // Tombol Ganti PIN Baru
+    document.getElementById('btnNewSession').addEventListener('click', function () {
+      const newPin = generateFriendlyPin();
+      sessionStorage.setItem('kwn_deck_room', newPin);
+      if (window.DeckSync) {
+        window.DeckSync.switchRoom(newPin);
+      }
+      refreshModalData();
+    });
+
     // Event listeners
     btn.addEventListener('click', openModal);
     document.getElementById('btnTeleClose').addEventListener('click', closeModal);
@@ -380,6 +470,23 @@
         closeModal();
       }
     });
+
+    refreshModalData();
+  }
+
+  function refreshModalData() {
+    const currentRoom = (window.DeckSync && window.DeckSync.roomId) || getOrGenerateDeckRoomId();
+    const pinValEl = document.getElementById('telePinVal');
+    if (pinValEl) pinValEl.textContent = currentRoom.toUpperCase();
+
+    const url = getPresenterUrl();
+    const urlInput = document.getElementById('teleUrlInput');
+    if (urlInput) urlInput.value = url;
+    const openNewTab = document.getElementById('btnOpenNewTab');
+    if (openNewTab) openNewTab.href = url;
+
+    renderQrCode(url);
+    if (window.DeckSync) updateModalStatus(window.DeckSync.status);
   }
 
   function renderQrCode(url) {
@@ -406,8 +513,8 @@
     if (!statusDotEl || !statusTextEl) return;
     statusDotEl.className = `tele-status-dot ${status}`;
     if (status === 'connected') {
-      const room = (window.DeckSync && window.DeckSync.roomId) || 'kwn93';
-      statusTextEl.textContent = `Aktif (Room: ${room.toUpperCase()})`;
+      const room = (window.DeckSync && window.DeckSync.roomId) || getOrGenerateDeckRoomId();
+      statusTextEl.textContent = `Aktif (PIN: ${room.toUpperCase()})`;
     } else if (status === 'connecting') {
       statusTextEl.textContent = 'Menyambung broker...';
     } else {
@@ -419,8 +526,7 @@
     if (!modalEl) return;
     modalEl.classList.add('open');
     modalEl.setAttribute('aria-hidden', 'false');
-    const url = getPresenterUrl();
-    renderQrCode(url);
+    refreshModalData();
   }
 
   function closeModal() {

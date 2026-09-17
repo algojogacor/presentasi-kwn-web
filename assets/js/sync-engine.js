@@ -56,6 +56,32 @@
       }
     },
 
+    switchRoom(newRoomId) {
+      if (!newRoomId) return;
+      newRoomId = newRoomId.toLowerCase().trim();
+      if (newRoomId === this.roomId) return;
+
+      const oldTopic = this.topic;
+      this.roomId = newRoomId;
+      this.topic = `kwn/deck/${this.roomId}`;
+
+      if (this.bc) {
+        try { this.bc.close(); } catch (e) {}
+        this.bc = null;
+        this.initBroadcastChannel();
+      }
+
+      if (this.client && this.client.connected) {
+        try { this.client.unsubscribe(oldTopic); } catch (e) {}
+        this.client.subscribe(this.topic, { qos: 0 }, (err) => {
+          if (!err && this.role === 'teleprompter') {
+            this.publish({ type: 'REQUEST_STATE', sender: 'teleprompter' });
+          }
+        });
+      }
+      this.setStatus('connected', 'Terhubung');
+    },
+
     initBroadcastChannel() {
       if ('BroadcastChannel' in window) {
         try {

@@ -74,15 +74,15 @@
   --font-body:'Manrope','Helvetica Neue',Arial,sans-serif;
   --font-mono:'Space Mono',ui-monospace,'Courier New',monospace;
 
-  /* --- Skala huruf: semua clamp, tidak ada px tetap --- */
-  --t-hero:clamp(2.1rem,6vw,5.4rem);
-  --t-1:clamp(1.7rem,3.9vw,3.3rem);
-  --t-2:clamp(1.25rem,2.5vw,2.1rem);
-  --t-3:clamp(.95rem,1.55vw,1.32rem);
-  --t-4:clamp(.8rem,1.12vw,1rem);
-  --t-5:clamp(.6rem,.8vw,.72rem);
-  --t-num:clamp(2.4rem,6.4vw,6.4rem);
-  --t-num-s:clamp(1.6rem,3.4vw,3rem);
+  /* --- Skala huruf: semua clamp, diperbesar untuk kenyamanan baca proyektor --- */
+  --t-hero:clamp(2.3rem,6.4vw,6.0rem);
+  --t-1:clamp(1.85rem,4.2vw,3.75rem);
+  --t-2:clamp(1.35rem,2.7vw,2.4rem);
+  --t-3:clamp(1.05rem,1.75vw,1.55rem);
+  --t-4:clamp(.92rem,1.28vw,1.22rem);
+  --t-5:clamp(.68rem,.95vw,.88rem);
+  --t-num:clamp(2.5rem,6.6vw,6.6rem);
+  --t-num-s:clamp(1.7rem,3.6vw,3.2rem);
 
   /* --- Jarak & gerak --- */
   --pad:clamp(1.1rem,3.2vw,3.2rem);
@@ -531,7 +531,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
 .slide.in .cpi-dot[data-d="2"]{transition-delay:1.5s}
 .slide.in .cpi-dot[data-d="3"]{transition-delay:2.0s}
 .cpi-txt{
-  font-family:var(--font-mono);font-size:11px;fill:var(--ink-2);
+  font-family:var(--font-mono);font-size:12.5px;fill:var(--ink-2);
   opacity:0;transition:opacity .5s ease;
 }
 .slide.in .cpi-txt{opacity:1}
@@ -563,11 +563,11 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
 .slide.in .chain-node:nth-child(5) circle{transition-delay:1.55s}
 .slide.in .chain-node:nth-child(6) circle{transition-delay:1.9s}
 .chain-node text{
-  font-family:var(--font-body);font-size:11px;font-weight:600;
+  font-family:var(--font-body);font-size:12.5px;font-weight:600;
   fill:var(--ink);opacity:0;transition:opacity .5s ease 1.1s;
 }
 .chain-node .sub{
-  font-family:var(--font-mono);font-size:9px;font-weight:400;
+  font-family:var(--font-mono);font-size:10px;font-weight:400;
   fill:var(--muted);letter-spacing:.06em;
 }
 .slide.in .chain-node text{opacity:1}

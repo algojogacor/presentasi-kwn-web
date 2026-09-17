@@ -91,15 +91,13 @@
   }
 
   function buildUI() {
-    // Tombol di deck (melayang elegan di kanan atas atau bawah)
+    // Tombol pemicu di rel kiri (samar-samar seperti #soundToggle & mode edit E)
     const btn = document.createElement('button');
     btn.id = 'btnTeleprompterModal';
-    btn.setAttribute('aria-label', 'Buka Teleprompter di HP');
-    btn.innerHTML = `
-      <span class="tele-icon">📱</span>
-      <span class="tele-label">Teleprompter HP</span>
-      <span class="tele-key">P</span>
-    `;
+    btn.type = 'button';
+    btn.setAttribute('aria-label', 'Teleprompter HP (P)');
+    btn.title = 'Teleprompter HP [P]';
+    btn.innerHTML = '<span>HP</span><i class="tele-dot"></i>';
     document.body.appendChild(btn);
 
     // Modal Container
@@ -162,39 +160,46 @@
     style.textContent = `
       #btnTeleprompterModal {
         position: fixed;
-        bottom: 12px;
-        right: 18px;
-        z-index: 45;
-        background: rgba(26, 24, 20, 0.88);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        border: 1px solid var(--rule);
-        color: var(--ink);
-        padding: 6px 12px;
-        border-radius: 999px;
-        font-family: var(--font-mono);
-        font-size: 11px;
-        display: inline-flex;
+        left: 2px;
+        top: calc(50% + 44px);
+        transform: translateY(-50%);
+        z-index: 41;
+        width: 42px;
+        height: 48px;
+        display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 7px;
+        justify-content: center;
+        gap: 4px;
+        font-family: var(--font-mono);
+        font-size: 8px;
+        letter-spacing: .1em;
+        color: var(--ink-3);
+        opacity: .45;
+        background: none;
+        border: none;
         cursor: pointer;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.18);
-        transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        transition: opacity .3s ease, color .3s ease;
       }
       #btnTeleprompterModal:hover {
-        background: var(--paper);
-        border-color: var(--vermilion);
-        color: var(--ink);
-        transform: translateY(-1px);
-      }
-      .tele-icon { font-size: 14px; }
-      .tele-key {
-        font-size: 9px;
-        background: rgba(21,19,15,0.12);
-        padding: 1px 5px;
-        border-radius: 4px;
-        border: 1px solid var(--rule);
+        opacity: 1;
         color: var(--vermilion-2);
+      }
+      #btnTeleprompterModal .tele-dot {
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: rgba(21,19,15,.25);
+        transition: background .3s ease, box-shadow .3s ease;
+      }
+      #btnTeleprompterModal.connected .tele-dot {
+        background: #34A853;
+        box-shadow: 0 0 5px rgba(52,168,83,0.5);
+      }
+      .fx-print #btnTeleprompterModal,
+      @media print {
+        #btnTeleprompterModal { display: none !important; }
       }
 
       /* Modal Overlay */
@@ -512,6 +517,8 @@
   function updateModalStatus(status) {
     if (!statusDotEl || !statusTextEl) return;
     statusDotEl.className = `tele-status-dot ${status}`;
+    const btn = document.getElementById('btnTeleprompterModal');
+    if (btn) btn.classList.toggle('connected', status === 'connected');
     if (status === 'connected') {
       const room = (window.DeckSync && window.DeckSync.roomId) || getOrGenerateDeckRoomId();
       statusTextEl.textContent = `Aktif (PIN: ${room.toUpperCase()})`;

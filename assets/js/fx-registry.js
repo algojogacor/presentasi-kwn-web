@@ -96,7 +96,7 @@ window.FXConfig = (function () {
 
     { /* 10 · TIGA PILAR */
       enter: { heading: 'rise', cards: 'rise' },
-      svg: { silhouette: 'skyline-full', layers: ['pillars'] },
+      svg: { silhouette: 'horizon', layers: ['pillars'] },
       webgl: null,
       interact: ['tilt'] },
 

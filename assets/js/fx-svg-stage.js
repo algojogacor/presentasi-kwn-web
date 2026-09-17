@@ -301,9 +301,9 @@ window.FXSvg = (function () {
   }
 
   function buildPillars(g) {
-    const xs = [380, 780, 1180];
+    const xs = [295, 800, 1305];
     xs.forEach(function (x, i) {
-      const w = 86, top = 300, base = GROUND;
+      const w = 88, top = 300, base = GROUND;
       mk('rect', { x: x - w / 2, y: top + 24, width: w, height: base - top - 24, class: 'sv-pillar' }, g);
       mk('rect', { x: x - w / 2 - 16, y: top, width: w + 32, height: 24, class: 'sv-pillar-cap' }, g);
       mk('rect', { x: x - w / 2 - 22, y: base - 14, width: w + 44, height: 14, class: 'sv-pillar-base' }, g);
@@ -313,7 +313,7 @@ window.FXSvg = (function () {
       }
     });
     /* balok atap yang disangga */
-    mk('rect', { x: 260, y: top_(), width: 1080, height: 16, class: 'sv-pillar-cap' }, g);
+    mk('rect', { x: 180, y: top_(), width: 1240, height: 16, class: 'sv-pillar-cap' }, g);
     function top_() { return 276; }
   }
 

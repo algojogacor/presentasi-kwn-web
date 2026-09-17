@@ -332,6 +332,70 @@ Perlu `white-space:pre-line` supaya `\A` di `content` jadi baris baru.
 **Untuk Arya:** jangan klik dua kali `index.html`. Pakai `PUTAR-DECK.bat`.
 Kalau nanti sudah di Vercel (https), masalah ini hilang sendiri.
 
+## Video diganti (17 Sep 2026)
+
+Arya menetapkan dua video yang dipakai:
+
+| Slide | Video | ID | Durasi |
+| --- | --- | --- | --- |
+| 04 | Dari Mana Negara Bisa Dapat Uang? · Kok Bisa? | `kcZktSqKgNI` | 3:18 |
+| 12 | Pribadi Jujur. Antikorupsi · Cerdas Berkarakter | `_YsXw4wKZKU` | 3:00 |
+
+Slide 12 **sudah** memakai ID yang diminta, jadi tidak diubah isinya. Yang
+benar-benar berganti hanya slide 04:
+
+- Sebelumnya: "Indonesia Tanpa Pajak?" · Kanwil DJP Jawa Tengah I · `proAhdTWOH4` (1:46)
+- Sekarang: "Dari Mana Negara Bisa Dapat Uang?" · Kok Bisa? · `kcZktSqKgNI` (3:18)
+
+Durasi diambil dari `lengthSeconds` di halaman YouTube, bukan dari perkiraan.
+Arya menyebut 2:59 untuk video anti korupsi; aslinya 3:00, jadi cocok.
+
+### Yang ikut berubah, bukan cuma `data-yt`
+
+Mengganti video **tidak cukup satu atribut.** Yang harus ikut disesuaikan:
+
+1. `data-yt` dan `data-title` pada `.video`.
+2. Dua URL thumbnail (`maxresdefault` dan `hqdefault` di `onerror`).
+3. Teks durasi di `.meta span` (1:46 → 3:18).
+4. Judul di `.meta strong`.
+5. `data-notes` slide tersebut.
+6. Footer slide (`Video: Kanwil DJP Jawa Tengah I` → `Video: Kok Bisa?`).
+7. **Panel sumber slide 01**, yang menyebut kanal video sebagai rujukan.
+8. **`assets/qr/slide04.png`**, dibuat ulang (lihat bawah).
+
+Poin 6, 7, dan 8 mudah terlewat karena tidak berada di slide yang sama.
+
+### QR dibuat ulang, dan sekarang ada perkakasnya
+
+QR di panel kanan menyimpan URL video **secara terpisah** dari `data-yt`, jadi
+mengganti `data-yt` tidak otomatis memperbaiki QR. QR lama masih menunjuk
+`https://youtu.be/proAhdTWOH4`.
+
+Perkakas baru: `tools/make-qr.py`
+
+```
+python tools/make-qr.py kcZktSqKgNI assets/qr/slide04.png
+python tools/make-qr.py --check assets/qr/slide04.png
+```
+
+Perlu `segno` (bikin) dan `opencv-python-headless` (baca) di venv default.
+Perkakas ini langsung **memverifikasi** hasilnya dengan membacanya kembali,
+jadi tidak ada QR yang diam-diam salah arah.
+
+Dua temuan teknis saat mengerjakan ini:
+
+- **Decoder OpenCV menolak QR tanpa quiet zone.** QR deck memang tanpa margin
+  (padding disediakan kontainer `.qr` di CSS), jadi verifikasi menambahkan
+  margin putih virtual sebelum membaca.
+- **OpenCV 5 mengembalikan `(teks, points, straight_qrcode)`.** Kode lama
+  `ok, txt, pts = ...` jadi salah petakan dan melempar `ValueError`. Perhatikan
+  urutannya.
+- **`error='l'` memberi 25×25 modul, skala 16, pas 400×400** sama seperti QR
+  lama. Level lebih tinggi membengkakkan jumlah modul (M/Q jadi 29×29, H jadi
+  33×33) sehingga modul per piksel mengecil dan QR justru lebih sulit dipindai
+  dari layar. Untuk tampilan di layar, modul besar lebih penting daripada ECC
+  tinggi.
+
 ## Deploy ke Vercel (16 Sep 2026)
 
 Arya bertanya apakah deck sudah di-deploy. Jawabannya belum — diverifikasi

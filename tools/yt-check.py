@@ -9,14 +9,14 @@ import json, pathlib, re, urllib.request, urllib.error
 from playwright.sync_api import sync_playwright
 
 IDS = {
-    "rTz_jTxitwA": "Kemenkeu — [FILM PENDEK] Kenapa Ada Pajak? (6:22)",
-    "3pDtl4aN0wo": "DJP — Jingle Pajak Versi Kartun (1:24)",
-    "proAhdTWOH4": "Kanwil DJP Jateng I — Indonesia Tanpa Pajak? (1:46)",
-    "Y2SvKeY1Gfw": "DDTC — Joni & Kawan Pajak EPS 4 (1:44)",
-    "7Fv5eLLDkDU": "DDTC — Joni & Kawan Pajak EPS 15 (2:15)",
-    "FOwX547KpY4": "Kemenkeu Corpu — Mengenal PNBP (8:06)",
-    "SES7E2Iuf9E": "Math Asik — Kisah Tono & Tini: APBN (7:00)",
-    "_YsXw4wKZKU": "SEKARANG / referensi — Pribadi Jujur Antikorupsi",
+    "rTz_jTxitwA": "Kemenkeu · [FILM PENDEK] Kenapa Ada Pajak? (6:22)",
+    "3pDtl4aN0wo": "DJP · Jingle Pajak Versi Kartun (1:24)",
+    "proAhdTWOH4": "Kanwil DJP Jateng I · Indonesia Tanpa Pajak? (1:46)",
+    "Y2SvKeY1Gfw": "DDTC · Joni & Kawan Pajak EPS 4 (1:44)",
+    "7Fv5eLLDkDU": "DDTC · Joni & Kawan Pajak EPS 15 (2:15)",
+    "FOwX547KpY4": "Kemenkeu Corpu · Mengenal PNBP (8:06)",
+    "SES7E2Iuf9E": "Math Asik · Kisah Tono & Tini: APBN (7:00)",
+    "_YsXw4wKZKU": "SEKARANG / referensi · Pribadi Jujur Antikorupsi",
 }
 OUT = pathlib.Path(__file__).resolve().parent.parent / "content" / "yt-embed-check.json"
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -60,7 +60,7 @@ def main():
             out[vid] = rec
             print(f"{vid}  {'OK ' if rec['OK'] else 'NO '} embed={rec['playableInEmbed']} "
                   f"status={rec['playerStatus']} http={rec['oembed_http']}")
-            print(f"          {str(rec['title'])[:60]}  —  {str(rec['author'])[:34]}")
+            print(f"          {str(rec['title'])[:60]}  ·  {str(rec['author'])[:34]}")
         b.close()
     OUT.write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     print("\ndisimpan:", OUT)

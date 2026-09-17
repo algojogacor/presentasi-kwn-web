@@ -1,5 +1,5 @@
 """
-verify-deck.py — Verifikasi deck: tiap slide di-screenshot + dicek.
+verify-deck.py · Verifikasi deck: tiap slide di-screenshot + dicek.
 
 Yang diperiksa per slide:
   - overflow (konten lebih tinggi/lebar dari viewport slide)
@@ -143,7 +143,7 @@ def main():
         if problems:
             print(f"HASIL: {len(problems)} masalah ditemukan")
         else:
-            print("HASIL: BERSIH — tidak ada overflow, tidak ada elemen bocor")
+            print("HASIL: BERSIH, tidak ada overflow, tidak ada elemen bocor")
 
         browser.close()
 

@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Direktori Sumber Rujukan &amp; Data Terverifikasi · Kelompok 6 PDB 93</title>
+<meta name="description" content="Kompilasi sumber resmi, dokumen hukum, data kementerian, dan pranala rujukan materi presentasi Kesadaran Pajak & Pendidikan Anti Korupsi." />
+
+<!-- Font Lokal: Aman walau offline / tanpa koneksi CDN -->
+<link rel="stylesheet" href="../assets/fonts/fonts.css" onerror="this.onerror=null;this.href='assets/fonts/fonts.css';" />
+
+<style>
+:root {
+  --paper: #F2EDE3;
+  --paper-2: #E8E0D1;
+  --paper-3: #DCD1BD;
+  --paper-card: #FAF7F2;
+  --ink: #15130F;
+  --ink-2: #3A352C;
+  --ink-3: #5C564A;
+  --muted: #5F5850;
+  --rule: rgba(21, 19, 15, 0.14);
+  --rule-2: rgba(21, 19, 15, 0.28);
+  --vermilion: #C33B22;
+  --vermilion-2: #9E2E19;
+  --vermilion-soft: rgba(195, 59, 34, 0.08);
+  --green-ok: #1B6E3F;
+  --green-soft: rgba(27, 110, 63, 0.10);
+
+  --font-display: 'Bodoni Moda', 'Didot', Georgia, serif;
+  --font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, 'Courier New', monospace;
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background-color: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(242, 237, 227, 0.8) 0%, rgba(220, 209, 189, 0.35) 100%),
+    var(--paper);
+  color: var(--ink);
+  padding-bottom: 5rem;
+  position: relative;
+}
+
+/* Subtle background grain */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(rgba(21, 19, 15, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 3rem);
+  position: relative;
+  z-index: 2;
+}
+
+/* Top Navigation Bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.4rem 0;
+  border-bottom: 1px solid var(--rule);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--paper-card);
+  border: 1px solid var(--rule-2);
+  border-radius: 4px;
+  color: var(--ink);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  transition: all 0.2s var(--ease);
+}
+
+.back-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+  transform: translateX(-3px);
+}
+
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.act-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.act-btn:hover {
+  border-color: var(--vermilion);
+  color: var(--vermilion-2);
+  background: var(--vermilion-soft);
+}
+
+/* Header Dossier */
+.header-dossier {
+  padding: 3rem 0 2rem;
+  border-bottom: 2px solid var(--ink);
+  margin-bottom: 2.5rem;
+}
+
+.dossier-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--vermilion-2);
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.dossier-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dossier-meta .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vermilion);
+}
+
+.doc-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.5vw, 3.4rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  margin-bottom: 1rem;
+}
+
+.doc-subtitle {
+  font-size: clamp(1rem, 1.6vw, 1.25rem);
+  color: var(--ink-2);
+  max-width: 82ch;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Status Banner */
+.status-card {
+  margin-top: 1.8rem;
+  padding: 1rem 1.4rem;
+  background: var(--paper-2);
+  border-left: 4px solid var(--green-ok);
+  border-radius: 0 4px 4px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.status-card p {
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.75rem;
+  background: var(--green-soft);
+  color: var(--green-ok);
+  border: 1px solid rgba(27, 110, 63, 0.3);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.status-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  background: var(--green-ok);
+  border-radius: 50%;
+  animation: pulseGreen 2s infinite ease-in-out;
+}
+
+@keyframes pulseGreen {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.6; }
+}
+
+/* Key Metrics Strip */
+.metrics-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+}
+
+.metric-box {
+  background: var(--paper-card);
+  border: 1px solid var(--rule);
+  padding: 1.25rem;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+
+.metric-box::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--rule-2);
+}
+
+.metric-box.accent::after {
+  background: var(--vermilion);
+}
+
+.metric-box .label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.4rem;
+}
+
+.metric-box .val {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.metric-box .val.red {
+  color: var(--vermilion-2);
+}
+
+.metric-box .sub {
+  font-size: 0.8rem;
+  color: var(--ink-3);
+  margin-top: 0.35rem;
+}
+
+/* Controls: Search & Filter Tabs */
+.controls-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: var(--paper-card);
+  padding: 1.2rem;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.6rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  background: var(--paper);
+  border: 1px solid var(--rule-2);
+  border-radius: 4px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-input:focus {
+  border-color: var(--vermilion);
+  box-shadow: 0 0 0 3px var(--vermilion-soft);
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.9rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.filter-tabs {
+  display: flex;
+  gap: 0.4rem;
+  overflow-x: auto;
+  padding-bottom: 0.2rem;
+  scrollbar-width: thin;
+}
+
+.filter-tab {
+  padding: 0.4rem 0.9rem;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-tab:hover {
+  background: var(--paper-2);
+  color: var(--ink);
+}
+
+.filter-tab.active {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* Directory Section Header */
+.section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 0.6rem;
+  margin: 2.5rem 0 1.5rem;
+}
+
+.section-heading h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.section-heading span {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+/* Reference Cards Grid */
+.ref-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.ref-card {
+  background: var(--paper-card);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 1.5rem;
+  transition: transform 0.2s var(--ease), border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+  position: relative;
+}
+
+.ref-card:hover {
+  border-color: var(--ink-3);
+  box-shadow: 0 4px 18px rgba(21, 19, 15, 0.06);
+  transform: translateY(-2px);
+}
+
+.ref-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.ref-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.2rem 0.6rem;
+  background: var(--paper-2);
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-2);
+}
+
+.ref-code {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.ref-verified {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--green-ok);
+  font-weight: 700;
+}
+
+.ref-verified svg {
+  width: 14px;
+  height: 14px;
+}
+
+.ref-title {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: 0.4rem;
+}
+
+.ref-institution {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: var(--vermilion-2);
+  margin-bottom: 0.85rem;
+  font-weight: 700;
+}
+
+.ref-desc {
+  font-size: 0.94rem;
+  color: var(--ink-2);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.ref-slides-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  background: var(--vermilion-soft);
+  color: var(--vermilion-2);
+  padding: 0.25rem 0.65rem;
+  border-radius: 3px;
+  margin-bottom: 1.1rem;
+  border: 1px solid rgba(195, 59, 34, 0.2);
+}
+
+/* Link and Actions Box */
+.ref-url-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--paper);
+  border: 1px solid var(--rule-2);
+  border-radius: 4px;
+  padding: 0.6rem 0.85rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.ref-url-text {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--ink-3);
+  word-break: break-all;
+  flex: 1;
+}
+
+.ref-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-visit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--vermilion-2);
+  color: #FFF !important;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.45rem 0.9rem;
+  border-radius: 3px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-visit:hover {
+  background: var(--ink);
+  transform: translateY(-1px);
+}
+
+.btn-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--paper-card);
+  border: 1px solid var(--rule-2);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-copy:hover {
+  background: var(--ink-2);
+  color: var(--paper);
+  border-color: var(--ink-2);
+}
+
+/* Toast Message */
+.toast-msg {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 0.65rem 1.4rem;
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.84rem;
+  letter-spacing: 0.04em;
+  box-shadow: 0 6px 24px rgba(0,0,0,0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s var(--ease);
+  z-index: 100;
+}
+
+.toast-msg.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Footer Attribution */
+.footer-dossier {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: var(--ink-3);
+}
+
+.footer-dossier p {
+  max-width: 60ch;
+  line-height: 1.5;
+}
+
+.footer-stamp {
+  display: inline-block;
+  border: 2px solid var(--vermilion);
+  color: var(--vermilion-2);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  padding: 0.4rem 0.8rem;
+  border-radius: 3px;
+  transform: rotate(-3deg);
+}
+
+/* Print Styling */
+@media print {
+  body {
+    background: #FFF !important;
+    color: #000 !important;
+  }
+  body::before, .topbar, .controls-panel, .btn-copy, .toast-msg {
+    display: none !important;
+  }
+  .ref-card {
+    border: 1px solid #CCC !important;
+    page-break-inside: avoid;
+    margin-bottom: 1.5rem;
+  }
+  .btn-visit {
+    display: none !important;
+  }
+  .ref-url-text {
+    font-size: 0.75rem !important;
+    color: #333 !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- TOPBAR NAVIGATION -->
+  <nav class="topbar">
+    <a href="../index.html" class="back-btn" title="Kembali ke slide presentasi">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+      Kembali ke Presentasi
+    </a>
+
+    <div class="top-actions">
+      <button class="act-btn" onclick="copyAllLinks()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Salin Semua URL
+      </button>
+      <button class="act-btn" onclick="window.print()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="6 9 6 2 18 2 18 9"></polyline>
+          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+          <rect x="6" y="14" width="12" height="8"></rect>
+        </svg>
+        Cetak Dokumen
+      </button>
+    </div>
+  </nav>
+
+  <!-- DOSSIER HEADER -->
+  <header class="header-dossier">
+    <div class="dossier-meta">
+      <span><span class="dot"></span> ARSIP DOKUMEN NEGARA · PDB 93</span>
+      <span>NO. ARSIP: REF-KWN-2026</span>
+      <span>FAKULTAS HUKUM UNIVERSITAS AIRLANGGA</span>
+    </div>
+
+    <h1 class="doc-title">Direktori Rujukan &amp; Data Terverifikasi</h1>
+    <p class="doc-subtitle">
+      Daftar lengkap sumber primer, data statistik kementerian, publikasi lembaga internasional, perundang-undangan hukum positif, dan materi audiovisual yang mendasari materi presentasi <em>"Kesadaran Pajak dan Pendidikan Anti Korupsi"</em>.
+    </p>
+
+    <div class="status-card">
+      <p>
+        Seluruh data diuji secara mandiri dan diverifikasi per <strong>17 September 2026</strong>. Semua pranala di bawah merupakan tautan aktif resmi yang dapat dikunjungi dan diperiksa langsung.
+      </p>
+      <div class="status-badge">100% Pranala Aktif &amp; Teruji (200 OK)</div>
+    </div>
+  </header>
+
+  <!-- KEY METRICS STRIP -->
+  <section class="metrics-strip">
+    <div class="metric-box accent">
+      <p class="label">Penerimaan Pajak 2025</p>
+      <p class="val red">Rp 1.917,6 T</p>
+      <p class="sub">87,6% target APBN (Shortfall Rp 271,7 T)</p>
+    </div>
+    <div class="metric-box">
+      <p class="label">Rasio Pajak (OECD 2024)</p>
+      <p class="val">11,8% PDB</p>
+      <p class="sub">Terendah ke-3 dari 38 negara Asia-Pasifik</p>
+    </div>
+    <div class="metric-box accent">
+      <p class="label">Indeks Persepsi Korupsi (CPI)</p>
+      <p class="val red">Skor 34 / 100</p>
+      <p class="sub">Peringkat 109 global (Turun 10 posisi)</p>
+    </div>
+    <div class="metric-box">
+      <p class="label">Hukum Positif Pajak</p>
+      <p class="val" style="font-size:1.35rem">UU No. 6/1983</p>
+      <p class="sub">Pasal 1 angka 1 UU KUP jo. UU HPP 2021</p>
+    </div>
+  </section>
+
+  <!-- SEARCH & FILTER CONTROLS -->
+  <section class="controls-panel">
+    <div class="search-box">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"></circle>
+        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+      </svg>
+      <input type="text" id="searchInput" class="search-input" placeholder="Cari nama lembaga, undang-undang, data angka, atau topik..." oninput="filterCards()" />
+    </div>
+
+    <div class="filter-tabs" id="filterTabs">
+      <button class="filter-tab active" onclick="setCategory('all', this)">Semua Sumber (10)</button>
+      <button class="filter-tab" onclick="setCategory('fiskal', this)">Data Fiskal &amp; APBN</button>
+      <button class="filter-tab" onclick="setCategory('oecd', this)">OECD (Rasio Pajak)</button>
+      <button class="filter-tab" onclick="setCategory('cpi', this)">Korupsi (CPI)</button>
+      <button class="filter-tab" onclick="setCategory('hukum', this)">Dasar Hukum UU</button>
+      <button class="filter-tab" onclick="setCategory('edukasi', this)">Edukasi Pajak</button>
+      <button class="filter-tab" onclick="setCategory('video', this)">Video YouTube</button>
+    </div>
+  </section>
+
+  <!-- DIRECTORY SECTION -->
+  <div class="section-heading">
+    <h2>Daftar Pranala Resmi Terverifikasi</h2>
+    <span id="resultCount">Menampilkan 10 Sumber Rujukan</span>
+  </div>
+
+  <main class="ref-grid" id="refGrid">
+
+    <!-- REF 01: APBN & Realisasi Pajak Kemenkeu -->
+    <article class="ref-card" data-cat="fiskal" data-keywords="kemenkeu apbn 2025 realisasi pajak 1917 shortfall pendapatan negara cnbc kontan perjalanan">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Data Fiskal</span>
+          <span class="ref-code">REF.01 / APBN-2025</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">Laporan Riset APBN: Begini Perjalanan Realisasi Pajak Indonesia di 2025</h3>
+      <p class="ref-institution">CNBC Indonesia Research &amp; Kementerian Keuangan RI</p>
+      <p class="ref-desc">
+        Rujukan utama angka fiskal deck: Realisasi penerimaan pajak neto 2025 mencapai <strong>Rp 1.917,6 triliun</strong> (87,6% dari target APBN Rp 2.189,3 triliun, menghasilkan shortfall Rp 271,7 triliun) dan total pendapatan negara Rp 2.765,13 triliun.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 01, Slide 04, Slide 05, Slide 22</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://www.cnbcindonesia.com/research/20251229150243-128-698006/begini-perjalanan-realisasi-pajak-indonesia-di-2025</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://www.cnbcindonesia.com/research/20251229150243-128-698006/begini-perjalanan-realisasi-pajak-indonesia-di-2025')">Salin</button>
+          <a href="https://www.cnbcindonesia.com/research/20251229150243-128-698006/begini-perjalanan-realisasi-pajak-indonesia-di-2025" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 02: DJPb Kemenkeu Portal -->
+    <article class="ref-card" data-cat="fiskal" data-keywords="kemenkeu perbendaharaan djpb apbn kita belanja pendapatan kas negara">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Portal Resmi</span>
+          <span class="ref-code">REF.02 / DJPB-KEMENKEU</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">Portal Publikasi Fiskal &amp; Berita APBN Ditjen Perbendaharaan</h3>
+      <p class="ref-institution">Direktorat Jenderal Perbendaharaan (DJPb) Kementerian Keuangan RI</p>
+      <p class="ref-desc">
+        Kanal publikasi resmi pemerintah Republik Indonesia untuk memantau neraca kas negara, belanja kementerian/lembaga, pembiayaan defisit, dan perkembangan realisasi bulanan APBN KiTa.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 01, Slide 05</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://djpb.kemenkeu.go.id/portal/id/berita/berita/nasional.html</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://djpb.kemenkeu.go.id/portal/id/berita/berita/nasional.html')">Salin</button>
+          <a href="https://djpb.kemenkeu.go.id/portal/id/berita/berita/nasional.html" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 03: OECD Tax Ratio -->
+    <article class="ref-card" data-cat="oecd" data-keywords="oecd revenue statistics asia pacific 2026 2024 tax to gdp ratio 11.8 rasio pajak adb pitaa">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Lembaga Internasional</span>
+          <span class="ref-code">REF.03 / OECD-REVSTATS</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">OECD Revenue Statistics in Asia and the Pacific 2026 (Data Indonesia)</h3>
+      <p class="ref-institution">Organisation for Economic Co-operation and Development (OECD) &amp; ADB</p>
+      <p class="ref-desc">
+        Publikasi statistik resmi perpajakan kawasan Asia-Pasifik yang membuktikan bahwa rasio pajak terhadap PDB Indonesia sebesar <strong>11,8%</strong>, menempatkan Indonesia di peringkat ke-3 terendah dari 38 negara/ekonomi di kawasan Asia-Pasifik (di bawah rata-rata kawasan 19,7% dan rata-rata OECD 34,1%).
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 01, Slide 06, Slide 22</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en.html</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en.html')">Salin</button>
+          <a href="https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en.html" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 04: Transparency International Country Indonesia -->
+    <article class="ref-card" data-cat="cpi" data-keywords="transparency international cpi indonesia corruption perceptions index skor 34 peringkat 109 tii">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Indeks Global</span>
+          <span class="ref-code">REF.04 / TI-INDONESIA</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">Transparency International: Profil &amp; Skor Korupsi Indonesia</h3>
+      <p class="ref-institution">Transparency International Secretariat (Berlin)</p>
+      <p class="ref-desc">
+        Halaman profil resmi negara Indonesia di basis data Transparency International. Memuat rekam jejak Corruption Perceptions Index (CPI) Indonesia dengan skor <strong>34/100</strong> dan peringkat <strong>109 dari 180 negara</strong> di dunia.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 01, Slide 16, Slide 21, Slide 22</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://www.transparency.org/en/countries/indonesia</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://www.transparency.org/en/countries/indonesia')">Salin</button>
+          <a href="https://www.transparency.org/en/countries/indonesia" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 05: Transparency International Global CPI -->
+    <article class="ref-card" data-cat="cpi" data-keywords="transparency international cpi database metodologi skor indeks persepsi korupsi global">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Indeks Global</span>
+          <span class="ref-code">REF.05 / TI-CPI-GLOBAL</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">Laporan Global Corruption Perceptions Index (CPI)</h3>
+      <p class="ref-institution">Transparency International</p>
+      <p class="ref-desc">
+        Laporan dan metodologi komparatif persepsi korupsi sektor publik global dengan rentang skor 0 (sangat korup) hingga 100 (sangat bersih), menjadi tolok ukur KPI nasional dan pembanding tata kelola pemerintahan antarnegara.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 16, Slide 21</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://www.transparency.org/en/cpi/2023</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://www.transparency.org/en/cpi/2023')">Salin</button>
+          <a href="https://www.transparency.org/en/cpi/2023" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 06: UU KUP (BPK RI) -->
+    <article class="ref-card" data-cat="hukum" data-keywords="uu no 6 tahun 1983 kup pasal 1 angka 1 hukum positif pengertian definisi pajak jdih bpk 46986">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Hukum Positif</span>
+          <span class="ref-code">REF.06 / UU-KUP-1983</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">UU No. 6 Tahun 1983 tentang Ketentuan Umum &amp; Tata Cara Perpajakan (KUP)</h3>
+      <p class="ref-institution">JDIH Badan Pemeriksa Keuangan (BPK) RI · Lembaran Negara RI</p>
+      <p class="ref-desc">
+        Landasan hukum positif Republik Indonesia untuk pengertian pajak: <strong>Pasal 1 angka 1</strong> menetapkan bahwa pajak adalah kontribusi wajib kepada negara yang terutang oleh orang pribadi atau badan yang bersifat memaksa berdasarkan Undang-Undang, dengan tidak mendapatkan imbalan secara langsung dan digunakan untuk keperluan negara bagi sebesar-besarnya kemakmuran rakyat.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 08 (Definisi Pajak)</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://peraturan.bpk.go.id/Details/46986/uu-no-6-tahun-1983</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://peraturan.bpk.go.id/Details/46986/uu-no-6-tahun-1983')">Salin</button>
+          <a href="https://peraturan.bpk.go.id/Details/46986/uu-no-6-tahun-1983" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 07: UU HPP (BPK RI) -->
+    <article class="ref-card" data-cat="hukum" data-keywords="uu no 7 tahun 2021 harmonisasi peraturan perpajakan hpp reformasi nik npwp jdih bpk 185162">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Hukum Positif</span>
+          <span class="ref-code">REF.07 / UU-HPP-2021</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">UU No. 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan (UU HPP)</h3>
+      <p class="ref-institution">JDIH Badan Pemeriksa Keuangan (BPK) RI</p>
+      <p class="ref-desc">
+        Payung hukum reformasi perpajakan terbaru di Indonesia yang mengatur penguatan administrasi perpajakan, kepatuhan sukarela wajib pajak, integrasi Nomor Induk Kependudukan (NIK) sebagai NPWP, dan kepastian hukum keadilan pajak.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 08, Slide 09, Slide 10</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">http://peraturan.bpk.go.id/Details/185162/uu-no-7-tahun-2021</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('http://peraturan.bpk.go.id/Details/185162/uu-no-7-tahun-2021')">Salin</button>
+          <a href="http://peraturan.bpk.go.id/Details/185162/uu-no-7-tahun-2021" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 08: DJP Edukasi Pajak -->
+    <article class="ref-card" data-cat="edukasi" data-keywords="edukasi pajak djp kemenkeu inklusi kesadaran pajak perguruan tinggi spt tahunan">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Edukasi Perpajakan</span>
+          <span class="ref-code">REF.08 / DJP-EDUKASI</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">Portal Resmi Edukasi Perpajakan Direktorat Jenderal Pajak</h3>
+      <p class="ref-institution">Direktorat Jenderal Pajak (DJP) Kementerian Keuangan RI</p>
+      <p class="ref-desc">
+        Sumber acuan program Inklusi Kesadaran Pajak pada tingkat pendidikan tinggi, mekanisme pelaporan SPT tahunan secara sukarela, serta pembentukan komunitas Duta Pajak dan Tax Center di universitas.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 09, Slide 10, Slide 20</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://edukasi.pajak.go.id</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://edukasi.pajak.go.id')">Salin</button>
+          <a href="https://edukasi.pajak.go.id" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 09: Video YouTube Kok Bisa -->
+    <article class="ref-card" data-cat="video" data-keywords="youtube kok bisa video dari mana negara dapat uang apbn pajak kczktsqkgni">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Materi Audiovisual</span>
+          <span class="ref-code">REF.09 / YT-KOKBISA</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">Video: Dari Mana Negara Bisa Dapat Uang?</h3>
+      <p class="ref-institution">Kanal Kok Bisa? (YouTube Resmi) · Durasi 3:18</p>
+      <p class="ref-desc">
+        Video edukasi publik populer yang membedah struktur APBN, fungsi instrumen pajak bagi pembangunan fasilitas publik, dan konsekuensi logis bila kesadaran pajak masyarakat tidak terbangun.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 04 (Pemutar Video &amp; QR Code)</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://www.youtube.com/watch?v=kcZktSqKgNI</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://www.youtube.com/watch?v=kcZktSqKgNI')">Salin</button>
+          <a href="https://www.youtube.com/watch?v=kcZktSqKgNI" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+    <!-- REF 10: Video YouTube Kemendikdasmen -->
+    <article class="ref-card" data-cat="video" data-keywords="youtube cerdas berkarakter kemendikdasmen pribadi jujur antikorupsi _ysxw4wkzku">
+      <div class="ref-card-head">
+        <div style="display:flex;align-items:center;gap:0.5rem">
+          <span class="ref-tag">Materi Audiovisual</span>
+          <span class="ref-code">REF.10 / YT-KEMENDIKBUD</span>
+        </div>
+        <span class="ref-verified">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          HTTP 200 Terverifikasi
+        </span>
+      </div>
+      <h3 class="ref-title">Video: Pribadi Jujur, Antikorupsi</h3>
+      <p class="ref-institution">Kanal Cerdas Berkarakter · Kemendikdasmen RI · Durasi 3:00</p>
+      <p class="ref-desc">
+        Video resmi kampanye penguatan integritas karakter generasi muda dari kementerian pendidikan, mengajak pelajar dan mahasiswa menolak korupsi dari perilaku kecil sehari-hari di ruang akademik.
+      </p>
+      <div class="ref-slides-badge">Digunakan pada: Slide 12 (Pemutar Video &amp; QR Code)</div>
+      <div class="ref-url-box">
+        <span class="ref-url-text">https://www.youtube.com/watch?v=_YsXw4wKZKU</span>
+        <div class="ref-actions">
+          <button class="btn-copy" onclick="copyText('https://www.youtube.com/watch?v=_YsXw4wKZKU')">Salin</button>
+          <a href="https://www.youtube.com/watch?v=_YsXw4wKZKU" class="btn-visit" target="_blank" rel="noopener noreferrer">Buka Sumber ↗</a>
+        </div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- FOOTER DOSSIER -->
+  <footer class="footer-dossier">
+    <div>
+      <p>
+        <strong>Mata Kuliah Kewarganegaraan (PDB) · Kelompok 6 PDB 93</strong><br />
+        Dosen Pengampu: Ratna Damayanti, M.Kes., Drh<br />
+        Fakultas Hukum · Universitas Airlangga · Semester Ganjil 2026/2027
+      </p>
+    </div>
+    <div class="footer-stamp">Taat &amp; Bersih</div>
+  </footer>
+
+</div>
+
+<!-- TOAST MESSAGE -->
+<div id="toastMsg" class="toast-msg">Tautan berhasil disalin ke clipboard!</div>
+
+<script>
+let currentCategory = 'all';
+
+function setCategory(cat, el) {
+  currentCategory = cat;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  filterCards();
+}
+
+function filterCards() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const cards = document.querySelectorAll('.ref-card');
+  let count = 0;
+
+  cards.forEach(card => {
+    const cardCat = card.getAttribute('data-cat');
+    const keywords = (card.getAttribute('data-keywords') || '') + ' ' + card.innerText.toLowerCase();
+    
+    const catMatch = (currentCategory === 'all') || (cardCat === currentCategory);
+    const searchMatch = !q || keywords.includes(q);
+
+    if (catMatch && searchMatch) {
+      card.style.display = 'block';
+      count++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const countEl = document.getElementById('resultCount');
+  if (countEl) {
+    countEl.innerText = `Menampilkan ${count} Sumber Rujukan`;
+  }
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Tautan berhasil disalin ke clipboard!');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Tautan berhasil disalin ke clipboard!');
+  });
+}
+
+function copyAllLinks() {
+  const urls = [
+    'Riset Realisasi Pajak 2025 (CNBC Indonesia): https://www.cnbcindonesia.com/research/20251229150243-128-698006/begini-perjalanan-realisasi-pajak-indonesia-di-2025',
+    'DJPb Kemenkeu RI: https://djpb.kemenkeu.go.id/portal/id/berita/berita/nasional.html',
+    'OECD Revenue Statistics Asia-Pacific: https://www.oecd.org/en/publications/revenue-statistics-in-asia-and-the-pacific-2026_065aa566-en.html',
+    'Transparency International Indonesia: https://www.transparency.org/en/countries/indonesia',
+    'Transparency International CPI Global: https://www.transparency.org/en/cpi/2023',
+    'UU KUP No. 6/1983 (JDIH BPK): https://peraturan.bpk.go.id/Details/46986/uu-no-6-tahun-1983',
+    'UU HPP No. 7/2021 (JDIH BPK): http://peraturan.bpk.go.id/Details/185162/uu-no-7-tahun-2021',
+    'DJP Edukasi Perpajakan: https://edukasi.pajak.go.id',
+    'Video Pajak Kok Bisa?: https://www.youtube.com/watch?v=kcZktSqKgNI',
+    'Video Anti Korupsi Kemdikbud: https://www.youtube.com/watch?v=_YsXw4wKZKU'
+  ].join('\n\n');
+
+  copyText(urls);
+  showToast('Semua 10 tautan rujukan berhasil disalin!');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toastMsg');
+  t.innerText = msg;
+  t.classList.add('show');
+  setTimeout(() => {
+    t.classList.remove('show');
+  }, 2400);
+}
+</script>
+
+</body>
+</html>

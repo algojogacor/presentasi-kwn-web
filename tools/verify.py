@@ -1,5 +1,5 @@
 """
-verify.py — Cek preview/deck: screenshot + error konsol + status WebGL.
+verify.py · Cek preview/deck: screenshot + error konsol + status WebGL.
 
 Pakai:
   python tools/verify.py previews/style-a.html

@@ -1,4 +1,4 @@
-# Data Terverifikasi — Deck Kewarganegaraan
+# Data Terverifikasi: Deck Kewarganegaraan
 
 Semua angka di bawah sudah dicek ulang pada 15 September 2026.
 Sumber dicantumkan supaya bisa dipertanggungjawabkan kalau dosen bertanya.
@@ -7,10 +7,10 @@ Sumber dicantumkan supaya bisa dipertanggungjawabkan kalau dosen bertanya.
 
 ## 1. Pendapatan Negara & Penerimaan Pajak
 
-### Data di PPT lama (slide 4) — SUDAH LAMPAU
+### Data di PPT lama (slide 4): SUDAH LAMPAU
 > Data 2020: penerimaan pajak Rp 1.865,7 triliun dari total pendapatan Rp 2.233,2 triliun
 
-### Data terbaru — realisasi 2025 (audited)
+### Data terbaru: realisasi 2025 (audited)
 | Pos | Nilai |
 |---|---|
 | Pendapatan negara | **Rp 2.765,13 triliun** |
@@ -20,15 +20,16 @@ Sumber dicantumkan supaya bisa dipertanggungjawabkan kalau dosen bertanya.
 | Capaian vs target pajak APBN 2025 (Rp 2.189,3 T) | 87,6% → **shortfall** |
 | Target penerimaan pajak 2026 | Rp 2.357,7 triliun |
 
-Sumber: Laporan Keuangan Kemenkeu 2025 (via RRI, RCTI+, 2026); Kontan via
-Ofisi Prima Consulting, 8 Jan 2026.
+Sumber: Riset CNBC Indonesia & Kemenkeu:
+https://www.cnbcindonesia.com/research/20251229150243-128-698006/begini-perjalanan-realisasi-pajak-indonesia-di-2025
+Laporan Keuangan Kemenkeu 2025 (via RRI, RCTI+, 2026).
 
 > **Catatan penting untuk narasi:** target pajak 2025 **tidak tercapai**
 > (87,6%). Ini justru memperkuat argumen deck: kesadaran pajak rendah.
 
 ---
 
-## 2. Rasio Pajak (Tax Ratio) — DATA BARU, BELUM ADA DI PPT LAMA
+## 2. Rasio Pajak (Tax Ratio): DATA BARU, BELUM ADA DI PPT LAMA
 
 Rasio pajak terhadap PDB, tahun 2024 (metodologi OECD):
 
@@ -61,7 +62,7 @@ Angka rasio pajak 2025 versi Kemenkeu: **9,31% PDB**.
 
 | Tahun | Skor | Peringkat |
 |---|---|---|
-| 2023 | 34 | — |
+| 2023 | 34 | n/a |
 | 2024 | 37 | 99 |
 | **2025** | **34** | **109** |
 
@@ -73,7 +74,7 @@ Sumber: Transparency International Indonesia (TII), rilis 10 Februari 2026.
 
 > **INI TEMUAN PALING KUAT DI SELURUH DECK.**
 > PPT lama pakai baseline 2023 = 34 dan target 2028 = 45. Faktanya pada 2025
-> skornya **masih 34** — tidak bergerak sama sekali dalam dua tahun, dan
+> skornya **masih 34**, tidak bergerak sama sekali dalam dua tahun, dan
 > peringkatnya justru jatuh 10 posisi. Bukan kegagalan target jangka panjang,
 > tapi stagnasi nyata. Slide ini akan membuat kelas diam.
 
@@ -91,23 +92,25 @@ Sumber: Rapat Paripurna DPR RI, 2 Juli 2026.
 
 ---
 
-## 5. Definisi Pajak (slide 6) — perlu diluruskan
+## 5. Definisi Pajak (slide 6): perlu diluruskan
 
 PPT lama memakai parafrase. Rumusan kanonik:
 
-**A. Definisi yuridis — Prof. Dr. P. J. A. Adriani**
+**A. Definisi yuridis · Prof. Dr. P. J. A. Adriani**
 > "Pajak adalah iuran masyarakat kepada negara (yang dapat dipaksakan)
 > yang terutang oleh yang wajib membayarnya menurut peraturan-peraturan
 > umum (undang-undang) dengan tidak mendapat prestasi kembali yang langsung
 > dapat ditunjuk, dan yang gunanya adalah untuk membiayai pengeluaran
 > pengeluaran umum berhubung tugas negara untuk menyelenggarakan pemerintahan."
 
-**B. Definisi ekonomi — Prof. Dr. Rochmat Soemitro, S.H.**
+**B. Definisi ekonomi · Prof. Dr. Rochmat Soemitro, S.H.**
 > "Pajak adalah peralihan kekayaan dari pihak rakyat kepada kas negara untuk
 > membiayai pengeluaran rutin, dan surplusnya digunakan untuk *public saving*
 > yang merupakan sumber utama untuk membiayai *public investment*."
 
-**C. Definisi hukum positif — UU No. 6 Tahun 1983 tentang KUP, Pasal 1 angka 1**
+**C. Definisi hukum positif · UU No. 6 Tahun 1983 tentang KUP, Pasal 1 angka 1**
+Pranala: https://peraturan.bpk.go.id/Details/46986/uu-no-6-tahun-1983
+(s.t.d.t.d UU No. 7 Tahun 2021 tentang HPP: http://peraturan.bpk.go.id/Details/185162/uu-no-7-tahun-2021)
 > "Pajak adalah kontribusi wajib kepada negara yang terutang oleh orang
 > pribadi atau badan yang bersifat memaksa berdasarkan Undang-Undang,
 > dengan tidak mendapatkan imbalan secara langsung dan digunakan untuk
@@ -115,7 +118,7 @@ PPT lama memakai parafrase. Rumusan kanonik:
 
 > **Rekomendasi:** tambahkan definisi C. PPT lama hanya punya doktrin, tanpa
 > hukum positif. Untuk mahasiswa hukum, menyebut UU KUP adalah pembeda yang
-> jelas — dan ini yang paling mungkin ditanya dosen.
+> jelas, dan ini yang paling mungkin ditanya dosen.
 
 ---
 

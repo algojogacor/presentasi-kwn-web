@@ -3,21 +3,21 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Kesadaran Pajak &amp; Pendidikan Anti Korupsi — Kewarganegaraan PDB</title>
-<meta name="description" content="Paparan Kelompok 6 PDB 93 — Kesadaran Pajak dan Pendidikan Anti Korupsi." />
+<title>Kesadaran Pajak &amp; Pendidikan Anti Korupsi: Kewarganegaraan PDB</title>
+<meta name="description" content="Paparan Kelompok 6 PDB 93: Kesadaran Pajak dan Pendidikan Anti Korupsi." />
 
 <!-- Font lokal: tidak butuh internet, aman walau wifi kampus mati -->
 <link rel="stylesheet" href="assets/fonts/fonts.css" />
 
 <style>
 /* ================================================================
-   DECK KEWARGANEGARAAN — "BERKAS NEGARA"
+   DECK KEWARGANEGARAAN · "BERKAS NEGARA"
    Kertas tulang, tinta, satu aksen vermilion.
    ----------------------------------------------------------------
    DAFTAR ISI
      01. Token desain
      02. Reset & dasar
-     03. Viewport fitting (WAJIB — tiap slide pas 100dvh)
+     03. Viewport fitting (WAJIB: tiap slide pas 100dvh)
      04. Lapisan atmosfer (WebGL, grain, guilloche)
      05. Kerangka slide
      06. Tipografi & komponen
@@ -34,19 +34,40 @@
    Ubah di sini untuk mengganti seluruh tampilan deck.
    ================================================================ */
 :root{
-  /* --- Palet: tiga warna, tidak lebih --- */
+  /* --- Palet: dua warna inti (kertas, tinta) + satu aksen (vermilion) ---
+     Tangga tinta punya empat tingkat. Tiga tingkat teratas dipakai untuk
+     teks, dan urutannya wajib tetap: ink > ink-2 > ink-3 > muted.
+
+     Kenapa --muted jauh lebih gelap dari kesan namanya: latar slide BUKAN
+     kertas polos. Noda tinta di shader, vignette, grain multiply, dan pita
+     `.slide::after` menurunkan latar di belakang teks chrome sampai sekitar
+     #DAD2C5 (terukur di seluruh 22 slide oleh tools/bg-exact.py). Di atas
+     latar itu, #8B8175 hanya mencapai 2,37:1. Bahkan di atas putih murni ia
+     cuma 3,83:1, jadi tone itu memang tidak layak untuk teks kecil berapa pun
+     latarnya. Angka 3,28:1 yang muncul kalau dihitung dari token saja adalah
+     angka di atas kertas polos, dan kertas polos tidak pernah terlihat. */
   --paper:#F2EDE3;
   --paper-2:#E8E0D1;
   --paper-3:#DCD1BD;
   --ink:#15130F;
   --ink-2:#3A352C;
   --ink-3:#5C564A;
-  --muted:#8B8175;
+  --muted:#5F5850;
   --rule:rgba(21,19,15,.15);
   --rule-2:rgba(21,19,15,.30);
+  /* Dua vermilion, satu peran masing-masing:
+     --vermilion      grafis (stempel, penggaris, titik, guilloche, garis).
+                      Ambang 3:1, dan #C33B22 lolos.
+     --vermilion-2    teks. Ambang 4,5:1 untuk ukuran kecil, dan #C33B22
+                      hanya sampai 3,54:1 di latar terburuk. */
   --vermilion:#C33B22;
   --vermilion-2:#9E2E19;
   --vermilion-soft:rgba(195,59,34,.12);
+
+  /* Tinggi baris footer, diukur ulang oleh JS saat muat dan saat resize.
+     Dipakai `.hint` supaya petunjuk navigasi duduk DI ATAS footer, bukan di
+     atasnya. Nilai awal hanya cadangan sebelum JS jalan. */
+  --ftr-h:26px;
 
   /* --- Tipografi: tiga peran --- */
   --font-display:'Bodoni Moda','Didot',Georgia,'Times New Roman',serif;
@@ -86,7 +107,7 @@ body{
 button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 
 /* ================================================================
-   03. VIEWPORT FITTING — setiap slide PAS 100dvh, tanpa scroll
+   03. VIEWPORT FITTING: setiap slide PAS 100dvh, tanpa scroll
    ================================================================ */
 #deck{
   position:relative;
@@ -117,8 +138,11 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
 .slide::after{
   content:"";
   position:absolute;left:0;right:0;top:0;
-  height:clamp(20px,4vh,44px);
-  background:linear-gradient(180deg,rgba(21,19,15,.055),transparent);
+  height:clamp(16px,3vh,34px);
+  /* 0,04, bukan 0,055. Pita ini duduk tepat di atas baris header. Di layar
+     sempit, --pad menyusut sampai 16px sementara pita ini tetap setinggi 3vh,
+     jadi pita menimpa teks header dan menggelapkan latarnya. */
+  background:linear-gradient(180deg,rgba(21,19,15,.04),transparent);
   pointer-events:none;z-index:1;
 }
 
@@ -130,24 +154,28 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   display:block;z-index:0;pointer-events:none;
   /* Latar kertas dipasang permanen, bukan cuma saat .no-gl.
      Hasil uji (tools/alpha-proof.py): saat konteks WebGL HILANG, Chromium
-     melewati elemen canvas sepenuhnya — yang terlihat latar body, dan itu
+     melewati elemen canvas sepenuhnya; yang terlihat latar body, dan itu
      sudah kertas. Yang dijaga di sini adalah kasus lain: canvas tampil tapi
      isinya kosong (WebGL gagal / driver aneh). Dengan alpha:true canvas
-     tembus pandang, jadi yang muncul kertas — bukan hitam. */
+     tembus pandang, jadi yang muncul kertas, bukan hitam. */
   background:
     radial-gradient(ellipse 60% 70% at 78% 18%,rgba(195,59,34,.05),transparent 60%),
     radial-gradient(ellipse 70% 60% at 12% 88%,rgba(21,19,15,.05),transparent 60%),
     var(--paper);
 }
 
-/* Grain film — SVG inline, tanpa permintaan jaringan */
+/* Grain film: SVG inline, tanpa permintaan jaringan.
+   Opasitas 0,24, bukan 0,30. Alasan: grain ini blend-mode multiply, jadi ia
+   menggelapkan latar di bawah teks sekunder. Pada 0,30 latar di belakang
+   footer turun ke sekitar #D8D3CA, dan itu memakan jatah kontras teks kecil.
+   Pada 0,24 butirnya masih terlihat, tetapi latarnya tidak lagi ikut gelap. */
 .grain{
   position:fixed;inset:0;z-index:1;pointer-events:none;
-  opacity:.30;mix-blend-mode:multiply;
+  opacity:.24;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
 }
 
-/* Guilloche — satu rosette per babak, saling silang-tutup */
+/* Guilloche: satu rosette per babak, saling silang-tutup */
 .rosettes{position:fixed;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 .rosette{
   position:absolute;
@@ -197,7 +225,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   gap:clamp(1rem,3.4vw,3.4rem);
 }
 .body.cols-wide{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
-/* 21 — kolom kanan lebih lega: panel metrik butuh ruang, bukan kolom sempit */
+/* Slide 21: kolom kanan lebih lega, panel metrik butuh ruang, bukan kolom sempit */
 .body.cols-kpi{
   grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);
   align-items:center;
@@ -214,7 +242,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   border-top:1px solid var(--rule);
   z-index:2;
 }
-.ftr .babak{color:var(--vermilion)}
+.ftr .babak{color:var(--vermilion-2)}
 
 /* ================================================================
    06. TIPOGRAFI & KOMPONEN
@@ -223,7 +251,7 @@ button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
   font-family:var(--font-mono);
   font-size:var(--t-5);
   letter-spacing:.26em;text-transform:uppercase;
-  color:var(--vermilion);
+  color:var(--vermilion-2);
   display:flex;align-items:center;gap:.75em;
   margin-bottom:clamp(.4rem,1.2vh,.9rem);
 }
@@ -252,7 +280,7 @@ h3.sub{
   font-size:var(--t-3);
   line-height:1.3;letter-spacing:-.01em;
 }
-em.acc{font-style:italic;font-weight:400;color:var(--vermilion)}
+em.acc{font-style:italic;font-weight:400;color:var(--vermilion-2)}
 p.lead{
   font-size:var(--t-4);
   line-height:1.62;
@@ -299,7 +327,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   position:absolute;
   right:calc(-1 * clamp(.2rem,.8vw,.7rem));
   bottom:calc(-1 * clamp(.4rem,1.2vh,.9rem));
-  border:2px solid var(--vermilion);color:var(--vermilion);
+  border:2px solid var(--vermilion);color:var(--vermilion-2);
   font-family:var(--font-mono);font-size:var(--t-5);
   letter-spacing:.13em;text-transform:uppercase;
   padding:.4em .68em;transform:rotate(-7deg) scale(1.5);
@@ -321,7 +349,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
 }
 .card .num{
   font-family:var(--font-mono);font-size:var(--t-5);
-  letter-spacing:.2em;color:var(--vermilion);
+  letter-spacing:.2em;color:var(--vermilion-2);
   display:block;margin-bottom:.5em;
 }
 .card h4{
@@ -330,7 +358,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   margin-bottom:.45em;letter-spacing:-.01em;
 }
 .card p{font-size:var(--t-4);line-height:1.55;color:var(--ink-3)}
-/* Baris NIM di bawah nama anggota — metadata, bukan isi */
+/* Baris NIM di bawah nama anggota: metadata, bukan isi */
 .card .nim{
   font-family:var(--font-mono);
   font-size:var(--t-5);
@@ -357,6 +385,19 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   font-variant-numeric:tabular-nums;
 }
 .bignum.v{color:var(--vermilion)}
+/* Angka besar yang duduk di dalam kartu.
+   `.card p` berkekhususan (0,1,1), sedangkan `.bignum` cuma (0,1,0), jadi
+   `.card p` menang dan tiga angka KPI di slide 5 dirender 16px, seukuran teks
+   badan. Hierarki visualnya hilang, dan slide-nya terbaca sebagai tiga baris
+   teks biasa. Aturan ini mengembalikan ukuran, tinggi baris, dan warnanya.
+   Ukurannya `--t-num-s`, bukan `--t-num`: tiga kartu berdampingan hanya
+   menyediakan sekitar 370px per kartu, sedangkan "2.765,13" pada 102px
+   membutuhkan lebih dari 450px.
+   Warnanya `--vermilion-2`, bukan `--vermilion`: pada layar sempit
+   `--t-num-s` turun sampai 20,8px, dan itu sudah masuk kategori teks kecil
+   yang menuntut 4,5:1, sedangkan `--vermilion` cuma 3,53:1 di latar terburuk. */
+.card p.bignum{font-size:var(--t-num-s);line-height:.95;color:var(--ink)}
+.card p.bignum.v{color:var(--vermilion-2)}
 .metric-label{
   font-family:var(--font-mono);font-size:var(--t-5);
   letter-spacing:.2em;text-transform:uppercase;color:var(--muted);
@@ -436,7 +477,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   color:var(--ink-2);text-align:right;
   font-variant-numeric:tabular-nums;
 }
-.bar-row.hi .name,.bar-row.hi .val{color:var(--vermilion)}
+.bar-row.hi .name,.bar-row.hi .val{color:var(--vermilion-2)}
 .bar-row.hi .bar-track i{background:var(--vermilion)}
 .bar-row.hi .bar-track{background:var(--vermilion-soft)}
 .avgline{
@@ -457,7 +498,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   left:calc(var(--av) / 25 * 100%);
   transform:translateX(-50%);
   font-family:var(--font-mono);font-size:var(--t-5);
-  font-weight:700;color:var(--vermilion);white-space:nowrap;
+  font-weight:700;color:var(--vermilion-2);white-space:nowrap;
   opacity:0;transition:opacity .6s ease 1.45s;
 }
 .slide.in .avgline b{opacity:1}
@@ -497,7 +538,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
 .slide.in .cpi-txt[data-d="1"]{transition-delay:1.15s}
 .slide.in .cpi-txt[data-d="2"]{transition-delay:1.65s}
 .slide.in .cpi-txt[data-d="3"]{transition-delay:2.15s}
-.cpi-txt.hi{fill:var(--vermilion);font-weight:700}
+.cpi-txt.hi{fill:var(--vermilion-2);font-weight:700}
 .cpi-axis{stroke:var(--rule);stroke-width:1}
 
 /* --- 18: rantai sebab-akibat --- */
@@ -582,7 +623,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   font-family:var(--font-mono);font-weight:700;color:var(--ink);
   white-space:nowrap;font-variant-numeric:tabular-nums;
 }
-.kpi-head .vals b{color:var(--vermilion);font-weight:700;padding:0 .35em}
+.kpi-head .vals b{color:var(--vermilion-2);font-weight:700;padding:0 .35em}
 
 /* jalur: garis ukur tiap 10% · batang hitam = hari ini · blok bergaris = jurang · garis merah = target */
 .kpi-track{
@@ -701,7 +742,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   border-color:var(--vermilion);background:rgba(195,59,34,.88);
 }
 .video.file-mode .meta span::after{
-  content:" · buka di YouTube ↗";color:var(--vermilion);opacity:1;
+  content:" · buka di YouTube ↗";color:var(--vermilion-2);opacity:1;
 }
 .video.file-mode::after{
   content:"Video butuh server · jalankan PUTAR-DECK.bat\A lalu buka http://127.0.0.1:8788/index.html";
@@ -723,7 +764,7 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
 .qr p{font-size:var(--t-5);line-height:1.5;color:var(--muted)}
 
 /* ================================================================
-   09. CHROME — navigasi, penggaris, titik
+   09. CHROME: navigasi, penggaris, titik
    ================================================================ */
 .ruler{
   position:fixed;left:0;right:0;top:0;height:clamp(12px,1.7vh,20px);
@@ -759,8 +800,13 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
 .dots button:hover{background:var(--ink-3);transform:scale(1.35)}
 .dots button.on{background:var(--vermilion);transform:scale(1.35)}
 
+/* Petunjuk navigasi sekali muncul.
+   `bottom` dihitung dari tinggi footer (--ftr-h, diukur JS), bukan angka
+   tetap. Sebelumnya nilainya clamp(10px,2vh,22px), dan itu menaruh petunjuk
+   ini tepat di atas baris footer. Terukur: tumpang tindih 256x6px pada lebar
+   900px, 195x27px pada 390px, dan 0px tetapi bersentuhan pada 1024px. */
 .hint{
-  position:fixed;left:50%;bottom:clamp(10px,2vh,22px);
+  position:fixed;left:50%;bottom:calc(var(--pad) + var(--ftr-h) + .7rem);
   transform:translateX(-50%);
   z-index:40;pointer-events:none;
   font-family:var(--font-mono);font-size:var(--t-5);
@@ -770,13 +816,46 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
   opacity:0;transition:opacity .6s ease;
 }
 .hint.on{opacity:.8}
-.hint b{color:var(--vermilion);font-weight:700}
+.hint b{color:var(--vermilion-2);font-weight:700}
 .hint .k{
   border:1px solid var(--rule-2);border-radius:3px;
   padding:.15em .5em;font-size:.92em;
 }
 
-/* Kursor tinta — hanya di perangkat berpenunjuk presisi */
+/* Bar navigasi layar sempit.
+   Kolom 22 titik tidak bisa memenuhi target sentuh 44x44 px: 22 x 44 px =
+   968 px, lebih tinggi dari layar mana pun, dan titiknya sendiri cuma 7x7 px
+   sehingga praktis tidak bisa dipilih dengan jempol. Jadi di layar sempit
+   kolom itu diganti pola navigasi ponsel yang sebenarnya: sebelumnya,
+   berikutnya, dan nomor lembar. Bar ini duduk di ruang yang disediakan
+   `.slide` lewat padding-bottom, jadi ia tidak menutupi isi slide.
+   Teks sumber dari footer dipindahkan ke slot kiri bar oleh JS, supaya
+   atribusi sumber tidak hilang saat footer disembunyikan. */
+.nav-mini{display:none}
+.nav-mini .nm-src{
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  min-width:0;flex:1;
+}
+.nav-mini .nm-nav{display:flex;align-items:center;gap:.55em;flex:none}
+.nav-mini .nm-btn{
+  width:44px;height:44px;flex:none;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-mono);font-size:1.1rem;line-height:1;
+  color:var(--ink-2);
+  border:1px solid var(--rule-2);
+  transition:background .2s ease,color .2s ease;
+}
+.nav-mini .nm-btn:active{background:var(--vermilion-soft);color:var(--vermilion-2)}
+.nav-mini .nm-btn[disabled]{opacity:.3}
+.nav-mini .nm-count{
+  font-family:var(--font-mono);font-size:var(--t-5);
+  letter-spacing:.1em;color:var(--muted);white-space:nowrap;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Kursor tinta: hanya di perangkat berpenunjuk presisi */
 .ink-cursor{
   position:fixed;left:0;top:0;z-index:39;
   width:9px;height:9px;border-radius:50%;
@@ -791,20 +870,183 @@ p.small{font-size:var(--t-5);line-height:1.55;color:var(--muted)}
 @media (hover:none),(pointer:coarse){.ink-cursor{display:none}}
 
 /* ================================================================
+   09b. LAPISAN FX (sistem visual modular — assets/js/fx-*.js)
+   ================================================================ */
+/* Deck dikunci: navigasi diambil alih FX core, scroll tidak lagi native */
+html.fx-on #deck{overflow:hidden;scroll-snap-type:none;scroll-behavior:auto}
+
+/* Panggung SVG persisten "kota negara" — overscan 60px agar parallax
+   mouse tidak memperlihatkan tepi kanvas */
+#svgStage{
+  position:fixed;left:-30px;top:-30px;
+  width:calc(100% + 60px);height:calc(100% + 60px);
+  z-index:1;pointer-events:none;
+}
+.sv-master{fill:url(#svFill);stroke:rgba(21,19,15,.42);stroke-width:1.6}
+.sv-sun{fill:none;stroke:rgba(195,59,34,.5);stroke-width:2}
+.sv-sun-ring{fill:none;stroke:rgba(195,59,34,.26);stroke-width:1;stroke-dasharray:4 7}
+.sv-grid-v,.sv-grid-h{stroke:rgba(21,19,15,.22);stroke-width:1;vector-effect:non-scaling-stroke}
+.sv-grid-cross{stroke:rgba(195,59,34,.5);stroke-width:1.4}
+.sv-ripple{fill:none;stroke:rgba(195,59,34,.6);stroke-width:1.5}
+.sv-ripple-dot{fill:#C33B22}
+.sv-crack{fill:none;stroke:rgba(21,19,15,.55);stroke-width:2.2;stroke-linecap:round}
+.sv-crack-thin{fill:none;stroke:rgba(158,46,25,.5);stroke-width:1.2}
+.sv-pillar{fill:rgba(21,19,15,.10);stroke:rgba(21,19,15,.4);stroke-width:1.4}
+.sv-pillar-cap,.sv-pillar-base{fill:rgba(21,19,15,.18)}
+.sv-pillar-flute{stroke:rgba(21,19,15,.22);stroke-width:1}
+.sv-ring{fill:none;stroke:rgba(195,59,34,.4);stroke-width:1.6}
+.sv-ring-core{fill:rgba(195,59,34,.12);stroke:rgba(195,59,34,.6);stroke-width:2}
+.sv-ring-tick{stroke:rgba(21,19,15,.35);stroke-width:1.4}
+.sv-coin-edge{fill:rgba(242,237,227,.5);stroke:#15130F;stroke-width:3}
+.sv-coin-inner{fill:none;stroke:rgba(21,19,15,.5);stroke-width:1.5}
+.sv-coin-half-l{fill:rgba(21,19,15,.10)}
+.sv-coin-half-r{fill:rgba(195,59,34,.12)}
+.sv-coin-seam{stroke:#C33B22;stroke-width:2.5}
+.sv-coin-tooth{stroke:rgba(21,19,15,.4);stroke-width:2}
+.sv-bridge-deck{stroke:rgba(21,19,15,.55);stroke-width:4;fill:none}
+.sv-bridge-cable{stroke:rgba(195,59,34,.5);stroke-width:2;fill:none}
+.sv-bridge-tower{fill:rgba(21,19,15,.14);stroke:rgba(21,19,15,.4);stroke-width:1}
+.sv-bridge-hanger{stroke:rgba(21,19,15,.25);stroke-width:1}
+.sv-bp-line{stroke:rgba(21,19,15,.14);stroke-width:1}
+.sv-bp-box{fill:rgba(195,59,34,.05);stroke:rgba(21,19,15,.45);stroke-width:1.4}
+.sv-bp-x{stroke:rgba(21,19,15,.2);stroke-width:1}
+.sv-icon-ring{fill:rgba(242,237,227,.6);stroke:#C33B22;stroke-width:2.5}
+.sv-icon-glyph{fill:none;stroke:#15130F;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.sv-layer{will-change:opacity}
+
+/* Kanvas Three.js (particle hero, abu, fluid) */
+#fx-three{position:fixed;inset:0;width:100%;height:100%;z-index:1;pointer-events:none;display:none}
+
+/* Overlay transisi antar slide */
+#fx-overlay{position:fixed;inset:0;z-index:60;pointer-events:none;overflow:hidden}
+
+/* Kanvas physics shard (slide 16) */
+.shard-canvas{position:absolute;inset:0;z-index:3;pointer-events:none}
+
+/* Cursor editorial — kursor tinta lama disembunyikan */
+body.fx-cursor-on .ink-cursor{display:none}
+body.fx-cursor-on,
+body.fx-cursor-on button,
+body.fx-cursor-on a,
+body.fx-cursor-on .video{cursor:none}
+body.fx-cursor-on.editing [data-edit]{cursor:text}
+.fxc-line{position:fixed;background:rgba(21,19,15,.26);pointer-events:none;z-index:70}
+.fxc-h{left:0;top:0;width:100%;height:1px}
+.fxc-v{left:0;top:0;width:1px;height:100%}
+.fxc-ring{position:fixed;left:0;top:0;pointer-events:none;z-index:71;overflow:visible}
+.fxc-ring-path{fill:none;stroke:rgba(21,19,15,.55);stroke-width:1.4}
+.fxc-ring.hot .fxc-ring-path{stroke:rgba(195,59,34,.85)}
+.fxc-dot{position:fixed;left:0;top:0;width:4px;height:4px;border-radius:50%;background:#C33B22;pointer-events:none;z-index:71}
+.fxc-label{
+  position:fixed;left:0;top:0;z-index:71;
+  font-family:var(--font-mono);font-size:9px;letter-spacing:.16em;
+  color:var(--vermilion-2);opacity:0;white-space:nowrap;pointer-events:none;
+  text-transform:uppercase;
+}
+.fxc-trail{
+  position:fixed;left:0;top:0;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;
+  border-radius:50%;background:rgba(21,19,15,.5);pointer-events:none;z-index:69;
+}
+
+/* Toggle suara — tepi kiri, di luar area konten */
+#soundToggle{
+  position:fixed;left:2px;top:50%;transform:translateY(-50%);
+  z-index:41;width:42px;height:48px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  font-family:var(--font-mono);font-size:8px;letter-spacing:.1em;
+  color:var(--ink-3);opacity:.45;
+  transition:opacity .3s ease,color .3s ease;
+}
+#soundToggle:hover{opacity:1;color:var(--vermilion-2)}
+
+/* ================================================================
+   09c. FX-AKTIF: primitif animasi CSS lama dinonaktifkan —
+   GSAP yang memegang kendali penuh atas entrance.
+   ================================================================ */
+html.fx-on .rv{opacity:1;transform:none;filter:none;transition:none}
+html.fx-on .mask{overflow:visible}
+html.fx-on .mask > span{transform:none;transition:none}
+html.fx-on .eyebrow .dash,
+html.fx-on .slide.in .eyebrow .dash{transform:scaleX(0);transition:none}
+html.fx-on .stamp,
+html.fx-on .slide.in .stamp{opacity:0;transform:rotate(-7deg) scale(2.4);transition:none}
+html.fx-on .bar-track i,
+html.fx-on .slide.in .bar-track i{width:0;transition:none}
+html.fx-on .avgline span,html.fx-on .avgline b,
+html.fx-on .slide.in .avgline span,html.fx-on .slide.in .avgline b{opacity:0;transition:none}
+html.fx-on .cpi-line,
+html.fx-on .slide.in .cpi-line{stroke-dashoffset:1;transition:none}
+html.fx-on .cpi-target,
+html.fx-on .slide.in .cpi-target{opacity:0;transition:none}
+html.fx-on .cpi-dot{transform:none;transition:none}
+html.fx-on .cpi-txt{transition:none}
+html.fx-on .chain-path,
+html.fx-on .slide.in .chain-path{stroke-dashoffset:1;transition:none}
+html.fx-on .chain-node circle,
+html.fx-on .slide.in .chain-node circle{transition:none;transform:none}
+html.fx-on .chain-node text{transition:none}
+html.fx-on .kpi-track i,
+html.fx-on .slide.in .kpi-track i{width:0;transition:none}
+html.fx-on .kpi-track .gap,
+html.fx-on .slide.in .kpi-track .gap{opacity:0;transition:none}
+html.fx-on .kpi-track em,
+html.fx-on .slide.in .kpi-track em{opacity:0;transition:none}
+html.fx-on .cb-row b{opacity:1;transform:none;transition:none}
+html.fx-on .cb-row i,
+html.fx-on .slide.in .cb-row i{width:0;animation:none}
+html.fx-on .reveal-line{opacity:1;transform:none;transition:none}
+/* reveal baris yang dikendalikan GSAP di slide 22 */
+html.fx-on .reveal-line{opacity:0}
+
+/* ================================================================
+   09d. FX-CETAK: paksa state akhir semua animasi GSAP
+   ================================================================ */
+.fx-print #svgStage,.fx-print #fx-three,.fx-print #fx-overlay,
+.fx-print #fxCursor,.fx-print .fxc-trail,.fx-print .shard-canvas,
+.fx-print #soundToggle,.fx-print .fxc-line{display:none !important}
+.fx-print .rv,.fx-print .mask > span,.fx-print .fx-ch{
+  opacity:1 !important;transform:none !important;filter:none !important;
+}
+.fx-print .eyebrow .dash{transform:scaleX(1) !important}
+.fx-print .stamp{opacity:.94 !important;transform:rotate(-7deg) scale(1) !important}
+.fx-print .bar-track i{width:calc(var(--v) / 25 * 100%) !important}
+.fx-print .avgline span{opacity:.85 !important}
+.fx-print .avgline b{opacity:1 !important}
+.fx-print .cpi-line{stroke-dashoffset:0 !important;stroke-dasharray:none !important}
+.fx-print .cpi-dot{opacity:1 !important;transform:none !important}
+.fx-print .cpi-txt,.fx-print .cpi-target{opacity:1 !important}
+.fx-print .chain-path{stroke-dashoffset:0 !important;stroke-dasharray:none !important}
+.fx-print .chain-node circle{opacity:1 !important;transform:none !important}
+.fx-print .chain-node text{opacity:1 !important}
+.fx-print .kpi-track i{width:calc(var(--v) * 1%) !important}
+.fx-print .kpi-track .gap,.fx-print .kpi-track em{opacity:1 !important;transform:none !important}
+.fx-print .cb-row i{width:0 !important}
+.fx-print .cb-row b,.fx-print .reveal-line{opacity:1 !important;transform:none !important}
+
+/* ================================================================
    10. MODE EDIT & PRESENTER
    ================================================================ */
+/* Tombol mode edit.
+   Kotaknya 44x44 px supaya memenuhi target sentuh, tetapi lingkarannya tetap
+   32x32 px lewat ::before. Yang diperbesar hanya area yang bisa ditekan, bukan
+   tampilannya. */
 .edit-toggle{
-  position:fixed;left:clamp(8px,1.4vw,18px);top:clamp(20px,3vh,34px);
-  z-index:41;width:32px;height:32px;border-radius:50%;
-  border:1px solid var(--rule-2);background:rgba(242,237,227,.85);
+  position:fixed;left:clamp(8px,1.4vw,18px);top:clamp(14px,2.4vh,28px);
+  z-index:41;width:44px;height:44px;
   display:flex;align-items:center;justify-content:center;
   font-size:13px;color:var(--ink-3);
   opacity:0;pointer-events:none;
-  transition:opacity .3s ease,background .3s ease,color .3s ease;
+  transition:opacity .3s ease;
+}
+.edit-toggle::before{
+  content:"";position:absolute;inset:6px;border-radius:50%;
+  border:1px solid var(--rule-2);background:rgba(242,237,227,.85);
+  transition:background .3s ease,border-color .3s ease;
 }
 .edit-toggle.show,.edit-toggle.on{opacity:1;pointer-events:auto}
-.edit-toggle.on{background:var(--vermilion);color:var(--paper);border-color:var(--vermilion)}
-.edit-toggle svg{width:15px;height:15px}
+.edit-toggle.on{color:var(--paper)}
+.edit-toggle.on::before{background:var(--vermilion);border-color:var(--vermilion)}
+.edit-toggle svg{position:relative;width:15px;height:15px}
 
 body.editing [data-edit]{outline:1px dashed var(--vermilion);outline-offset:3px;cursor:text}
 body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgba(195,59,34,.05)}
@@ -833,12 +1075,12 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 .notes h5{
   font-family:var(--font-mono);font-size:var(--t-5);
   letter-spacing:.2em;text-transform:uppercase;
-  color:var(--vermilion);margin-bottom:.7em;
+  color:var(--vermilion-2);margin-bottom:.7em;
 }
 .notes p{font-size:var(--t-4);line-height:1.6;max-width:88ch}
 .notes .timer{
   position:absolute;right:clamp(.8rem,2vw,1.6rem);top:clamp(.8rem,2vw,1.6rem);
-  font-family:var(--font-mono);font-size:var(--t-3);color:var(--vermilion);
+  font-family:var(--font-mono);font-size:var(--t-3);color:var(--vermilion-2);
 }
 
 /* ================================================================
@@ -853,12 +1095,13 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
      persis sama dengan yang tampil di layar. */
   @page{size:1600px 900px;margin:0}
   html,body{overflow:visible;background:#fff}
-  #deck{height:auto;overflow:visible;scroll-snap-type:none}
+  #deck{height:auto !important;overflow:visible !important;scroll-snap-type:none !important}
   .slide{
     width:1600px;height:900px;
     page-break-after:always;break-after:page;
   }
-  .ruler,.dots,.hint,.ink-cursor,.edit-toggle,.notes,.grain,.rosettes{display:none !important}
+  .ruler,.dots,.hint,.nav-mini,.ink-cursor,.edit-toggle,.notes,.grain,.rosettes,
+  #svgStage,#fx-three,#fx-overlay,#fxCursor,.fxc-trail,.fxc-line,.shard-canvas,#soundToggle{display:none !important}
   #gl{display:none !important}
   .rv,.mask > span,.cpi-line,.chain-path,.bar-track i,.cb-row b,
   .chain-node circle,.chain-node text{
@@ -883,10 +1126,73 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 /* ================================================================
    12. RESPONSIF & REDUCED MOTION
    ================================================================ */
+
+/* Layar sempit: kolom ditumpuk, dan navigasi diganti pola ponsel.
+   Titik-titik navigasi tidak bisa dipertahankan di sini. Target sentuhnya
+   7x7 px, sementara 22 titik berukuran 44x44 px akan meminta 968 px ruang
+   vertikal, lebih tinggi dari layar ponsel mana pun. Jadi kolom titik
+   digantikan bar sebelumnya/berikutnya/nomor lembar, dan tingginya
+   disediakan lewat padding-bottom supaya tidak menutupi isi slide. */
+@media (max-width:900px),(pointer:coarse){
+  .dots{display:none}
+  .nav-mini{
+    display:flex;align-items:center;gap:.9em;
+    position:fixed;left:var(--pad);right:var(--pad);
+    bottom:calc(var(--pad) * .55);
+    z-index:40;
+  }
+  /* Ruang untuk bar: 44px tombol + jarak aman. */
+  .slide{padding-bottom:calc(var(--pad) * .55 + 52px)}
+  /* Footer disembunyikan karena teksnya dipindahkan ke slot kiri bar oleh JS,
+     jadi atribusi sumber tetap terbaca. */
+  .ftr{display:none}
+  .hint{bottom:calc(var(--pad) * .55 + 52px + .5rem)}
+}
+
 @media (max-width:900px){
-  .body.cols,.body.cols-wide,.body.cols-kpi{grid-template-columns:1fr;align-content:center}
   .doc{display:none}
   .rosette{opacity:.18 !important}
+
+  /* Kolom yang menumpuk meminta tinggi sekitar 60% lebih banyak daripada
+     susunan dua kolom. Celah antara max-height:680px (huruf mengecil) dan
+     max-height:560px (elemen disembunyikan) tidak tertutup, dan di situlah
+     enam slide rusak. Blok ini menutupnya: jarak dirapatkan, dan butir daftar
+     di dalam kartu disembunyikan lebih awal karena di lebar ini barisnya
+     sudah tidak terbaca nyaman. */
+  .body{gap:clamp(.45rem,1.2vh,.9rem)}
+  .cards{gap:clamp(.4rem,1vw,.75rem)}
+  .card{padding-top:clamp(.35rem,.9vh,.7rem)}
+  .card p{font-size:var(--t-5);line-height:1.5}
+  .card li{display:none}
+  .rule{padding-top:clamp(.35rem,.9vh,.65rem)}
+  h3.sub{font-size:var(--t-4)}
+  p.lead{line-height:1.5}
+}
+
+/* Penumpukan kolom, hanya kalau ada tinggi untuk menanggungnya.
+   Menumpuk kolom memang jawaban untuk layar sempit, tetapi biayanya tinggi:
+   sekitar 60% lebih banyak daripada susunan dua kolom. Di 900x600 dan di
+   844x390 (ponsel mendatar) tinggi itu tidak tersedia, dan hasilnya empat
+   sampai tujuh slide terpotong, dengan bar navigasi menimpa teks yang meluber.
+   Di dua ukuran itu susunan dua kolom asli justru lebih pas: lebarnya masih
+   memadai, dan yang bermasalah adalah tingginya.
+   Pengecualian: di bawah 560px lebar, dua kolom tidak mungkin sama sekali,
+   jadi menumpuk tetap dilakukan meski layarnya pendek. */
+@media (max-width:900px) and (min-height:620px),
+       (max-width:560px){
+  .body.cols,.body.cols-wide,.body.cols-kpi{grid-template-columns:1fr;align-content:center}
+}
+
+/* Tumpukan kartu di layar yang tingginya sedang.
+   Slide 2 menyusun enam kartu anggota bertumpuk. Jarak antar kartu diatur
+   `clamp(.6rem,1.4vw,1.1rem)`, dan itu mengikuti LEBAR, bukan tinggi, jadi di
+   1366x768 jaraknya justru paling lebar sementara tingginya paling sempit.
+   Hasilnya kartu keenam meluber 16px dan baris NIM-nya bertabrakan dengan
+   footer. Di bawah 800px tinggi jaraknya dirapatkan; di 1600x900 ke atas
+   tampilannya tidak berubah. */
+@media (max-height:800px){
+  .cards{gap:clamp(.45rem,1vh,.8rem)}
+  .card{padding-top:clamp(.4rem,1vh,.7rem)}
 }
 @media (max-height:680px){
   :root{
@@ -898,9 +1204,28 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   }
   .card li{display:none}
 }
+/* Tinggi sangat terbatas: yang tersisa hanya isi pokok.
+   `.nav-mini` sengaja tidak disembunyikan di sini, karena justru di layar
+   pendek (mis. ponsel mendatar) navigasi paling dibutuhkan. */
 @media (max-height:560px){
   .dots,.hint,.ftr{display:none}
   .card p{display:none}
+  /* Di tinggi 390px (ponsel mendatar) kartu yang bertumpuk satu kolom tidak
+     mungkin muat: enam kartu anggota slide 2 meminta sekitar 250px, sementara
+     ruang isi yang tersisa hanya sekitar 270px untuk seluruh slide. Kartunya
+     disusun mendatar, jadi enam kartu menjadi tiga baris.
+     `!important` dipakai karena slide 2 menulis `grid-template-columns:1fr`
+     langsung di atribut style, dan atribut style mengalahkan stylesheet. */
+  .cards{
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr)) !important;
+    gap:clamp(.4rem,1.4vw,.8rem);
+  }
+  /* Diagram berasio tetap tingginya mengikuti LEBAR, jadi di layar pendek dan
+     lebar diagram itu justru yang paling tinggi. Rantai kausal slide 18
+     (rasio 660:172) meminta 208px dari 254px ruang isi yang tersedia di
+     844x390. Lebarnya dibatasi supaya tingginya ikut turun, dan diagramnya
+     tetap di tengah. */
+  .chain{max-width:min(100%,540px);margin-inline:auto}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
@@ -924,6 +1249,11 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 <canvas id="gl" aria-hidden="true"></canvas>
 <div class="grain" aria-hidden="true"></div>
 
+<!-- PANGGUNG FX: SVG persisten "kota negara", kanvas Three.js, overlay transisi -->
+<svg id="svgStage" aria-hidden="true"></svg>
+<canvas id="fx-three" aria-hidden="true"></canvas>
+<div id="fx-overlay" aria-hidden="true"></div>
+
 <div class="rosettes" aria-hidden="true">
   <svg class="rosette" id="ros1" viewBox="-300 -300 600 600"><g class="spin"></g></svg>
   <svg class="rosette" id="ros2" viewBox="-300 -300 600 600"><g class="spin"></g></svg>
@@ -934,6 +1264,19 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 <!-- CHROME -->
 <div class="ruler" aria-hidden="true"><i id="rulerFill"></i></div>
 <nav class="dots" id="dots" aria-label="Navigasi slide"></nav>
+
+<!-- Navigasi layar sempit. Disembunyikan lewat CSS di layar lebar, dan kolom
+     titik di atas yang disembunyikan di layar sempit. Keduanya tidak pernah
+     tampil bersamaan. -->
+<div class="nav-mini" id="navMini">
+  <span class="nm-src" id="nmSrc"></span>
+  <span class="nm-nav">
+    <button class="nm-btn" type="button" id="nmPrev" aria-label="Slide sebelumnya">&#8249;</button>
+    <span class="nm-count" id="nmCount">01 / 22</span>
+    <button class="nm-btn" type="button" id="nmNext" aria-label="Slide berikutnya">&#8250;</button>
+  </span>
+</div>
+
 <div class="hint" id="hint"><span class="k">←</span><span class="k">→</span> atau scroll untuk berpindah</div>
 <div class="ink-cursor" id="inkCursor" aria-hidden="true"></div>
 
@@ -950,15 +1293,15 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </div>
 
 <!-- ============================================================
-     DECK — 21 slide
+     DECK: 22 slide
      ============================================================ -->
 <main id="deck">
 
 <!-- ============================================================
-     01 — JUDUL
+     01 · JUDUL
      ============================================================ -->
 <section class="slide" data-babak="1"
-  data-notes="Buka dengan tenang. Kalimat pembuka: 'Semua angka yang kami pakai hari ini ada sumbernya. Empat lembaga ini yang jadi dasar kami — kalau ada yang mau dicek, semuanya bisa ditelusuri.' Sebut sumbernya sekilas saja, jangan dibacakan satu per satu. Lalu lanjut ke slide berikutnya.">
+  data-notes="Buka dengan tenang. Kalimat pembuka: 'Semua angka yang kami pakai hari ini ada sumbernya. Empat lembaga ini yang jadi dasar kami. Kalau ada yang mau dicek, semuanya bisa ditelusuri.' Sebut sumbernya sekilas saja, jangan dibacakan satu per satu. Lalu lanjut ke slide berikutnya.">
   <header class="hdr">
     <div><span class="seal"></span>Kewarganegaraan PDB · Kelompok 6 · PDB 93</div>
     <div class="hdr-r">Lembar 01 / 22</div>
@@ -975,7 +1318,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       </h1>
 
       <p class="lead rule rv" style="--i:5">
-        Membangun warga negara yang taat, berintegritas, dan bertanggung jawab —
+        Membangun warga negara yang taat, berintegritas, dan bertanggung jawab,
         dimulai dari meja kuliah, diuji di ruang publik.
       </p>
     </div>
@@ -1000,9 +1343,14 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
           <span>Dari Mana Negara Bisa Dapat Uang? · bahan video</span>
         </li>
       </ul>
-      <p class="small" style="margin-top:1.1em;padding-top:.85em;border-top:1px solid var(--rule);color:var(--vermilion);letter-spacing:.16em;text-transform:uppercase">
-        Diverifikasi 15 Sep 2026
+      <p class="small" style="margin-top:1.1em;padding-top:.85em;border-top:1px solid var(--rule);color:var(--vermilion-2);letter-spacing:.16em;text-transform:uppercase">
+        Diverifikasi 17 Sep 2026
       </p>
+      <div style="margin-top:.6em;padding-top:.5em;border-top:1px dashed var(--rule)">
+        <a href="source/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:var(--t-5);color:var(--ink-2);text-decoration:none;letter-spacing:.08em;text-transform:uppercase">
+          <span>Direktori Sumber /source</span> ↗
+        </a>
+      </div>
       <div class="stamp">Taat &amp; Bersih</div>
     </aside>
   </div>
@@ -1014,7 +1362,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     02 — IDENTITAS
+     02 · IDENTITAS
      ============================================================ -->
 <section class="slide" data-babak="1"
   data-notes="Perkenalan singkat, jangan berlama-lama. Sebut nama anggota satu kali saja, lalu lanjut. Kalau waktu mepet, slide ini bisa dilewati.">
@@ -1062,10 +1410,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     03 — PETA PAPARAN
+     03 · PETA PAPARAN
      ============================================================ -->
 <section class="slide" data-babak="1"
-  data-notes="Beri peta jalan. Sebut empat babak, lalu tegaskan satu kalimat kunci: 'Argumen utama kami ada di babak empat — kesadaran pajak dan anti korupsi bukan dua topik, tapi satu.'">
+  data-notes="Beri peta jalan. Sebut empat babak, lalu tegaskan satu kalimat kunci: 'Argumen utama kami ada di babak empat: kesadaran pajak dan anti korupsi bukan dua topik, tapi satu.'">
   <header class="hdr">
     <div><span class="seal"></span>Peta paparan</div>
     <div class="hdr-r">Lembar 03 / 22</div>
@@ -1124,7 +1472,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     04 — VIDEO: PENDAPATAN NEGARA
+     04 · VIDEO: PENDAPATAN NEGARA
      ============================================================ -->
 <section class="slide" data-babak="1"
   data-notes="Video: 'Dari Mana Negara Bisa Dapat Uang?' dari kanal Kok Bisa? (3:18). Menjelaskan sumber pendapatan negara dengan bahasa populer, pas sebagai pembuka babak. Putar sampai selesai. Kalau internet mati, slide ini tetap tampil rapi: klik tidak berfungsi, langsung lanjut ke angka di kanan, pendapatan negara Rp 2.765,13 T dan dari pajak Rp 1.917,6 T.">
@@ -1138,13 +1486,13 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       <p class="eyebrow"><span class="dash"></span>Pendapatan negara</p>
       <h3 class="sub" style="margin-bottom:clamp(.5rem,1.4vh,1rem)">Dari mana uang negara berasal</h3>
 
-      <!-- Video: "Dari Mana Negara Bisa Dapat Uang?" — kanal Kok Bisa?, durasi 3:18.
+      <!-- Video: "Dari Mana Negara Bisa Dapat Uang?" dari kanal Kok Bisa?, durasi 3:18.
            Diganti 17 Sep 2026 atas permintaan Arya. Sebelumnya "Indonesia Tanpa Pajak?"
            dari Kanwil DJP Jawa Tengah I (1:46).
            PENTING: kalau data-yt diubah lagi, bikin ulang assets/qr/slide04.png,
            karena QR di panel kanan menyimpan URL video secara terpisah. -->
       <div class="video" data-yt="kcZktSqKgNI"
-           data-title="Dari Mana Negara Bisa Dapat Uang? — Kok Bisa?">
+           data-title="Dari Mana Negara Bisa Dapat Uang? (Kok Bisa?)">
         <img src="https://i.ytimg.com/vi/kcZktSqKgNI/maxresdefault.jpg" alt="" loading="lazy"
              onerror="if(!this.dataset.f){this.dataset.f=1;this.src='https://i.ytimg.com/vi/kcZktSqKgNI/hqdefault.jpg'}else{this.remove()}" />
         <span class="play" aria-hidden="true"></span>
@@ -1182,10 +1530,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     05 — PAJAK: KONTRIBUTOR UTAMA
+     05 · PAJAK: KONTRIBUTOR UTAMA
      ============================================================ -->
 <section class="slide" data-babak="2"
-  data-notes="Tekankan bahwa pajak BUKAN sekadar sumber pemasukan — ia tulang punggung. Lalu sebut kegagalan target: 87,6% dari target APBN 2025. Ini fakta yang mengganggu, dan justru itu pintu masuk ke seluruh argumen kita.">
+  data-notes="Tekankan bahwa pajak BUKAN sekadar sumber pemasukan; ia tulang punggung. Lalu sebut kegagalan target: 87,6% dari target APBN 2025. Ini fakta yang mengganggu, dan justru itu pintu masuk ke seluruh argumen kita.">
   <header class="hdr">
     <div><span class="seal"></span>Latar belakang</div>
     <div class="hdr-r">Lembar 05 / 22</div>
@@ -1232,10 +1580,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     06 — RASIO PAJAK  ★ momen puncak
+     06 · RASIO PAJAK  ★ momen puncak
      ============================================================ -->
 <section class="slide" data-babak="2"
-  data-notes="MOMEN PENTING. Diamkan 2 detik setelah batang tumbuh. Jangan buru-buru. Kalimatnya: 'Bar Indonesia paling pendek kedua setelah Bangladesh dan Timor-Leste. Rata-rata kawasan Asia-Pasifik 19,7 persen. Kita 11,8. Jarak delapan poin itu bukan angka statistik — itu kapasitas negara yang tidak terpakai.'">
+  data-notes="MOMEN PENTING. Diamkan 2 detik setelah batang tumbuh. Jangan buru-buru. Kalimatnya: 'Bar Indonesia paling pendek kedua setelah Bangladesh dan Timor-Leste. Rata-rata kawasan Asia-Pasifik 19,7 persen. Kita 11,8. Jarak delapan poin itu bukan angka statistik; itu kapasitas negara yang tidak terpakai.'">
   <header class="hdr">
     <div><span class="seal"></span>Rasio pajak terhadap PDB</div>
     <div class="hdr-r">Lembar 06 / 22</div>
@@ -1297,7 +1645,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     07 — KE MANA UANG PAJAK PERGI
+     07 · KE MANA UANG PAJAK PERGI
      ============================================================ -->
 <section class="slide" data-babak="2"
   data-notes="Slide ini yang paling mudah dimengerti kelas. Pakai bahasa konkret: 'Pajak yang Anda bayar tidak hilang. Ia jadi jalan, jadi puskesmas, jadi ruang kelas.' Hindari istilah teknis di sini.">
@@ -1319,7 +1667,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       <div class="card rv" style="--i:1">
         <span class="num">01</span>
         <h4>Pendidikan</h4>
-        <p>Membangun dan meningkatkan kualitas fasilitas pendidikan nasional — dari gedung sekolah sampai kesejahteraan guru.</p>
+        <p>Membangun dan meningkatkan kualitas fasilitas pendidikan nasional, dari gedung sekolah sampai kesejahteraan guru.</p>
       </div>
       <div class="card rv" style="--i:2">
         <span class="num">02</span>
@@ -1334,7 +1682,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     </div>
 
     <p class="lead rule rv" style="--i:5;max-width:76ch">
-      Tiga hal ini bukan hadiah dari negara. Ini hak yang dibiayai bersama —
+      Tiga hal ini bukan hadiah dari negara. Ini hak yang dibiayai bersama,
       dan satu-satunya cara membiayainya adalah melalui pajak.
     </p>
   </div>
@@ -1346,7 +1694,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     08 — DEFINISI PAJAK
+     08 · DEFINISI PAJAK
      ============================================================ -->
 <section class="slide" data-babak="2"
   data-notes="Ini slide paling mungkin ditanya dosen. Tiga lapis definisi: doktrin yuridis (Adriani), doktrin ekonomi (Soemitro), dan hukum positif (UU KUP Pasal 1 angka 1). Tegaskan: dua yang pertama adalah doktrin, yang ketiga mengikat. Kalau ditanya, jawab dengan pasal.">
@@ -1380,7 +1728,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <h4>Prof. Dr. Rochmat Soemitro, S.H.</h4>
         <p style="font-size:var(--t-5);line-height:1.6">
           Peralihan kekayaan dari pihak rakyat kepada kas negara untuk membiayai
-          pengeluaran rutin; surplusnya menjadi <em>public saving</em> — sumber utama
+          pengeluaran rutin; surplusnya menjadi <em>public saving</em>, sumber utama
           pembiayaan <em>public investment</em>.
         </p>
       </div>
@@ -1404,10 +1752,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     09 — FAKTOR KEPATUHAN
+     09 · FAKTOR KEPATUHAN
      ============================================================ -->
 <section class="slide" data-babak="2"
-  data-notes="Analogi yang mudah: faktor internal itu 'mau', faktor eksternal itu 'harus'. Kepatuhan yang sehat bertumpu pada yang pertama — yang kedua hanya jaring pengaman.">
+  data-notes="Analogi yang mudah: faktor internal itu 'mau', faktor eksternal itu 'harus'. Kepatuhan yang sehat bertumpu pada yang pertama; yang kedua hanya jaring pengaman.">
   <header class="hdr">
     <div><span class="seal"></span>Kepatuhan pajak</div>
     <div class="hdr-r">Lembar 09 / 22</div>
@@ -1436,13 +1784,13 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <span class="num">Faktor internal</span>
         <h4>Dorongan dari dalam</h4>
         <p>Pengetahuan dan kesadaran individu yang mendorong kepatuhan dari dalam
-           diri wajib pajak — tanpa perlu diawasi.</p>
+           diri wajib pajak, tanpa perlu diawasi.</p>
       </div>
       <div class="card" style="margin-top:clamp(.7rem,1.8vh,1.4rem)">
         <span class="num">Faktor eksternal</span>
         <h4>Tekanan dari luar</h4>
         <p>Sanksi perpajakan dan pengawasan yang membentuk perilaku patuh dari luar
-           individu — bekerja ketika kesadaran belum tumbuh.</p>
+           individu, dan bekerja ketika kesadaran belum tumbuh.</p>
       </div>
       <p class="small" style="margin-top:clamp(.6rem,1.6vh,1.2rem)">
         Kepatuhan yang sehat bertumpu pada faktor internal. Faktor eksternal
@@ -1458,10 +1806,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     10 — TIGA PILAR
+     10 · TIGA PILAR
      ============================================================ -->
 <section class="slide" data-babak="2"
-  data-notes="Tiga pilar ini yang nanti dipakai lagi di slide rantai sebab-akibat. Sebut ketiganya dengan cepat: kesadaran sukarela, pengetahuan, pelayanan dan sanksi. Jangan berhenti lama di sini — ini jembatan, bukan tujuan.">
+  data-notes="Tiga pilar ini yang nanti dipakai lagi di slide rantai sebab-akibat. Sebut ketiganya dengan cepat: kesadaran sukarela, pengetahuan, pelayanan dan sanksi. Jangan berhenti lama di sini: ini jembatan, bukan tujuan.">
   <header class="hdr">
     <div><span class="seal"></span>Tiga pilar kepatuhan</div>
     <div class="hdr-r">Lembar 10 / 22</div>
@@ -1514,10 +1862,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     11 — FONDASI SISTEM (jembatan)
+     11 · FONDASI SISTEM (jembatan)
      ============================================================ -->
 <section class="slide" data-babak="2"
-  data-notes="Slide jeda. Bacakan kalimat di bawah perlahan. Setelah ini kita pindah topik ke anti korupsi — tapi tegaskan dulu bahwa keduanya nyambung, supaya perpindahannya tidak terasa melompat.">
+  data-notes="Slide jeda. Bacakan kalimat di bawah perlahan. Setelah ini kita pindah topik ke anti korupsi, tapi tegaskan dulu bahwa keduanya nyambung, supaya perpindahannya tidak terasa melompat.">
   <header class="hdr">
     <div><span class="seal"></span>Fondasi sistem</div>
     <div class="hdr-r">Lembar 11 / 22</div>
@@ -1528,7 +1876,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 
     <p class="quote rv" style="--i:1">
       Tanpa kesadaran sukarela, pengetahuan yang memadai, dan pelayanan yang
-      berkualitas — sistem perpajakan tidak akan berjalan optimal.
+      berkualitas, sistem perpajakan tidak akan berjalan optimal.
       <em class="acc">Kepatuhan pajak yang tinggi berbanding lurus dengan kualitas
       pembangunan nasional yang dirasakan masyarakat.</em>
     </p>
@@ -1546,7 +1894,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     12 — VIDEO: ANTI KORUPSI
+     12 · VIDEO: ANTI KORUPSI
      ============================================================ -->
 <section class="slide" data-babak="3"
   data-notes="Video: 'Pribadi Jujur. Antikorupsi' dari kanal Cerdas Berkarakter, Kemendikdasmen RI, durasi 3:00. Kanal resmi pemerintah, jadi aman dari sisi kredibilitas. Putar 1-2 menit saja, jangan sampai habis.">
@@ -1577,7 +1925,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       <div class="rule">
         <h3 class="sub">Pribadi Jujur. Antikorupsi</h3>
         <p class="small" style="margin-top:.6em">
-          Kanal resmi <strong>Cerdas Berkarakter</strong>, Kemendikdasmen RI —
+          Kanal resmi <strong>Cerdas Berkarakter</strong>, Kemendikdasmen RI,
           program penguatan karakter generasi muda.
         </p>
       </div>
@@ -1596,10 +1944,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     13 — HAKIKAT PENDIDIKAN ANTI KORUPSI
+     13 · HAKIKAT PENDIDIKAN ANTI KORUPSI
      ============================================================ -->
 <section class="slide" data-babak="3"
-  data-notes="Tiga kata kunci: sadar, sistematis, konsisten. Tegaskan bahwa pendidikan anti korupsi bukan kampanye sesaat — ia usaha sadar dan sistematis, artinya harus masuk kurikulum, bukan sekadar poster di dinding.">
+  data-notes="Tiga kata kunci: sadar, sistematis, konsisten. Tegaskan bahwa pendidikan anti korupsi bukan kampanye sesaat; ia usaha sadar dan sistematis, artinya harus masuk kurikulum, bukan sekadar poster di dinding.">
   <header class="hdr">
     <div><span class="seal"></span>Pendidikan anti korupsi</div>
     <div class="hdr-r">Lembar 13 / 22</div>
@@ -1619,7 +1967,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <span class="num">01</span>
         <h4>Usaha sadar dan sistematis</h4>
         <p>Proses terencana untuk menanamkan nilai moral dan kejujuran secara
-           konsisten dalam lingkungan pendidikan — bukan kampanye sesaat.</p>
+           konsisten dalam lingkungan pendidikan, bukan kampanye sesaat.</p>
       </div>
       <div class="card rv" style="--i:2">
         <span class="num">02</span>
@@ -1643,7 +1991,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     14 — TUJUAN
+     14 · TUJUAN
      ============================================================ -->
 <section class="slide" data-babak="3"
   data-notes="Bedakan slide ini dari sebelumnya: yang tadi hakikat (apa itu), yang ini tujuan (untuk apa). Sebut tiga sasaran perubahan: pola pikir, sikap, perilaku.">
@@ -1666,7 +2014,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <span class="num">Pola pikir</span>
         <h4>Memahami bahayanya</h4>
         <p>Mengembangkan pemahaman tentang bahaya korupsi bagi negara dan
-           masyarakat secara luas — bukan sekadar tahu bahwa korupsi itu salah.</p>
+           masyarakat secara luas, bukan sekadar tahu bahwa korupsi itu salah.</p>
       </div>
       <div class="card rv" style="--i:2">
         <span class="num">Sikap</span>
@@ -1678,7 +2026,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <span class="num">Perilaku</span>
         <h4>Membangun budaya</h4>
         <p>Menciptakan budaya anti korupsi di lingkungan pendidikan dan masyarakat
-           luas — sehingga kejujuran menjadi kebiasaan, bukan prestasi.</p>
+           luas, sehingga kejujuran menjadi kebiasaan, bukan prestasi.</p>
       </div>
     </div>
   </div>
@@ -1690,10 +2038,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     15 — DAMPAK PADA GENERASI MUDA
+     15 · DAMPAK PADA GENERASI MUDA
      ============================================================ -->
 <section class="slide" data-babak="3"
-  data-notes="Slide ini soal kita sendiri. Sebut bahwa korupsi tidak selalu dimulai dari pejabat — ia dimulai dari kebiasaan kecil: menyontek, titip absen, laporan yang dibesarkan. Normalisasi itulah pintu masuknya.">
+  data-notes="Slide ini soal kita sendiri. Sebut bahwa korupsi tidak selalu dimulai dari pejabat; ia dimulai dari kebiasaan kecil: menyontek, titip absen, laporan yang dibesarkan. Normalisasi itulah pintu masuknya.">
   <header class="hdr">
     <div><span class="seal"></span>Dampak korupsi</div>
     <div class="hdr-r">Lembar 15 / 22</div>
@@ -1713,7 +2061,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <span class="num">01</span>
         <h4>Normalisasi korupsi</h4>
         <p>Korupsi yang dianggap lumrah oleh lingkungan menciptakan kepribadian
-           antisosial pada anak — batas antara benar dan salah menjadi kabur.</p>
+           antisosial pada anak, batas antara benar dan salah menjadi kabur.</p>
       </div>
       <div class="card rv" style="--i:2">
         <span class="num">02</span>
@@ -1730,7 +2078,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     </div>
 
     <p class="lead rule rv" style="--i:5;max-width:76ch">
-      Menyontek, titip absen, laporan yang dibesarkan — semuanya kecil.
+      Menyontek, titip absen, laporan yang dibesarkan, semuanya kecil.
       <strong>Masalahnya bukan ukurannya, tapi kebiasaannya.</strong>
     </p>
   </div>
@@ -1742,10 +2090,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     16 — CPI  ★ momen puncak emosional
+     16 · CPI  ★ momen puncak emosional
      ============================================================ -->
 <section class="slide" data-babak="3"
-  data-notes="MOMEN PALING PENTING DI SELURUH PAPARAN. Diam total 3 detik setelah garis jatuh. Jangan tersenyum. Kalimatnya: 'Dua ribu dua puluh tiga: tiga puluh empat. Dua ribu dua puluh empat: naik ke tiga puluh tujuh — kita sempat berharap. Dua ribu dua puluh lima: kembali ke tiga puluh empat. Peringkat kita turun dari sembilan puluh sembilan ke seratus sembilan. Target kami empat puluh lima.' Lalu diam lagi. Biarkan kelas yang menyimpulkan.">
+  data-notes="MOMEN PALING PENTING DI SELURUH PAPARAN. Diam total 3 detik setelah garis jatuh. Jangan tersenyum. Kalimatnya: 'Dua ribu dua puluh tiga: tiga puluh empat. Dua ribu dua puluh empat: naik ke tiga puluh tujuh, kita sempat berharap. Dua ribu dua puluh lima: kembali ke tiga puluh empat. Peringkat kita turun dari sembilan puluh sembilan ke seratus sembilan. Target kami empat puluh lima.' Lalu diam lagi. Biarkan kelas yang menyimpulkan.">
   <header class="hdr">
     <div><span class="seal"></span>Indeks Persepsi Korupsi</div>
     <div class="hdr-r">Lembar 16 / 22</div>
@@ -1759,7 +2107,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <span class="mask" style="--i:1"><span><em class="acc">berhenti di 34</em></span></span>
       </h2>
       <p class="lead rule rv" style="--i:4;margin-top:clamp(.6rem,1.6vh,1.2rem)">
-        Sempat naik tiga poin pada 2024. Lalu turun kembali ke titik awal —
+        Sempat naik tiga poin pada 2024. Lalu turun kembali ke titik awal,
         dan peringkat Indonesia justru jatuh sepuluh posisi.
       </p>
       <p class="small rv" style="--i:5;margin-top:clamp(.5rem,1.3vh,1rem)">
@@ -1801,7 +2149,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <text class="cpi-txt" data-d="2" x="215" y="126" text-anchor="middle">2024 · 37</text>
         <text class="cpi-txt hi" data-d="3" x="340" y="190" text-anchor="middle">2025 · 34</text>
 
-        <text class="cpi-txt" x="90"  y="224" text-anchor="middle" style="fill:var(--muted)">Peringkat —</text>
+        <text class="cpi-txt" x="90"  y="224" text-anchor="middle" style="fill:var(--muted)">Peringkat n/a</text>
         <text class="cpi-txt" x="215" y="224" text-anchor="middle" style="fill:var(--muted)">Peringkat 99</text>
         <text class="cpi-txt hi" data-d="3" x="340" y="224" text-anchor="middle">Peringkat 109</text>
       </svg>
@@ -1809,16 +2157,16 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   </div>
 
   <footer class="ftr">
-    <div>Target kelompok: skor 45 pada 2028 — masih 11 poin dari kondisi hari ini</div>
+    <div>Target kelompok: skor 45 pada 2028, masih 11 poin dari kondisi hari ini</div>
     <div class="babak">Babak III · Anti Korupsi</div>
   </footer>
 </section>
 
 <!-- ============================================================
-     17 — DUA SISI SATU KOIN
+     17 · DUA SISI SATU KOIN
      ============================================================ -->
 <section class="slide" data-babak="4"
-  data-notes="Inilah tesis utama paparan. Ucapkan dengan pelan: 'Kesadaran pajak dan pendidikan anti korupsi bukan dua topik. Keduanya satu mata uang — dua sisinya berbeda, tapi nilainya sama.'">
+  data-notes="Inilah tesis utama paparan. Ucapkan dengan pelan: 'Kesadaran pajak dan pendidikan anti korupsi bukan dua topik. Keduanya satu mata uang, dua sisinya berbeda, tapi nilainya sama.'">
   <header class="hdr">
     <div><span class="seal"></span>Korelasi</div>
     <div class="hdr-r">Lembar 17 / 22</div>
@@ -1851,7 +2199,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     </div>
 
     <p class="lead rule rv" style="--i:7;max-width:78ch">
-      Warga yang memahami manfaat pajak secara otomatis akan menolak korupsi —
+      Warga yang memahami manfaat pajak secara otomatis akan menolak korupsi,
       karena korupsi merugikan kepentingan publik yang ia biayai sendiri.
     </p>
   </div>
@@ -1863,10 +2211,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     18 — RANTAI SEBAB-AKIBAT  ★
+     18 · RANTAI SEBAB-AKIBAT  ★
      ============================================================ -->
 <section class="slide" data-babak="4"
-  data-notes="Biarkan garis menggambar dirinya sendiri sambil Anda diam. Setelah selesai, baru jelaskan tiap simpul dari kiri ke kanan. Kalimat penutup: 'Perhatikan bahwa semuanya dimulai dari pendidikan — bukan dari penindakan.'">
+  data-notes="Biarkan garis menggambar dirinya sendiri sambil Anda diam. Setelah selesai, baru jelaskan tiap simpul dari kiri ke kanan. Kalimat penutup: 'Perhatikan bahwa semuanya dimulai dari pendidikan, bukan dari penindakan.'">
   <header class="hdr">
     <div><span class="seal"></span>Mekanisme kausal</div>
     <div class="hdr-r">Lembar 18 / 22</div>
@@ -1949,10 +2297,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     19 — PERAN MAHASISWA & DOSEN
+     19 · PERAN MAHASISWA & DOSEN
      ============================================================ -->
 <section class="slide" data-babak="4"
-  data-notes="Slide ini yang paling dekat dengan audiens. Kalau waktunya cukup, sebut nama — misalnya himpunan mahasiswa atau komunitas di fakultas. Yang penting bukan teori, tapi siapa yang mulai.">
+  data-notes="Slide ini yang paling dekat dengan audiens. Kalau waktunya cukup, sebut nama, misalnya himpunan mahasiswa atau komunitas di fakultas. Yang penting bukan teori, tapi siapa yang mulai.">
   <header class="hdr">
     <div><span class="seal"></span>Peran</div>
     <div class="hdr-r">Lembar 19 / 22</div>
@@ -1972,13 +2320,13 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
         <span class="num">Mahasiswa</span>
         <h4>Agen perubahan</h4>
         <p>Garda terdepan penyebaran nilai kejujuran dan kesadaran pajak
-           di masyarakat — dimulai dari lingkaran terdekat.</p>
+           di masyarakat, dimulai dari lingkaran terdekat.</p>
       </div>
       <div class="card rv" style="--i:2">
         <span class="num">Dosen</span>
         <h4>Teladan akademis</h4>
         <p>Role model integritas dan penggerak budaya anti korupsi
-           di lingkungan kampus — lewat keteladanan, bukan hanya ceramah.</p>
+           di lingkungan kampus, lewat keteladanan, bukan hanya ceramah.</p>
       </div>
       <div class="card rv" style="--i:3">
         <span class="num">Bersama</span>
@@ -1996,10 +2344,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     20 — TIGA PROGRAM
+     20 · TIGA PROGRAM
      ============================================================ -->
 <section class="slide" data-babak="4"
-  data-notes="Tiga program ini usulan kelompok. Sampaikan sebagai usulan, bukan klaim — dan sebut targetnya supaya terukur. Yang paling mudah dieksekusi adalah yang ketiga: komunitas duta pajak kampus.">
+  data-notes="Tiga program ini usulan kelompok. Sampaikan sebagai usulan, bukan klaim, dan sebut targetnya supaya terukur. Yang paling mudah dieksekusi adalah yang ketiga: komunitas duta pajak kampus.">
   <header class="hdr">
     <div><span class="seal"></span>Program</div>
     <div class="hdr-r">Lembar 20 / 22</div>
@@ -2009,7 +2357,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     <div>
       <p class="eyebrow"><span class="dash"></span>Tiga usulan nyata</p>
       <h2 class="title" style="max-width:30ch">
-        <span class="mask" style="--i:0"><span>Bukan sekadar gagasan —</span></span>
+        <span class="mask" style="--i:0"><span>Bukan sekadar gagasan,</span></span>
         <span class="mask" style="--i:1"><span>ini yang bisa dijalankan</span></span>
       </h2>
     </div>
@@ -2046,10 +2394,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     21 — METRIK & JURANG  ★
+     21 · METRIK & JURANG  ★
      ============================================================ -->
 <section class="slide" data-babak="4"
-  data-notes="MOMEN KEDUA TERPENTING. Tunjukkan jurangnya secara terbuka. Kalimatnya: 'Kami menetapkan target ini. Kami juga tahu di mana posisi kita sekarang. Jarak antara batang hitam dan garis merah itu adalah pekerjaan yang belum selesai — dan itu justru alasan paparan ini dibuat.' Kejujuran di sini yang akan diingat dosen.">
+  data-notes="MOMEN KEDUA TERPENTING. Tunjukkan jurangnya secara terbuka. Kalimatnya: 'Kami menetapkan target ini. Kami juga tahu di mana posisi kita sekarang. Jarak antara batang hitam dan garis merah itu adalah pekerjaan yang belum selesai, dan itu justru alasan paparan ini dibuat.' Kejujuran di sini yang akan diingat dosen.">
   <header class="hdr">
     <div><span class="seal"></span>Metrik keberhasilan</div>
     <div class="hdr-r">Lembar 21 / 22</div>
@@ -2064,7 +2412,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       </h2>
       <p class="lead rule rv" style="--i:4;margin-top:clamp(.6rem,1.6vh,1.2rem)">
         Batang hitam adalah kondisi hari ini. Blok bergaris adalah selisihnya.
-        Garis merah adalah target 2028. Jarak itu bukan kegagalan — itu daftar pekerjaan.
+        Garis merah adalah target 2028. Jarak itu bukan kegagalan, itu daftar pekerjaan.
       </p>
       <div class="kpi-legend rv" style="--i:6;margin-top:clamp(.7rem,1.8vh,1.3rem)">
         <span><i></i>Hari ini</span>
@@ -2113,10 +2461,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 </section>
 
 <!-- ============================================================
-     22 — KESIMPULAN  ★ penutup
+     22 · KESIMPULAN  ★ penutup
      ============================================================ -->
 <section class="slide" data-babak="4"
-  data-notes="PENUTUP. Bar yang menutupi angka di panel kanan akan terbuka serentak. Diam sampai semuanya terbuka, baru ucapkan kalimat terakhir. Jangan tambah slide 'terima kasih' — akhiri di sini.">
+  data-notes="PENUTUP. Bar yang menutupi angka di panel kanan akan terbuka serentak. Diam sampai semuanya terbuka, baru ucapkan kalimat terakhir. Jangan tambah slide 'terima kasih'; akhiri di sini.">
   <header class="hdr">
     <div><span class="seal"></span>Kesimpulan</div>
     <div class="hdr-r">Lembar 22 / 22</div>
@@ -2131,7 +2479,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       </h2>
 
       <p class="lead rule rv" style="--i:4;margin-top:clamp(.6rem,1.6vh,1.2rem)">
-        Banyak tantangan yang dihadapi Indonesia — salah satunya pemahaman tentang
+        Banyak tantangan yang dihadapi Indonesia, salah satunya pemahaman tentang
         pajak itu sendiri, dan ketidakpercayaan masyarakat terhadap pengalokasiannya.
         Karena itu diperlukan kesadaran pajak dan pendidikan anti korupsi.
       </p>
@@ -2166,9 +2514,14 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
           <i></i>
         </span>
       </span>
-      <p class="reveal-line" style="font-family:var(--font-mono);font-size:var(--t-5);letter-spacing:.16em;text-transform:uppercase;color:var(--vermilion)">
+      <p class="reveal-line" style="font-family:var(--font-mono);font-size:var(--t-5);letter-spacing:.16em;text-transform:uppercase;color:var(--vermilion-2)">
         Transparansi · Integritas · Akuntabilitas
       </p>
+      <div class="reveal-line" style="margin-top:.5em">
+        <a href="source/" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:var(--t-5);color:var(--ink-3);text-decoration:none;letter-spacing:.08em;text-transform:uppercase">
+          <span>Verifikasi Data: /source</span> ↗
+        </a>
+      </div>
       <div class="stamp" style="transition-delay:3.4s">Taat &amp; Bersih</div>
     </aside>
   </div>
@@ -2185,12 +2538,12 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 
 <script>
 /* ================================================================
-   DECK KEWARGANEGARAAN — MESIN
+   DECK KEWARGANEGARAAN · MESIN
    ----------------------------------------------------------------
-     1. WebGL — kertas + noda tinta, bereaksi ke scroll & babak
-     2. Guilloche — satu rosette per babak
-     3. Navigasi — keyboard, titik, penggaris, swipe
-     4. Animasi masuk — dipicu saat slide mendarat
+     1. WebGL: kertas + noda tinta, bereaksi ke scroll & babak
+     2. Guilloche: satu rosette per babak
+     3. Navigasi: keyboard, titik, penggaris, swipe
+     4. Animasi masuk: dipicu saat slide mendarat
      5. Parallax halus
      6. Penghitung angka
      7. Kursor tinta
@@ -2208,7 +2561,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ==============================================================
-     1. WEBGL — kertas + noda tinta
+     1. WEBGL: kertas + noda tinta
      ============================================================== */
   (function webgl() {
     const canvas = document.getElementById('gl');
@@ -2274,18 +2627,34 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       vec3 paper = vec3(0.949, 0.929, 0.890);
       vec3 sepia = mix(vec3(0.744, 0.686, 0.592), vec3(0.780, 0.664, 0.560), warmth);
 
-      vec3 col = mix(paper, sepia, stain * (0.28 + 0.06 * warmth));
+      /* Kekuatan noda 0,24 (dulu 0,28). Noda tinta adalah bagian dari
+         identitas kertas ini, tetapi pada 0,28 noda terpekat menurunkan latar
+         sampai sekitar #E3D6C6, dan teks sekunder kehilangan kontras di
+         atasnya. Diturunkan sedikit supaya noda tetap terbaca sebagai noda. */
+      vec3 col = mix(paper, sepia, stain * (0.24 + 0.05 * warmth));
 
-      /* Serat kertas */
-      float fiber = vnoise(vec2(uv.x * 300.0, uv.y * 6.0));
-      col -= fiber * 0.014;
+      /* Serat kertas.
+         Frekuensinya 320 mendatar dan 90 tegak, bukan 300 dan 6. Pada 6, satu
+         pita serat setinggi 150px di layar 900px, jadi pitanya jauh lebih
+         tinggi daripada huruf, dan begitu satu pita gelap jatuh melintang
+         sebuah judul ia terbaca sebagai coretan penghapus di tengah huruf.
+         Terbukti: mematikan suku ini menghilangkan garisnya, sementara seluruh
+         lapisan lain tetap. Frekuensi tegak dinaikkan sampai pitanya sekitar
+         10px, jauh di bawah tinggi huruf, sehingga seratnya kembali terbaca
+         sebagai tekstur kertas. Amplitudo diturunkan sedikit karena derau yang
+         lebih rapat terbaca lebih kuat pada amplitudo yang sama. */
+      float fiber = vnoise(vec2(uv.x * 320.0, uv.y * 90.0));
+      col -= fiber * 0.012;
 
       /* Cahaya hangat dari kiri atas */
       col += vec3(0.028, 0.020, 0.0) * smoothstep(1.0, 0.0, length(uv - vec2(0.12, 0.92)));
 
-      /* Vignette */
+      /* Vignette 0,14 (dulu 0,24). Vignette menggelapkan sudut, dan justru di
+         sudut itulah teks chrome berada: nomor lembar di kanan atas, sumber di
+         kiri bawah. Pada 0,24 sudut kanan atas turun ke sekitar #D2C6B7.
+         Pada 0,14 kedalaman latarnya masih ada, tetapi teksnya dapat kontras. */
       vec2 v = uv - 0.5;
-      col *= 1.0 - dot(v, v) * 0.24;
+      col *= 1.0 - dot(v, v) * 0.14;
 
       /* Grain */
       col += (hash(gl_FragCoord.xy + fract(uTime) * 77.0) - 0.5) * 0.018;
@@ -2336,7 +2705,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
            canvas tampil tapi isinya kosong. Catatan hasil uji: saat konteks
            HILANG, Chromium melewati canvas sepenuhnya (bukan hitam), jadi
            latar body yang terlihat. Yang bikin layar hitam adalah canvas
-           opaque yang tampil tanpa isi — itu yang dicegah di sini. */
+           opaque yang tampil tanpa isi; itu yang dicegah di sini. */
         alpha: true,
         powerPreference: 'high-performance'
       });
@@ -2405,10 +2774,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       e.preventDefault();                                 // minta dipulihkan
       stop();
       document.documentElement.classList.add('no-gl');    // -> latar kertas
-      console.warn('[deck] konteks WebGL hilang — latar dialihkan ke kertas');
+      console.warn('[deck] konteks WebGL hilang, latar dialihkan ke kertas');
     });
     canvas.addEventListener('webglcontextrestored', () => {
-      console.info('[deck] konteks WebGL pulih — menggambar ulang');
+      console.info('[deck] konteks WebGL pulih, menggambar ulang');
       run();
     });
 
@@ -2419,7 +2788,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   })();
 
   /* ==============================================================
-     2. GUILLOCHE — satu pola per babak
+     2. GUILLOCHE: satu pola per babak
      ============================================================== */
   (function guilloche() {
     const NS = 'http://www.w3.org/2000/svg';
@@ -2460,7 +2829,12 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   const dotsBox   = document.getElementById('dots');
   const rulerFill = document.getElementById('rulerFill');
   const hint      = document.getElementById('hint');
+  const nmSrc     = document.getElementById('nmSrc');
+  const nmCount   = document.getElementById('nmCount');
+  const nmPrev    = document.getElementById('nmPrev');
+  const nmNext    = document.getElementById('nmNext');
   let activeIndex = -1;
+  let nmLastIdx   = -1;
 
   slides.forEach(function (s, i) {
     const b = document.createElement('button');
@@ -2471,9 +2845,40 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   });
   const dots = Array.from(dotsBox.children);
 
+  /* Tinggi baris footer, diukur dari slide yang sedang tampil.
+     Dipakai CSS lewat --ftr-h supaya petunjuk navigasi duduk di atas footer.
+     Kalau footer disembunyikan (layar sempit, atau tinggi <= 560px), nilainya
+     nol, dan CSS memakai tinggi bar navigasi sebagai gantinya. */
+  function measureFooter() {
+    let h = 0;
+    slides.forEach(function (s) {
+      const f = s.querySelector('.ftr');
+      if (f && getComputedStyle(f).display !== 'none') {
+        h = Math.max(h, f.offsetHeight);
+      }
+    });
+    document.documentElement.style.setProperty('--ftr-h', h + 'px');
+  }
+
+  nmPrev.addEventListener('click', function () { goTo(currentIndex() - 1); });
+  nmNext.addEventListener('click', function () { goTo(currentIndex() + 1); });
+
   function slideHeight() { return deck.clientHeight; }
 
+  /* goTo = pintu masuk semua navigasi (keyboard, titik, swipe, bar mini).
+     Kalau sistem FX aktif, permintaan diserahkan ke FX.nav yang memainkan
+     transisi berkarakter lebih dulu; scroll asli terjadi di tengah transisi
+     saat layar tertutup penuh. Tanpa FX (reduced-motion), perilaku klasik. */
   function goTo(i) {
+    i = Math.max(0, Math.min(total - 1, i));
+    if (window.FX && window.FX.nav && document.documentElement.classList.contains('fx-on')) {
+      window.FX.nav(i);
+      return;
+    }
+    rawGo(i);
+  }
+
+  function rawGo(i) {
     i = Math.max(0, Math.min(total - 1, i));
     const target = i * slideHeight();
     deck.scrollTo({ top: target, behavior: reduced ? 'auto' : 'smooth' });
@@ -2481,8 +2886,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 
     /* Jaring pengaman: kalau scroll mulus berhenti di tengah (bisa terjadi
        karena scroll-snap-stop), lompat langsung ke target. */
-    clearTimeout(goTo.__t);
-    goTo.__t = setTimeout(function () {
+    clearTimeout(rawGo.__t);
+    rawGo.__t = setTimeout(function () {
       if (Math.abs(deck.scrollTop - target) > slideHeight() * 0.5) {
         const prev = deck.style.scrollBehavior;
         deck.style.scrollBehavior = 'auto';
@@ -2491,6 +2896,17 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       }
       ensureActive();
     }, 820);
+  }
+
+  /* Lompat instan ke slide i — dipanggil FX core di titik 'mid' transisi */
+  function show(i) {
+    i = Math.max(0, Math.min(total - 1, i));
+    const prevB = deck.style.scrollBehavior;
+    deck.style.scrollBehavior = 'auto';
+    deck.scrollTop = i * slideHeight();
+    deck.style.scrollBehavior = prevB;
+    clearTimeout(rawGo.__t);
+    ensureActive();
   }
 
   function currentIndex() {
@@ -2506,6 +2922,18 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 
     const idx = currentIndex();
     dots.forEach(function (d, i) { d.classList.toggle('on', i === idx); });
+
+    /* Bar navigasi layar sempit. Teks sumber diambil dari footer slide aktif,
+       karena di layar sempit footer itu sendiri disembunyikan. */
+    if (idx !== nmLastIdx) {
+      nmLastIdx = idx;
+      nmCount.textContent = String(idx + 1).padStart(2, '0') + ' / ' + total;
+      nmPrev.disabled = idx <= 0;
+      nmNext.disabled = idx >= total - 1;
+      const active = slides[idx];
+      const src = active ? active.querySelector('.ftr > div:first-child') : null;
+      nmSrc.textContent = src ? src.textContent.trim() : '';
+    }
   }
 
   let lastScrollAt = 0;
@@ -2526,6 +2954,8 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     deck.style.scrollBehavior = 'auto';
     deck.scrollTop = Math.max(0, activeIndex) * slideHeight();
     deck.style.scrollBehavior = prev;
+    measureFooter();
+    nmLastIdx = -1;   /* paksa teks sumber ikut diperbarui setelah lebar berubah */
     updateChrome();
   });
 
@@ -2571,9 +3001,9 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   /* ==============================================================
      4. ANIMASI MASUK
      Tiga lapis pengaman supaya slide TIDAK PERNAH kosong:
-       a. IntersectionObserver — jalur utama
-       b. scrollend / scroll   — cadangan
-       c. watchdog interval    — jaring terakhir
+       a. IntersectionObserver · jalur utama
+       b. scrollend / scroll   · cadangan
+       c. watchdog interval    · jaring terakhir
      Semua memanggil ensureActive() yang idempoten.
      ============================================================== */
   function nearestIndex() {
@@ -2591,6 +3021,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     if (idx < 0 || idx >= total) return;
     if (idx === activeIndex) return;
 
+    const prevIdx = activeIndex;
     slides.forEach(function (s) { s.classList.remove('in'); });
     activeIndex = idx;
 
@@ -2601,6 +3032,11 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     });
     if (window.__glState) window.__glState.babak = babak - 1;
 
+    /* beri tahu sistem FX: slide lama di-destroy, slide baru di-init */
+    document.dispatchEvent(new CustomEvent('deck:activate', {
+      detail: { index: idx, prev: prevIdx }
+    }));
+
     void s.offsetWidth;                     /* paksa reflow, transisi mulai dari nol */
     requestAnimationFrame(function () {
       s.classList.add('in');
@@ -2608,7 +3044,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     });
   }
 
-  /* Idempoten. Kalau slide aktif belum beranimasi, paksa tampil —
+  /* Idempoten. Kalau slide aktif belum beranimasi, paksa tampil.
      inilah yang menjamin tidak akan pernah ada slide kosong. */
   function ensureActive() {
     const idx = nearestIndex();
@@ -2633,7 +3069,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     slides.forEach(function (s) { io.observe(s); });
   }
 
-  /* c. Watchdog — sangat murah, dan memastikan isi selalu terlihat.
+  /* c. Watchdog: sangat murah, dan memastikan isi selalu terlihat.
      Dilewati saat sedang menggulir supaya tidak berebut dengan snap. */
   setInterval(function () {
     if (document.hidden) return;
@@ -2667,6 +3103,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
      6. PENGHITUNG ANGKA
      ============================================================== */
   function runCounters(slide) {
+    /* Saat sistem FX aktif, counter ditangani GSAP (fx-entrances) dengan
+       easing dramatis + suara tick. Jalur lama hanya untuk reduced-motion
+       dan untuk mode cetak. */
+    if (window.FX && document.documentElement.classList.contains('fx-on') && !window.FX.printing) return;
     slide.querySelectorAll('[data-count]').forEach(function (el) {
       if (el.dataset.done === '1') return;
       el.dataset.done = '1';
@@ -2716,7 +3156,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   })();
 
   /* ==============================================================
-     8. VIDEO — facade, iframe baru dimuat setelah diklik
+     8. VIDEO: facade, iframe baru dimuat setelah diklik
      ============================================================== */
   document.querySelectorAll('.video').forEach(function (v) {
     const id = v.dataset.yt;
@@ -2724,7 +3164,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 
     /* PENTING: kalau file dibuka lewat klik dua kali (protocol file:),
        origin-nya null dan YouTube menolak embed-nya (Error 153). Jangan
-       tampilkan player rusak di depan kelas — alihkan ke YouTube. */
+       tampilkan player rusak di depan kelas; alihkan ke YouTube. */
     if (location.protocol === 'file:') v.classList.add('file-mode');
 
     v.addEventListener('click', function () {
@@ -2812,10 +3252,10 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       setEditable(on);
       if (on) {
         tag();
-        toast('Mode edit aktif — klik teks untuk mengubah. Ctrl+S untuk unduh.');
+        toast('Mode edit aktif: klik teks untuk mengubah. Ctrl+S untuk unduh.');
       } else {
         save();
-        toast('Mode edit nonaktif — perubahan tersimpan.');
+        toast('Mode edit nonaktif: perubahan tersimpan.');
       }
     }
 
@@ -2834,7 +3274,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       a.download = 'index.html';
       a.click();
       setTimeout(function () { URL.revokeObjectURL(a.href); }, 4000);
-      toast('HTML terunduh — simpan menimpa index.html');
+      toast('HTML terunduh: simpan menimpa index.html');
     }
 
     document.addEventListener('input', function (e) {
@@ -2905,6 +3345,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
      Semua animasi dipaksa ke keadaan akhir sebelum dicetak.
      ============================================================== */
   window.addEventListener('beforeprint', function () {
+    if (window.FX && window.FX.preparePrint) window.FX.preparePrint();
     slides.forEach(function (s) { s.classList.add('in'); });
     document.querySelectorAll('[data-count]').forEach(function (el) {
       const dec = parseInt(el.dataset.dec || '0', 10);
@@ -2913,14 +3354,30 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       }) + (el.dataset.suffix || '');
     });
   });
+  window.addEventListener('afterprint', function () {
+    if (window.FX && window.FX.restorePrint) window.FX.restorePrint();
+  });
+
+  /* ================================================================
+     ANTARMUKA UNTUK SISTEM FX (assets/js/fx-core.js)
+     ================================================================ */
+  window.DeckNav = {
+    deck: deck, slides: slides, total: total, reduced: reduced,
+    slideHeight: slideHeight,
+    currentIndex: currentIndex,
+    show: show,
+    rawGo: rawGo,
+    firstPaint: false
+  };
 
   /* ==============================================================
      START
      ============================================================== */
   function boot() {
+    measureFooter();
     updateChrome();
 
-    /* Slide pertama langsung aktif — tanpa menunggu scroll apa pun */
+    /* Slide pertama langsung aktif, tanpa menunggu scroll apa pun */
     slides.forEach(function (s) { s.classList.remove('in'); });
     activeIndex = 0;
     document.querySelectorAll('.rosette').forEach(function (r, i) {
@@ -2939,7 +3396,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
       setTimeout(function () { Editor.toast('Perubahan tersimpan dipulihkan.'); }, 1400);
     }
 
-    console.log('[deck] siap — ' + total + ' slide' +
+    console.log('[deck] siap · ' + total + ' slide' +
       (document.documentElement.classList.contains('no-gl') ? ' (tanpa WebGL)' : ''));
   }
 
@@ -2947,5 +3404,31 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   else window.addEventListener('load', boot);
 })();
 </script>
+
+<!-- ============================================================
+     SISTEM FX MODULAR
+     Vendor: GSAP 3.13 (semua plugin gratis sejak 3.13) + Three.js.
+     Muat berurutan; fx-core terakhir — ia yang mengorkestrasi semua.
+     Struktur: registry (fx-registry.js) adalah satu-satunya tempat
+     konfigurasi per slide; menambah/mengganti efek tidak menyentuh
+     file lain.
+     ============================================================ -->
+<script src="assets/vendor/gsap.min.js"></script>
+<script src="assets/vendor/CustomEase.min.js"></script>
+<script src="assets/vendor/MorphSVGPlugin.min.js"></script>
+<script src="assets/vendor/SplitText.min.js"></script>
+<script src="assets/vendor/DrawSVGPlugin.min.js"></script>
+<script src="assets/vendor/MotionPathPlugin.min.js"></script>
+<script src="assets/vendor/three.min.js"></script>
+<script src="assets/js/fx-sound.js"></script>
+<script src="assets/js/fx-cursor.js"></script>
+<script src="assets/js/fx-svg-stage.js"></script>
+<script src="assets/js/fx-webgl.js"></script>
+<script src="assets/js/fx-physics.js"></script>
+<script src="assets/js/fx-transitions.js"></script>
+<script src="assets/js/fx-entrances.js"></script>
+<script src="assets/js/fx-interactions.js"></script>
+<script src="assets/js/fx-registry.js"></script>
+<script src="assets/js/fx-core.js"></script>
 </body>
 </html>

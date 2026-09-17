@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Preview C — Transparansi</title>
+<title>Preview C · Transparansi</title>
 <link rel="preconnect" href="https://api.fontshare.com" />
 <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -11,11 +11,11 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
 <style>
 /* ============================================================
-   STYLE C — "TRANSPARANSI"
+   STYLE C · "TRANSPARANSI"
    Konsep: cahaya menembus kaca. Kesadaran pajak = terang;
    korupsi = keruh. WebGL caustics + light shafts.
    Arah rasa: presisi, dingin, institusional modern. Angka jadi
-   bintang utama — cocok untuk slide data & KPI.
+   bintang utama, cocok untuk slide data & KPI.
    ============================================================ */
 
 /* ---------- TOKENS ---------- */
@@ -332,7 +332,7 @@ body{
 
 <script>
 /* ============================================================
-   WEBGL — "TRANSPARANSI" SHADER
+   WEBGL · "TRANSPARANSI" SHADER
    Berkas cahaya vertikal menembus medium keruh, dengan caustics
    dari ridged noise. Domain warp memberi kesan kaca yang mengalir.
    ============================================================ */
@@ -385,7 +385,7 @@ body{
     float n = fbm(p * 2.1 + w * 1.9);
 
     /* Berkas cahaya vertikal: inti sempit & tajam, plus halo lembut.
-       Lebar inti ~6% layar — bukan 34%, biar tidak jadi awan. */
+       Lebar inti ~6% layar, bukan 34%, biar tidak jadi awan. */
     float shafts = 0.0;
     float halo   = 0.0;
     for (int i = 0; i < 5; i++){

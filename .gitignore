@@ -7,6 +7,7 @@ shots/
 # Sisa penyelidikan ekspor PDF yang dibatalkan (Arya: tidak butuh PDF)
 _pdf_dump.json
 verify.log
+tools/_shot/
 
 # Berkas sementara saat memeriksa repo / server
 _lsremote.txt

@@ -1,5 +1,5 @@
 """
-alpha-proof.py — Apa yang terjadi pada canvas WebGL saat konteksnya hilang?
+alpha-proof.py · Apa yang terjadi pada canvas WebGL saat konteksnya hilang?
 
 Warna dibikin saling berbeda supaya bisa dibedakan:
   body   : hijau   (0,255,0)

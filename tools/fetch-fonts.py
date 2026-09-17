@@ -1,5 +1,5 @@
 """
-fetch-fonts.py — Unduh font dari Google Fonts dan simpan lokal sebagai woff2.
+fetch-fonts.py · Unduh font dari Google Fonts dan simpan lokal sebagai woff2.
 
 Kenapa self-host: kalau wifi kampus mati, deck harus tetap tampil sempurna.
 Hanya subset `latin` yang diambil (konten berbahasa Indonesia).
@@ -74,7 +74,7 @@ def main():
         )
 
     (FONT_DIR / "fonts.css").write_text(
-        "/* Font lokal — dihasilkan oleh tools/fetch-fonts.py. Jangan diedit manual. */\n"
+        "/* Font lokal, dihasilkan oleh tools/fetch-fonts.py. Jangan diedit manual. */\n"
         + "\n".join(out_rules) + "\n",
         encoding="utf-8",
     )

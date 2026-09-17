@@ -1,5 +1,5 @@
 """
-yt-file-test.py — Bisakah YouTube di-embed saat halaman dibuka lewat file:// ?
+yt-file-test.py · Bisakah YouTube di-embed saat halaman dibuka lewat file:// ?
 
 Menguji beberapa varian URL embed dari dua konteks: file:// dan http://127.0.0.1.
 Hasilnya dinilai dari screenshot area player (bukan dari DOM iframe, karena

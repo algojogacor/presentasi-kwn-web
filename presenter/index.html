@@ -231,13 +231,20 @@
       padding: 18px 16px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.35);
     }
+    .script-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
     .script-tag {
       font-family: var(--font-mono);
       font-size: 11px;
       letter-spacing: 0.16em;
       text-transform: uppercase;
       color: var(--ink-muted);
-      margin-bottom: 12px;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -250,13 +257,161 @@
       background: var(--vermilion);
     }
 
+    /* Stabilo Quick Toggle Pill */
+    .stabilo-quick-toggle {
+      background: var(--bg-elevated);
+      border: 1px solid var(--rule);
+      color: var(--ink-2);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+      transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    }
+    .stabilo-quick-toggle:active {
+      transform: scale(0.97);
+    }
+    .stabilo-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      transition: all 0.2s ease;
+    }
+    .stabilo-quick-toggle.off .stabilo-indicator {
+      background: #777;
+      box-shadow: none;
+    }
+
+    /* Stabilo Legend Bar */
+    .stabilo-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed rgba(246, 241, 234, 0.1);
+      transition: opacity 0.2s ease;
+    }
+    .legend-chip {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.03em;
+      padding: 3px 8px;
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .legend-chip .chip-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .chip-tegas { background: rgba(224, 83, 56, 0.16); color: #FFA896; border: 1px solid rgba(224, 83, 56, 0.35); }
+    .chip-tegas .chip-dot { background: #FF5A36; }
+    .chip-santai { background: rgba(212, 163, 89, 0.16); color: #FBE2A7; border: 1px solid rgba(212, 163, 89, 0.35); }
+    .chip-santai .chip-dot { background: #E5B25D; }
+    .chip-serius { background: rgba(86, 148, 240, 0.16); color: #B2D3FF; border: 1px solid rgba(86, 148, 240, 0.35); }
+    .chip-serius .chip-dot { background: #5A9EFF; }
+    .chip-aksi { background: rgba(78, 173, 105, 0.16); color: #A6EBB9; border: 1px solid rgba(78, 173, 105, 0.35); }
+    .chip-aksi .chip-dot { background: #4EAD69; }
+
     .script-text {
       font-size: var(--tele-size);
       line-height: var(--tele-line);
       color: var(--ink);
       font-weight: 500;
       letter-spacing: -0.01em;
-      white-space: pre-wrap;
+      white-space: normal;
+    }
+    .script-text p {
+      margin-bottom: 0.95em;
+    }
+    .script-text p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* When Stabilo is ACTIVE */
+    .stabilo-on mark.hl-tegas {
+      background: rgba(224, 83, 56, 0.28);
+      color: #FFB5A5;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border-bottom: 2px solid rgba(224, 83, 56, 0.65);
+    }
+    .stabilo-on mark.hl-santai {
+      background: rgba(212, 163, 89, 0.22);
+      color: #FFE6B0;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border-bottom: 2px solid rgba(212, 163, 89, 0.55);
+    }
+    .stabilo-on mark.hl-serius {
+      background: rgba(86, 148, 240, 0.22);
+      color: #BFDCFF;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border-bottom: 2px solid rgba(86, 148, 240, 0.55);
+    }
+    .stabilo-on mark.hl-aksi {
+      background: rgba(78, 173, 105, 0.24);
+      color: #A9EFBD;
+      font-weight: 600;
+      padding: 1px 5px;
+      border-radius: 4px;
+      border-bottom: 2px solid rgba(78, 173, 105, 0.6);
+    }
+    .stabilo-on .hl-pause {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--gold);
+      background: rgba(21, 19, 15, 0.6);
+      border: 1px dashed rgba(212, 163, 89, 0.5);
+      padding: 1px 7px;
+      border-radius: 4px;
+      margin: 0 4px;
+      vertical-align: middle;
+      font-weight: 600;
+    }
+
+    /* When Stabilo is MUTED / OFF */
+    .stabilo-off mark {
+      background: transparent !important;
+      color: inherit !important;
+      font-weight: inherit !important;
+      padding: 0 !important;
+      border: none !important;
+    }
+    .stabilo-off .hl-pause {
+      display: none !important;
+    }
+    .stabilo-off-hide {
+      display: none !important;
+    }
+
+    /* Stabilo Badge in header */
+    .stabilo-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--green);
+      color: #FFF;
+      letter-spacing: 0.05em;
+      transition: background 0.2s ease;
+    }
+    .stabilo-badge.off {
+      background: #555;
+      color: #CCC;
     }
 
     /* Spoken quotes highlight */
@@ -527,11 +682,16 @@
       <div style="display:flex;align-items:center;gap:6px">
         <button id="btnFontMinus" class="btn-tool" title="Kecilkan teks">A−</button>
         <button id="btnFontPlus" class="btn-tool" title="Besarkan teks">A+</button>
-        <span id="wakelockBadge" class="wakelock-pill">Layar: Otomatis</span>
+        <button id="btnToggleStabilo" class="btn-tool" title="Nyalakan / Matikan Highlight Stabilo">
+          <span>🖍️</span> Stabilo <span id="stabiloToggleBadge" class="stabilo-badge">ON</span>
+        </button>
       </div>
-      <button id="btnOpenDrawer" class="btn-tool" style="background:var(--bg-elevated)">
-        <span>📑</span> Daftar Slide
-      </button>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span id="wakelockBadge" class="wakelock-pill">Layar: Otomatis</span>
+        <button id="btnOpenDrawer" class="btn-tool" style="background:var(--bg-elevated)">
+          <span>📑</span> Slide
+        </button>
+      </div>
     </div>
   </header>
 
@@ -557,8 +717,23 @@
 
     <!-- Script Text Area -->
     <article class="script-card">
-      <div class="script-tag">Naskah Penjelasan Sutradara</div>
-      <div id="scriptContent" class="script-text">Memuat materi slide...</div>
+      <div class="script-header">
+        <div class="script-tag">Naskah Bicara Presenter</div>
+        <button id="btnQuickStabilo" class="stabilo-quick-toggle" title="Klik untuk menyalakan/mematikan highlight stabilo">
+          <span class="stabilo-indicator"></span>
+          <span id="stabiloQuickText">Stabilo Aktif</span>
+        </button>
+      </div>
+
+      <!-- Stabilo Legend Bar -->
+      <div id="stabiloLegend" class="stabilo-legend">
+        <span class="legend-chip chip-tegas"><span class="chip-dot"></span>Tegas / Tekan</span>
+        <span class="legend-chip chip-santai"><span class="chip-dot"></span>Santai / Alami</span>
+        <span class="legend-chip chip-serius"><span class="chip-dot"></span>Serius / Reflektif</span>
+        <span class="legend-chip chip-aksi"><span class="chip-dot"></span>Solusi / Aksi</span>
+      </div>
+
+      <div id="scriptContent" class="script-text stabilo-on">Memuat materi slide...</div>
     </article>
 
     <!-- Key Points Checklist on slide -->
@@ -672,6 +847,49 @@
         if (teleFontSize > 15) { teleFontSize -= 2; applyFontSize(); }
       });
 
+      // Stabilo Highlight System
+      let stabiloEnabled = localStorage.getItem('kwn_tele_stabilo') !== 'off';
+      const btnToggleStabilo = document.getElementById('btnToggleStabilo');
+      const stabiloToggleBadge = document.getElementById('stabiloToggleBadge');
+      const btnQuickStabilo = document.getElementById('btnQuickStabilo');
+      const stabiloQuickText = document.getElementById('stabiloQuickText');
+      const stabiloLegend = document.getElementById('stabiloLegend');
+
+      function applyStabiloState() {
+        if (stabiloEnabled) {
+          scriptContent.classList.remove('stabilo-off');
+          scriptContent.classList.add('stabilo-on');
+          if (stabiloToggleBadge) {
+            stabiloToggleBadge.textContent = 'ON';
+            stabiloToggleBadge.classList.remove('off');
+          }
+          if (btnQuickStabilo) btnQuickStabilo.classList.remove('off');
+          if (stabiloQuickText) stabiloQuickText.textContent = 'Stabilo Aktif';
+          if (stabiloLegend) stabiloLegend.classList.remove('stabilo-off-hide');
+        } else {
+          scriptContent.classList.remove('stabilo-on');
+          scriptContent.classList.add('stabilo-off');
+          if (stabiloToggleBadge) {
+            stabiloToggleBadge.textContent = 'OFF';
+            stabiloToggleBadge.classList.add('off');
+          }
+          if (btnQuickStabilo) btnQuickStabilo.classList.add('off');
+          if (stabiloQuickText) stabiloQuickText.textContent = 'Stabilo Mati';
+          if (stabiloLegend) stabiloLegend.classList.add('stabilo-off-hide');
+        }
+        localStorage.setItem('kwn_tele_stabilo', stabiloEnabled ? 'on' : 'off');
+      }
+
+      function toggleStabilo() {
+        stabiloEnabled = !stabiloEnabled;
+        applyStabiloState();
+        vibrate();
+      }
+
+      if (btnToggleStabilo) btnToggleStabilo.addEventListener('click', toggleStabilo);
+      if (btnQuickStabilo) btnQuickStabilo.addEventListener('click', toggleStabilo);
+      applyStabiloState();
+
       // Presentation Timer
       let timerRunning = false;
       let timerStart = 0;
@@ -774,17 +992,20 @@
           cuesBox.appendChild(d);
         }
 
-        // Script content formatting
-        let rawNotes = s.notes || 'Tidak ada catatan penjelasan untuk slide ini.';
-        // Format quotes inside single quotes
-        let formatted = rawNotes;
-        if (s.quotes && s.quotes.length > 0) {
-          s.quotes.forEach(q => {
-            const pattern = new RegExp(`'${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`, 'g');
-            formatted = formatted.replace(pattern, `<div class="spoken-quote"><span class="spoken-quote-label">Ucapkan ke audiens:</span>"${q}"</div>`);
-          });
+        // Script content formatting: prioritaskan naskah bicara lengkap dengan stabilo
+        if (s.script && s.script.trim()) {
+          scriptContent.innerHTML = s.script;
+        } else {
+          let rawNotes = s.notes || 'Tidak ada catatan penjelasan untuk slide ini.';
+          let formatted = rawNotes;
+          if (s.quotes && s.quotes.length > 0) {
+            s.quotes.forEach(q => {
+              const pattern = new RegExp(`'${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}'`, 'g');
+              formatted = formatted.replace(pattern, `<div class="spoken-quote"><span class="spoken-quote-label">Ucapkan ke audiens:</span>"${q}"</div>`);
+            });
+          }
+          scriptContent.innerHTML = formatted;
         }
-        scriptContent.innerHTML = formatted;
 
         // Points list
         if (s.cards && s.cards.length > 0) {
@@ -961,6 +1182,9 @@
 
       buildDrawer();
       renderSlide(0);
+
+      // Expose goTo for automated testing / deep-link
+      window.kwn_goTo = (idx) => goTo(idx, false);
 
       // Try requesting WakeLock on first touch
       window.addEventListener('touchstart', requestWakeLock, { once: true });

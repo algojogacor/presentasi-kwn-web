@@ -1,6 +1,7 @@
 /**
  * presentation-data.js
  * Metadata terstruktur untuk semua 22 slide presentasi KWN.
+ * Berisi naskah lengkap bicara pembicara dengan anotasi intonasi stabilo.
  * Digunakan oleh Halaman Teleprompter Mobile (/presenter).
  */
 window.PRESENTATION_SLIDES = [
@@ -19,7 +20,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Selamat pagi rekan-rekan mahasiswa dan Bapak/Ibu Dosen pengampu mata kuliah Kewarganegaraan.</mark> Pada kesempatan hari ini, kelompok kami memaparkan kajian mendalam mengenai <mark class=\"hl-tegas\">Kesadaran Pajak dan Pendidikan Anti Korupsi.</mark></p><p><mark class=\"hl-santai\">Sebelum kita melangkah lebih jauh,</mark> kami ingin menegaskan satu komitmen ilmiah: <mark class=\"hl-tegas\">seluruh data statistik, rasio penerimaan, dan rujukan hukum yang kami sajikan dalam paparan ini memiliki basis data valid dan dapat dipertanggungjawabkan.</mark> Kami merujuk langsung pada laporan resmi Kementerian Keuangan, Badan Pemeriksa Keuangan, Komisi Pemberantasan Korupsi, serta Transparency International.</p><p><mark class=\"hl-aksi\">Mari kita mulai pembahasan ini dari pertanyaan mendasar: bagaimana kedua pilar ini menentukan nasib peradaban bangsa kita.</mark></p>"
   },
   {
     "index": 1,
@@ -41,7 +43,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Paparan ini disusun secara kolaboratif oleh kami dari Kelompok 6 PDB 93,</mark> yang beranggotakan enam orang: Muhammad Adyan Faqih Huddin, Salma Nur Khasanah, Akbar Arya Maulana, Arya Rizky Ardhi Pratama, Dinda Naura Firdausy, dan Izzatul Hayati.</p><p><mark class=\"hl-aksi\">Kami menggabungkan perspektif yuridis, analisis kebijakan publik, serta tinjauan etika kemahasiswaan untuk membedah tema ini secara utuh dan terpadu.</mark></p>"
   },
   {
     "index": 2,
@@ -63,7 +66,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Untuk mempermudah pemahaman kelas, presentasi kami rancang ke dalam empat babak yang saling mengikat.</mark></p><p><mark class=\"hl-tegas\">Babak Pertama</mark> adalah pengantar landasan berpikir. <mark class=\"hl-tegas\">Babak Kedua</mark> mengupas tuntas realitas penerimaan dan kesadaran pajak di Indonesia. <mark class=\"hl-tegas\">Babak Ketiga</mark> mengkaji pentingnya pendidikan anti korupsi sebagai pembentuk watak warga negara.</p><p><mark class=\"hl-santai\">Dan puncaknya pada</mark> <mark class=\"hl-tegas\">Babak Keempat,</mark> kami menghadirkan sintesis dan solusi konkret: <mark class=\"hl-aksi\">bahwa kesadaran pajak dan pendidikan anti korupsi bukanlah dua topik terpisah, melainkan satu kesatuan mutlak dalam membangun tata kelola negara yang sehat.</mark></p>"
   },
   {
     "index": 3,
@@ -80,7 +84,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Mari kita mulai Babak Kedua dengan menengok asal mula dana publik yang menggerakkan republik ini.</mark> Silakan perhatikan cuplikan animasi edukatif di layar berikut. <span class=\"hl-pause\">[jeda 1 dtk saat video/angka tampil]</span></p><p><mark class=\"hl-tegas\">Data resmi APBN menunjukkan angka yang sangat gamblang:</mark> dari total pendapatan negara sebesar <mark class=\"hl-tegas\">Rp 2.765,13 triliun,</mark> porsi terbesar yaitu <mark class=\"hl-tegas\">Rp 1.917,6 triliun berasal dari setoran pajak.</mark></p><p><mark class=\"hl-serius\">Artinya, hampir tujuh puluh persen napas anggaran belanja negara kita ditopang langsung oleh iuran wajib masyarakat, bukan dari keuntungan sumber daya alam semata.</mark></p>"
   },
   {
     "index": 4,
@@ -95,7 +100,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-tegas\">Pajak adalah tulang punggung kedaulatan fiskal Indonesia.</mark> Namun, data realisasi tahun 2025 memperlihatkan fakta yang cukup memprihatinkan.</p><p><mark class=\"hl-serius\">Realisasi penerimaan pajak kita hanya mencapai 87,6 persen dari target APBN yang ditetapkan.</mark> <mark class=\"hl-tegas\">Terdapat kekurangan atau shortfall sebesar Rp 271,7 triliun.</mark> <span class=\"hl-pause\">[jeda 2 dtk]</span></p><p><mark class=\"hl-serius\">Kita harus menyadari bahwa selisih dua ratus tujuh puluh satu triliun itu bukan sekadar catatan tinta merah di atas kertas kementerian.</mark> Angka itu adalah kilometer jalan desa yang tertunda diperbaiki, ribuan atap sekolah dasar yang batal direnovasi, dan obat-obatan subsidi yang tidak sampai ke tangan warga prasejahtera. Setiap rupiah yang hilang memiliki wajah nyata rakyat yang membutuhkan.</p>"
   },
   {
     "index": 5,
@@ -112,7 +118,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": true,
     "isDosenCue": false,
-    "pauseSec": 2
+    "pauseSec": 2,
+    "script": "<p><mark class=\"hl-santai\">Jika kita menengok perbandingan di tingkat regional Asia-Pasifik,</mark> posisi Indonesia semakin menuntut perhatian serius kita bersama. <span class=\"hl-pause\">[jeda 2 dtk saat grafik memanjang]</span></p><p><mark class=\"hl-serius\">Dari tiga puluh delapan negara di kawasan Asia-Pasifik, rasio pajak Indonesia berada di urutan terendah ketiga.</mark> Hanya Bangladesh dan Timor-Leste yang memiliki rasio pajak lebih rendah dari kita.</p><p><mark class=\"hl-tegas\">Rata-rata rasio pajak kawasan Asia-Pasifik berada di angka 19,7 persen dari PDB, sementara Indonesia tertahan di level 11,8 persen.</mark> <span class=\"hl-pause\">[jeda 1 dtk]</span></p><p><mark class=\"hl-serius\">Jarak hampir delapan persen ini bukan angka abstrak. Ini menandakan bahwa kapasitas fiskal bangsa kita belum bekerja maksimal untuk menyejahterakan rakyatnya.</mark></p>"
   },
   {
     "index": 6,
@@ -133,7 +140,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Mungkin timbul pertanyaan di antara kita: untuk apa sebenarnya uang pajak itu ditarik?</mark></p><p><mark class=\"hl-tegas\">Pajak yang dibayarkan masyarakat tidak pernah lenyap tanpa jejak. Uang tersebut hadir kembali dalam tiga kebutuhan pokok kita sehari-hari.</mark></p><p><mark class=\"hl-aksi\">Pertama, sektor pendidikan:</mark> membiayai operasional kampus negeri, program beasiswa, serta tunjangan guru dan dosen.</p><p><mark class=\"hl-aksi\">Kedua, sektor kesehatan:</mark> menopang subsidi iuran BPJS, penyediaan fasilitas rumah sakit, dan program pencegahan stunting.</p><p><mark class=\"hl-aksi\">Ketiga, infrastruktur publik:</mark> pembangunan jalan raya, jembatan penghubung antarpulau, hingga moda transportasi massal.</p><p><mark class=\"hl-tegas\">Fasilitas-fasilitas ini bukan hadiah cuma-cuma dari penguasa, melainkan hak warga negara yang diwujudkan melalui sistem gotong royong perpajakan.</mark></p>"
   },
   {
     "index": 7,
@@ -152,7 +160,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": true,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Secara akademis, pengertian pajak memiliki tiga lapisan doktrin dan landasan hukum yang saling melengkapi.</mark></p><p><mark class=\"hl-tegas\">Secara yuridis,</mark> Prof. Dr. P. J. A. Adriani merumuskan pajak sebagai iuran kepada negara yang dapat dipaksakan oleh penguasa berdasarkan norma umum, tanpa imbalan langsung yang dapat ditunjuk secara perseorangan.</p><p><mark class=\"hl-tegas\">Secara ekonomi dan kemasyarakatan,</mark> Prof. Dr. Rochmat Soemitro memandangnya sebagai peralihan kekayaan dari kas rakyat ke kas negara untuk membiayai pengeluaran rutin dan pembangunan sarana umum.</p><p><mark class=\"hl-tegas\">Sedangkan dalam hukum positif Indonesia,</mark> rujukannya tertuang tegas pada <mark class=\"hl-tegas\">Pasal 1 angka 1 UU Nomor 6 Tahun 1983 yang telah diperbarui melalui UU Nomor 7 Tahun 2021 tentang Harmonisasi Peraturan Perpajakan.</mark></p><p><mark class=\"hl-aksi\">Undang-undang menegaskan bahwa pajak adalah kontribusi wajib warga negara yang bersifat memaksa secara legal konstitusional.</mark></p>"
   },
   {
     "index": 8,
@@ -173,7 +182,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Lantas, apa hakikat dari kepatuhan pajak yang sesungguhnya?</mark></p><p><mark class=\"hl-tegas\">Kepatuhan pajak adalah sikap taat dan disiplin dalam menunaikan seluruh kewajiban perpajakan sesuai koridor hukum yang berlaku.</mark></p><p><mark class=\"hl-santai\">Kepatuhan ini digerakkan oleh dua faktor fundamental:</mark></p><p><mark class=\"hl-aksi\">Faktor pertama adalah dorongan internal,</mark> yaitu kemauan dari dalam diri sendiri. Warga negara sadar bahwa membayar pajak adalah wujud nyata cinta tanah air dan tanggung jawab sosial.</p><p><mark class=\"hl-serius\">Faktor kedua adalah tekanan eksternal,</mark> yaitu keharusan karena aturan hukum, ketegasan audit fiskal, dan kepastian sanksi.</p><p><mark class=\"hl-tegas\">Negara yang maju tidak bisa hanya bertumpu pada rasa takut wajib pajak terhadap sanksi hukum. Kepatuhan yang kokoh dan berkelanjutan selalu berakar dari kesadaran internal warganya.</mark></p>"
   },
   {
     "index": 9,
@@ -192,7 +202,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Sistem perpajakan nasional bertumpu pada tiga pilar penyangga yang tidak boleh ada satupun yang rapuh.</mark></p><p><mark class=\"hl-tegas\">Pilar pertama:</mark> <mark class=\"hl-aksi\">Kesadaran sukarela.</mark> Wajib pajak memahami dengan tulus bahwa dana yang mereka setorkan kembali untuk kemaslahatan bersama.</p><p><mark class=\"hl-tegas\">Pilar kedua:</mark> <mark class=\"hl-aksi\">Pengetahuan dan pemahaman teknis.</mark> Masyarakat dibekali literasi yang memadai mengenai hak, tata cara pelaporan, dan penghitungan pajak secara akurat.</p><p><mark class=\"hl-tegas\">Pilar ketiga:</mark> <mark class=\"hl-aksi\">Kualitas pelayanan dan ketegasan sanksi.</mark> Aparat perpajakan melayani secara profesional, transparan, serta menegakkan sanksi hukum secara adil tanpa tebang pilih.</p><p><mark class=\"hl-serius\">Ketiga pilar ini saling mengunci. Ketimpangan pada salah satu pilar akan membuat keseluruhan sistem perpajakan goyah.</mark></p>"
   },
   {
     "index": 10,
@@ -207,7 +218,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Sampai di sini, mari kita berhenti sejenak dan merenungkan satu pertanyaan krusial.</mark> <span class=\"hl-pause\">[jeda 2 dtk]</span></p><p><mark class=\"hl-serius\">Ada satu virus berbahaya yang sanggup meruntuhkan ketiga pilar perpajakan tadi sekaligus dalam sekejap mata.</mark></p><p><mark class=\"hl-serius\">Bukan karena wajib pajak malas membaca aturan. Bukan pula karena sanksi denda yang kurang berat.</mark></p><p><mark class=\"hl-tegas\">Penyebab utamanya adalah hilangnya rasa kepercayaan publik.</mark> <span class=\"hl-pause\">[jeda 2 dtk]</span></p><p><mark class=\"hl-serius\">Saat masyarakat menyaksikan uang pajak yang mereka bayarkan dengan tetes keringat justru diselewengkan dan dikorupsi oleh oknum pejabat, kerelaan untuk taat akan hancur seketika.</mark></p><p><mark class=\"hl-aksi\">Oleh sebab itu, perbincangan tentang pajak tidak akan pernah sempurna tanpa kita melangkah ke Babak Ketiga: Pendidikan Anti Korupsi.</mark></p>"
   },
   {
     "index": 11,
@@ -224,7 +236,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Untuk membuka pembahasan Babak Ketiga, mari kita perhatikan video edukasi karakter dari Kementerian Pendidikan Dasar dan Menengah berikut ini.</mark> <span class=\"hl-pause\">[jeda 1 dtk saat video dimulai]</span></p><p><mark class=\"hl-tegas\">Pesan mendasar dari materi ini sangat jelas:</mark> kejujuran bukanlah sebuah bawaan lahir yang terjadi dengan sendirinya, melainkan nilai luhur yang harus dilatih dan dibiasakan secara terus-menerus.</p><p><mark class=\"hl-aksi\">Pribadi yang jujur dan berkarakter anti korupsi adalah benteng pertahanan moral pertama bangsa kita sebelum seseorang memegang wewenang publik.</mark></p>"
   },
   {
     "index": 12,
@@ -243,7 +256,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Lalu, bagaimana kita mendefinisikan hakikat pendidikan anti korupsi secara tepat?</mark></p><p><mark class=\"hl-tegas\">Pendidikan anti korupsi bukanlah seremonial temporer atau sekadar hiasan spanduk di lorong kampus.</mark> Hakikatnya bertumpu pada tiga fondasi utama:</p><p><mark class=\"hl-aksi\">Pertama, merupakan usaha sadar dan sistematis.</mark> Artinya, penanaman nilai moral dirancang secara terstruktur ke dalam kurikulum pembelajaran dan dievaluasi secara konsisten.</p><p><mark class=\"hl-aksi\">Kedua, membangun integritas dan karakter batin,</mark> membentuk pribadi yang kokoh pendiriannya agar tidak berkompromi pada kecurangan dalam situasi apapun.</p><p><mark class=\"hl-aksi\">Ketiga, menghilangkan peluang terjadinya korupsi,</mark> baik dengan mengikis niat sejak dini maupun menciptakan tata kerja yang transparan dan akuntabel.</p>"
   },
   {
     "index": 13,
@@ -262,7 +276,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Jika slide sebelumnya meninjau hakikatnya, maka slide ini mempertegas tujuannya: apa sasaran nyata yang ingin dicapai?</mark></p><p><mark class=\"hl-tegas\">Pendidikan anti korupsi menargetkan tiga tahapan transformasi manusiawi:</mark></p><p><mark class=\"hl-tegas\">Tahap pertama, pola pikir.</mark> Mengembangkan pemahaman mendalam tentang bahaya korupsi bagi kemunduran bangsa, melampaui sekadar tahu definisi teoritis di buku.</p><p><mark class=\"hl-tegas\">Tahap kedua, sikap batin.</mark> Menumbuhkan keberanian moral untuk menolak gratifikasi dan kecurangan, terutama ketika berada sendirian tanpa ada pengawasan luar.</p><p><mark class=\"hl-tegas\">Tahap ketiga, perilaku konkret.</mark> Membangun kebiasaan jujur dalam laku sehari-hari, hingga integritas menjadi budaya alami dan bukan sekadar pencitraan sesaat.</p>"
   },
   {
     "index": 14,
@@ -281,7 +296,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-serius\">Seringkali kita mengecam korupsi pejabat publik di layar televisi. Namun marilah kita bercermin dengan jujur: di mana korupsi itu sebenarnya bermula?</mark> <span class=\"hl-pause\">[jeda 2 dtk]</span></p><p><mark class=\"hl-tegas\">Korupsi tidak pernah berawal secara tiba-tiba di ruang rapat eksekutif kementerian.</mark></p><p><mark class=\"hl-serius\">Korupsi berakar dari pembiaran atas kecurangan-kecurangan kecil di masa muda: menyontek saat lembar ujian dibagikan, menitip tanda tangan presensi kehadiran kelas, hingga memanipulasi nota laporan pertanggungjawaban kepanitiaan mahasiswa.</mark></p><p><mark class=\"hl-serius\">Bahayanya bukan terletak pada seberapa kecil nominalnya hari ini, melainkan pada normalisasi kebiasaan tersebut.</mark></p><p><mark class=\"hl-tegas\">Ketika kebohongan kecil dianggap wajar oleh pergaulan kampus, batas etika antara benar dan salah perlahan-lahan runtuh.</mark></p>"
   },
   {
     "index": 15,
@@ -298,7 +314,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": true,
     "isDosenCue": false,
-    "pauseSec": 3
+    "pauseSec": 3,
+    "script": "<p><mark class=\"hl-santai\">Sekarang, mari kita buka cermin integritas bangsa kita di mata masyarakat internasional.</mark> <span class=\"hl-pause\">[jeda 3 dtk saat grafik skor turun]</span></p><p><mark class=\"hl-serius\">Ini adalah catatan resmi Indeks Persepsi Korupsi Indonesia yang dirilis oleh Transparency International.</mark></p><p><mark class=\"hl-tegas\">Tahun 2023: skor kita 34.</mark></p><p><mark class=\"hl-santai\">Tahun 2024: naik ke angka 37, dan kita sempat menaruh harapan perbaikan.</mark></p><p><mark class=\"hl-serius\">Namun pada tahun 2025: skor Indonesia anjlok kembali ke titik mula di angka 34.</mark> <span class=\"hl-pause\">[jeda 2 dtk]</span></p><p><mark class=\"hl-serius\">Peringkat dunia kita merosot tajam sepuluh posisi, dari urutan ke-99 jatuh ke urutan ke-109 di dunia.</mark> Skor 34 dari skala 100 menegaskan bahwa pemberantasan korupsi kita masih terjebak dalam lampu kuning bahaya. Kita tidak boleh menutup mata dari kenyataan ini.</p>"
   },
   {
     "index": 16,
@@ -319,7 +336,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Memasuki Babak Keempat, kita tiba pada tesis utama yang menjadi benang merah presentasi kelompok kami.</mark></p><p><mark class=\"hl-tegas\">Kesadaran pajak dan pendidikan anti korupsi bukanlah dua agenda yang terpisah. Keduanya adalah dua sisi dari satu mata uang yang sama nilainya.</mark> <span class=\"hl-pause\">[jeda 1 dtk]</span></p><p><mark class=\"hl-santai\">Hubungan logisnya sangat sederhana namun mengikat:</mark> warga negara yang mengerti bahwa uang pajak adalah hasil keringatnya sendiri, secara otomatis akan bangkit mengawasi dan menolak setiap tindak pidana korupsi.</p><p><mark class=\"hl-aksi\">Pendidikan integritas menanamkan nilai luhur sejak dini; integritas melahirkan kepatuhan pajak sukarela; dan kepatuhan sukarela itulah yang melandasi terwujudnya tata kelola pemerintahan yang bersih dan bertanggung jawab.</mark></p>"
   },
   {
     "index": 17,
@@ -336,7 +354,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Mari kita amati bagaimana siklus sebab-akibat ini bekerja secara runtut dari hulu ke hilir.</mark> <span class=\"hl-pause\">[jeda 2 dtk saat alur diagram terbentuk di layar]</span></p><p><mark class=\"hl-tegas\">Perhatikan dengan seksama: rangkaian rantai keberhasilan ini bermula dari pendidikan karakter, bukan dari penindakan hukum.</mark></p><p><mark class=\"hl-serius\">Operasi tangkap tangan dan vonis pengadilan hanya bekerja di hilir, setelah uang negara hilang dan kerugian publik terjadi.</mark></p><p><mark class=\"hl-aksi\">Sebaliknya, pendidikan beroperasi di hulu, menyembuhkan akar penyakit dan memutus niat koruptif sebelum sempat terjadi.</mark></p><p><mark class=\"hl-tegas\">Ketika pendidikan berhasil membangun karakter, kepatuhan pajak tumbuh secara organik, penerimaan negara terkumpul optimal, dan roda pembangunan berjalan dengan tata kelola yang transparan.</mark></p>"
   },
   {
     "index": 18,
@@ -355,7 +374,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Lalu, tindakan nyata apa yang dapat kita mulai hari ini dari lingkungan kampus kita tercinta?</mark></p><p><mark class=\"hl-aksi\">Pertama, posisi kita sebagai Mahasiswa:</mark> kita adalah garda terdepan agen perubahan. Kita mulai dari hal sederhana: menolak titip presensi, menyusun laporan keuangan kepanitiaan organisasi secara transparan, serta menyebarkan literasi pajak di lingkar pergaulan.</p><p><mark class=\"hl-aksi\">Kedua, peran Bapak dan Ibu Dosen:</mark> menjadi teladan integritas moral akademis, membiasakan kejujuran ilmiah, dan mendorong pemikiran kritis atas kebijakan publik.</p><p><mark class=\"hl-aksi\">Ketiga, secara Bersama:</mark> membangun kultur sivitas akademika yang sehat, di mana kejujuran dihormati dan kompromi atas kecurangan ditolak secara tegas.</p>"
   },
   {
     "index": 19,
@@ -374,7 +394,8 @@ window.PRESENTATION_SLIDES = [
     ],
     "isCritical": false,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Kelompok kami merumuskan tiga agenda program terukur yang dapat segera diimplementasikan di tingkat perguruan tinggi.</mark></p><p><mark class=\"hl-aksi\">Program 01: Kurikulum anti korupsi terintegrasi.</mark> Memasukkan studi kasus nyata seputar etika perpajakan dan resiko korupsi ke dalam mata kuliah dasar umum dan mata kuliah keahlian.</p><p><mark class=\"hl-aksi\">Program 02: Platform edukasi digital interaktif.</mark> Menghadirkan modul e-learning ringkas dan simulasi pengisian SPT mandiri yang wajib diikuti mahasiswa menjelang kelulusan.</p><p><mark class=\"hl-aksi\">Program 03: Komunitas relawan duta pajak dan integritas kampus.</mark> Melatih mahasiswa terpilih sebagai konsultan sebaya yang aktif mengedukasi kawan-kawan mahasiswa tentang pentingnya kontribusi fiskal dan pengawasan publik.</p>"
   },
   {
     "index": 20,
@@ -382,7 +403,7 @@ window.PRESENTATION_SLIDES = [
     "babak": "4",
     "babakName": "Babak IV · Sintesis & Solusi",
     "title": "Target kami, dan jarak ke sana",
-    "eyebrow": "Target jangka menengah 3–5 tahun",
+    "eyebrow": "Target jangka menengah 3-5 tahun",
     "lead": "Batang hitam adalah kondisi hari ini. Blok bergaris adalah selisihnya. Garis merah adalah target 2028. Jarak itu bukan kegagalan, itu daftar pekerjaan.",
     "notes": "MOMEN KEDUA TERPENTING. Tunjukkan jurangnya secara terbuka. Kalimatnya: 'Kami menetapkan target ini. Kami juga tahu di mana posisi kita sekarang. Jarak antara batang hitam dan garis merah itu adalah pekerjaan yang belum selesai, dan itu justru alasan paparan ini dibuat.' Kejujuran di sini yang akan diingat dosen.",
     "quotes": [
@@ -391,7 +412,8 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": true,
     "isDosenCue": true,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Di slide ini, kami menunjukkan peta target kuantitatif yang ingin kita capai dalam jangka menengah hingga tahun 2028.</mark> <span class=\"hl-pause\">[jeda 2 dtk]</span></p><p><mark class=\"hl-tegas\">Batang hitam melambangkan kondisi kita hari ini. Area bergaris adalah jurang selisihnya. Dan garis merah adalah target yang kita tetapkan.</mark></p><p><mark class=\"hl-tegas\">Pada rasio pajak, dari posisi 11,8 persen hari ini, target kita adalah melangkah mencapai 15 persen dari PDB.</mark></p><p><mark class=\"hl-tegas\">Pada Indeks Persepsi Korupsi, dari skor 34 hari ini, target kita adalah mendaki ke angka 45.</mark></p><p><mark class=\"hl-serius\">Kami menyadari jarak tersebut sangat menantang. Namun jarak ini bukanlah alasan untuk menyerah, melainkan daftar agenda kerja konkret yang harus kita tuntaskan bersama demi masa depan republik.</mark></p>"
   },
   {
     "index": 21,
@@ -408,6 +430,7 @@ window.PRESENTATION_SLIDES = [
     "cards": [],
     "isCritical": true,
     "isDosenCue": false,
-    "pauseSec": 0
+    "pauseSec": 0,
+    "script": "<p><mark class=\"hl-santai\">Sebagai penutup dari seluruh paparan Kelompok 6,</mark> silakan perhatikan panel di layar saat tirai sensor angka terbuka seutuhnya. <span class=\"hl-pause\">[jeda hening sejenak]</span></p><p><mark class=\"hl-serius\">Tantangan terbesar bangsa kita sesungguhnya bukanlah ketiadaan potensi ekonomi, melainkan defisit pemahaman dan defisit kepercayaan publik terhadap pengelolaan uang negara.</mark></p><p><mark class=\"hl-tegas\">Pajak adalah amanah gotong royong dari seluruh rakyat. Dan nilai anti korupsi adalah komitmen moral agar amanah tersebut tidak dikhianati.</mark></p><p><mark class=\"hl-aksi\">Ketika kesadaran pajak berpadu dengan integritas yang tak tergoyahkan, tidak ada lagi data yang perlu ditutup-tutupi, dan keadilan sosial bagi seluruh rakyat Indonesia akan benar-benar terwujud.</mark></p><p><mark class=\"hl-santai\">Sekian paparan dari kami. Kami mengundang tanggapan, koreksi, dan diskusi mendalam dari Bapak/Ibu Dosen serta rekan-rekan sekalian.</mark></p>"
   }
-];
+];

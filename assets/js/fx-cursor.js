@@ -22,11 +22,6 @@ window.FXCursor = (function () {
     if (built) return;
     built = true;
 
-    el.h = document.createElement('div');
-    el.h.className = 'fxc-line fxc-h';
-    el.v = document.createElement('div');
-    el.v.className = 'fxc-line fxc-v';
-
     el.ring = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     el.ring.setAttribute('class', 'fxc-ring');
     el.ring.setAttribute('viewBox', '0 0 44 44');
@@ -47,8 +42,6 @@ window.FXCursor = (function () {
 
     el.wrap = document.createElement('div');
     el.wrap.id = 'fxCursor';
-    el.wrap.appendChild(el.h);
-    el.wrap.appendChild(el.v);
     el.wrap.appendChild(el.ring);
     el.wrap.appendChild(el.dot);
     for (let i = 0; i < TRAIL_N; i++) {
@@ -61,14 +54,11 @@ window.FXCursor = (function () {
 
     gsap.set(el.ring, { xPercent: -50, yPercent: -50, scale: 0, opacity: 0 });
     gsap.set(el.dot, { xPercent: -50, yPercent: -50, scale: 0 });
-    gsap.set([el.h, el.v], { opacity: 0 });
 
     el.qx = gsap.quickTo(el.ring, 'x', { duration: 0.32, ease: 'power3' });
     el.qy = gsap.quickTo(el.ring, 'y', { duration: 0.32, ease: 'power3' });
     el.qdx = gsap.quickTo(el.dot, 'x', { duration: 0.06 });
     el.qdy = gsap.quickTo(el.dot, 'y', { duration: 0.06 });
-    el.qhx = gsap.quickTo(el.h, 'y', { duration: 0.12 });
-    el.qvy = gsap.quickTo(el.v, 'x', { duration: 0.12 });
     el.qlblx = gsap.quickTo(el.label, 'x', { duration: 0.36, ease: 'power3' });
     el.qllby = gsap.quickTo(el.label, 'y', { duration: 0.36, ease: 'power3' });
     gsap.set(el.label, { xPercent: 0, yPercent: -50 });
@@ -82,12 +72,10 @@ window.FXCursor = (function () {
       mx = e.clientX; my = e.clientY;
       if (!el.wrap.classList.contains('on')) {
         el.wrap.classList.add('on');
-        gsap.to([el.h, el.v], { opacity: 1, duration: 0.4 });
         gsap.to(el.dot, { scale: 1, duration: 0.3 });
         gsap.to(el.ring, { scale: 1, opacity: 1, duration: 0.45, ease: 'back.out(2)' });
       }
       el.qdx(mx); el.qdy(my);
-      el.qhx(my); el.qvy(mx);
       el.qx(mx); el.qy(my);
       el.qlblx(mx + 30); el.qllby(my);
       trail.forEach(function (t) { t.qx(mx); t.qy(my); });
@@ -96,12 +84,11 @@ window.FXCursor = (function () {
 
     document.addEventListener('mouseleave', function () {
       el.wrap.classList.remove('on');
-      gsap.to([el.h, el.v, el.dot, el.ring], { opacity: 0, duration: 0.25 });
+      gsap.to([el.dot, el.ring], { opacity: 0, duration: 0.25 });
     });
     document.addEventListener('mouseenter', function () {
       if (mx > 0) {
         el.wrap.classList.add('on');
-        gsap.to([el.h, el.v], { opacity: 1, duration: 0.3 });
         gsap.to(el.dot, { opacity: 1, duration: 0.3 });
         gsap.to(el.ring, { opacity: 1, duration: 0.3 });
       }

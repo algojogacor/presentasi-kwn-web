@@ -21,8 +21,9 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 
 def main():
-    deck_url = (ROOT / "index.html").resolve().as_uri()
-    tele_url = (ROOT / "presenter" / "index.html").resolve().as_uri()
+    room_id = f"test_{int(time.time())}"
+    deck_url = (ROOT / "index.html").resolve().as_uri() + f"?room={room_id}"
+    tele_url = (ROOT / "presenter" / "index.html").resolve().as_uri() + f"?room={room_id}"
 
     with sync_playwright() as pw:
         browser = pw.chromium.launch(

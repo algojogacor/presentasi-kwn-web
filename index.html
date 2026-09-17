@@ -1061,25 +1061,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 }
 .toast.on{opacity:1;transform:translate(-50%,0)}
 
-.notes{
-  position:fixed;right:0;bottom:0;left:0;
-  max-height:38vh;overflow:auto;z-index:45;
-  background:rgba(21,19,15,.94);color:var(--paper);
-  padding:clamp(.8rem,2vw,1.6rem);
-  transform:translateY(101%);
-  transition:transform .45s var(--ease);
-}
-.notes.on{transform:translateY(0)}
-.notes h5{
-  font-family:var(--font-mono);font-size:var(--t-5);
-  letter-spacing:.2em;text-transform:uppercase;
-  color:var(--vermilion-2);margin-bottom:.7em;
-}
-.notes p{font-size:var(--t-4);line-height:1.6;max-width:88ch}
-.notes .timer{
-  position:absolute;right:clamp(.8rem,2vw,1.6rem);top:clamp(.8rem,2vw,1.6rem);
-  font-family:var(--font-mono);font-size:var(--t-3);color:var(--vermilion-2);
-}
+.notes{display:none !important}
 
 /* ================================================================
    11. CETAK / PDF
@@ -1284,11 +1266,6 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   </svg>
 </button>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<div class="notes" id="notes" aria-hidden="true">
-  <div class="timer" id="timer">00:00</div>
-  <h5>Catatan pembicara</h5>
-  <p id="notesText"></p>
-</div>
 
 <!-- ============================================================
      DECK: 22 slide
@@ -2977,8 +2954,6 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     } else if (k === 'f' || k === 'F') {
       if (document.fullscreenElement) document.exitFullscreen();
       else document.documentElement.requestFullscreen().catch(function () {});
-    } else if (k === 'p' || k === 'P') {
-      toggleNotes();
     } else if (k === 'e' || k === 'E') {
       Editor.toggle();
     }
@@ -3305,38 +3280,11 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
   })();
 
   /* ==============================================================
-     10. MODE PRESENTER
+     10. MODE PRESENTER / TELEPROMPTER
+     Catatan pembicara privat dipindahkan sepenuhnya ke HP (/presenter)
+     melalui assets/js/deck-teleprompter-modal.js agar TIDAK PERNAH
+     tampil di layar proyeksi utama / laptop presenter.
      ============================================================== */
-  const notesEl   = document.getElementById('notes');
-  const notesText = document.getElementById('notesText');
-  const timerEl   = document.getElementById('timer');
-  let notesOn = false;
-  let timerStart = null;
-
-  function toggleNotes() {
-    notesOn = !notesOn;
-    notesEl.classList.toggle('on', notesOn);
-    notesEl.setAttribute('aria-hidden', String(!notesOn));
-    if (notesOn) {
-      if (!timerStart) timerStart = Date.now();
-      refreshNotes();
-    }
-  }
-
-  function refreshNotes() {
-    if (!notesOn) return;
-    const s = slides[Math.max(0, currentIndex())];
-    notesText.textContent = (s && s.dataset.notes) || 'Belum ada catatan untuk slide ini.';
-  }
-
-  setInterval(function () {
-    if (!notesOn || !timerStart) return;
-    const sec = Math.floor((Date.now() - timerStart) / 1000);
-    timerEl.textContent =
-      String(Math.floor(sec / 60)).padStart(2, '0') + ':' +
-      String(sec % 60).padStart(2, '0');
-    refreshNotes();
-  }, 1000);
 
   /* ==============================================================
      11. CETAK / PDF

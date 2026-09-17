@@ -16,6 +16,8 @@ window.FX = (function () {
   let current = -1;
   let ctx = null;
   let heroStopTimer = 0;
+  let navTimer = null;
+  let navToken = 0;
 
   const api = { printing: false };
 
@@ -151,6 +153,8 @@ window.FX = (function () {
     const hint = document.getElementById('hint');
     if (hint) hint.classList.remove('on');
 
+    clearTimeout(navTimer);
+    const thisToken = ++navToken;
     busy = true;
     ov.innerHTML = '';
     ov.style.pointerEvents = 'auto';
@@ -167,8 +171,14 @@ window.FX = (function () {
       return;
     }
 
-    tl.call(function () { DN.show(i); }, [], 'mid');
+    tl.call(function () {
+      if (thisToken !== navToken) return;
+      DN.show(i);
+    }, [], 'mid');
+
     tl.eventCallback('onComplete', function () {
+      if (thisToken !== navToken) return;
+      clearTimeout(navTimer);
       busy = false;
       ov.style.pointerEvents = 'none';
       ov.innerHTML = '';
@@ -176,8 +186,8 @@ window.FX = (function () {
 
     /* jaring pengaman: transisi macet -> pastikan slide tetap berganti */
     const dur = tl.duration();
-    setTimeout(function () {
-      if (busy) {
+    navTimer = setTimeout(function () {
+      if (thisToken === navToken && busy) {
         busy = false;
         ov.style.pointerEvents = 'none';
         ov.innerHTML = '';

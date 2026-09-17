@@ -36,6 +36,7 @@
       this.role = options.role || 'deck';
       this.roomId = (getQueryParam('room') || options.roomId || DEFAULT_ROOM).toLowerCase().trim();
       this.topic = `kwn/deck/${this.roomId}`;
+      this.instanceId = 'inst_' + Math.random().toString(36).substring(2, 10);
 
       if (options.onSlideChange) this.callbacks.onSlideChange = options.onSlideChange;
       if (options.onRemoteNav) this.callbacks.onRemoteNav = options.onRemoteNav;
@@ -143,8 +144,11 @@
     handleIncomingMessage(msg, transport) {
       if (!msg || typeof msg !== 'object') return;
 
-      // Jangan proses pesan dari diri sendiri
-      if (msg.role === this.role && msg.instanceId === this.instanceId) return;
+      // Jangan proses pesan dari instance yang sama
+      if (msg.instanceId && msg.instanceId === this.instanceId) return;
+
+      // Deck hanya memproses sinyal kendali dari teleprompter
+      if (this.role === 'deck' && msg.role === 'deck') return;
 
       if (msg.type === 'SLIDE_CHANGE') {
         if (typeof msg.index === 'number' && this.callbacks.onSlideChange) {
@@ -165,6 +169,7 @@
     publish(payload) {
       payload.roomId = this.roomId;
       payload.role = this.role;
+      payload.instanceId = this.instanceId;
       payload.timestamp = Date.now();
 
       // 1. Kirim via BroadcastChannel

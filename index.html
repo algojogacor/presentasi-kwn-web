@@ -3365,6 +3365,7 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
     currentIndex: currentIndex,
     show: show,
     rawGo: rawGo,
+    goTo: goTo,
     firstPaint: false
   };
 
@@ -3428,5 +3429,11 @@ body.editing [data-edit]:focus{outline:2px solid var(--vermilion);background:rgb
 <script src="assets/js/fx-interactions.js"></script>
 <script src="assets/js/fx-registry.js"></script>
 <script src="assets/js/fx-core.js"></script>
+
+<!-- Sinkronisasi Real-Time & Teleprompter HP -->
+<script src="https://unpkg.com/mqtt@5.3.5/dist/mqtt.min.js"></script>
+<script src="assets/vendor/qrcode.min.js"></script>
+<script src="assets/js/sync-engine.js"></script>
+<script src="assets/js/deck-teleprompter-modal.js"></script>
 </body>
 </html>
